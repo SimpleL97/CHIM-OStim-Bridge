@@ -13,7 +13,8 @@ configured in the MCM.
 > for adults only.
 
 This repository is the complete source of the mod. Players should download the packaged
-release (FOMOD archive) from the mod's Nexus Mods page instead of building it.
+release (FOMOD archive) from the **[Nexus Mods page](https://www.nexusmods.com/skyrimspecialedition/mods/194761)**
+instead of building it.
 
 - **[BUILDING.md](BUILDING.md)** - how to build the release from these sources, step by
   step, and where every file in the release comes from
@@ -104,7 +105,8 @@ python3 -I verify_release.py "release/CHIM OStim Bridge-1.0.0.zip"
 
 Requirements: SKSE64, Address Library, CHIM (plugin and server), OStim Standalone,
 PapyrusUtil, SkyUI, MCM Helper - see [DEPENDENCIES.md](DEPENDENCIES.md).
-Install the release archive with Vortex or MO2, start the CHIM server, then the game.
+Install the [release archive](https://www.nexusmods.com/skyrimspecialedition/mods/194761?tab=files)
+with Vortex or MO2, start the CHIM server, then the game.
 More in [docs/README.txt](docs/README.txt).
 
 ## License

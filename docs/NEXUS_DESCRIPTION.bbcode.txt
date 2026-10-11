@@ -90,5 +90,8 @@ If your CHIM version does not install bundled server plugins, choose "Manual ser
 [b]Group scenes become two people.[/b] No installed animation fits that group - install 3P animation packs.
 [b]Names in the Needs page?[/b] Exactly as shown in game, separated by commas, for example "Name One, Name Two".
 
+[size=4][b]Source code[/b][/size]
+Full source and step-by-step build instructions: [url=https://github.com/SimpleL97/CHIM-OStim-Bridge]github.com/SimpleL97/CHIM-OStim-Bridge[/url] ([url=https://github.com/SimpleL97/CHIM-OStim-Bridge/blob/main/BUILDING.md]BUILDING.md[/url], [url=https://github.com/SimpleL97/CHIM-OStim-Bridge/blob/main/DEPENDENCIES.md]DEPENDENCIES.md[/url]).
+
 [size=4][b]Credits[/b][/size]
 Dwemer Dynamics for CHIM, the OStim team for OStim Standalone, exiledviper and meh321 for PapyrusUtil, the SkyUI team, Exit-9B for MCM Helper.
