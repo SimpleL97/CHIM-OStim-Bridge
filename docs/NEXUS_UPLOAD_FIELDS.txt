@@ -1,0 +1,43 @@
+CHIM OStim Bridge - values for the Nexus Mods upload form
+==========================================================
+
+MOD PAGE
+  Name:            CHIM OStim Bridge
+  Author:          SaurOff
+  Version:         1.0.0
+  Category:        Gameplay   (Skyrim SE has no separate adult category; adult content is a flag)
+  Adult content:   YES (sexual content)
+  Language:        English
+  Brief overview (max 350 characters):
+    Lets CHIM AI NPCs start, change and end OStim scenes on their own - with you, other NPCs or groups - picking the act from the conversation. They react to cities, shops, sleep and scenes, talk about a scene afterwards and can have needs (lust, blood thirst, drink, jealousy). MCM in 12 languages; the server side installs itself.
+  Description:     paste NEXUS_DESCRIPTION.bbcode.txt (BBCode editor)
+
+REQUIREMENTS (Nexus "Requirements" tab, Nexus mods)
+  CHIM                              126330   game plugin and server
+  OStim Standalone                  98163    7.3.1 or newer
+  PapyrusUtil SE/AE                 13048
+  SkyUI                             12604
+  MCM Helper                        53000
+  Address Library for SKSE Plugins  32444
+Off-site requirement
+  SKSE64                            https://skse.silverlock.org/
+DLC requirement
+  Dawnguard
+
+FILE UPLOAD
+  File:            CHIM OStim Bridge-1.0.0.zip
+  File name:       CHIM OStim Bridge
+  Version:         1.0.0   (must match fomod/info.xml; Vortex shows and tracks versions from this)
+  Category:        Main Files
+  Description:     First public release. FOMOD installer; the CHIM server plugin installs itself at game start.
+  Remove old versions: when uploading a newer version, move the old file to "Old versions"
+                   (do not delete it) so players can pick an older version in Vortex.
+
+PERMISSIONS (suggested)
+  Upload to other sites:   ask first
+  Modify and re-release:   ask first
+  Use assets in your mods: credit SaurOff
+  Convert to other games:  no
+  Donation points:         your choice
+
+TAGS (suggested): AI, CHIM, OStim, Followers, Immersion, MCM, Adult, Vampires, Dialogue

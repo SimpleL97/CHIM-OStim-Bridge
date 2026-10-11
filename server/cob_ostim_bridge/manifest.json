@@ -1,0 +1,6 @@
+{
+  "name": "cob_ostim_bridge",
+  "description": "CHIM OStim Bridge by SaurOff: AI agents start, change and stop OStim scenes (groups, kinds), undress, feed on blood; event reactions; simple needs; two CHIM fixes. Needs CHIMOStimBridge.esp in Skyrim.",
+  "version": "1.0.0",
+  "author": "SaurOff"
+}

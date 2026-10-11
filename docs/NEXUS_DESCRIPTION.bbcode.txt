@@ -1,0 +1,94 @@
+[center][size=6][b]CHIM OStim Bridge[/b][/size]
+[size=3]Let your CHIM AI companions decide for themselves - and actually do it.[/size][/center]
+
+[size=4][b]What is this?[/b][/size]
+[url=https://www.nexusmods.com/skyrimspecialedition/mods/126330]CHIM[/url] gives NPCs a mind and a voice. [url=https://www.nexusmods.com/skyrimspecialedition/mods/98163]OStim Standalone[/url] gives them a body. This mod connects the two: when an AI agent agrees, flirts, insists or gets drunk enough, it can start, change and end OStim scenes on its own, with you, with another NPC or with a whole group - and the kind of scene follows what was said ("use your mouth", "from behind", "all of us together").
+
+On top of that the agents react to the world around them, talk about a scene after it ends, and can live with a few simple needs you switch on per NPC. Everything is configured in the MCM, and the server side installs itself.
+
+[size=4][b]Features[/b][/size]
+[b]AI actions[/b] (appear in CHIM's action list)
+[list]
+[*][b]Start_Intimate_Scene[/b] - with you, any named NPC nearby, or several people at once. The AI picks the kind of scene from the conversation: oral, cunnilingus, vaginal, anal, handjob, boobjob, kissing, 69, cowgirl, reverse cowgirl, doggystyle, missionary.
+[*][b]Change_Intimate_Scene[/b] - switch position or act mid-scene ("now from behind").
+[*][b]Stop_Intimate_Scene[/b]
+[*][b]Undress / Get_Dressed[/b] - strip without a scene and later put exactly those clothes back on.
+[*][b]Feed_On_Blood[/b] - vampires bite someone present, with the vanilla feeding animation.
+[/list]
+Every result is reported back to CHIM. When something is not possible ("weapons are still drawn", "she is not here", "there is a fight going on") the agent answers in character instead of the action silently failing.
+
+[b]Scene logic[/b]
+[list]
+[*]Men always take the active role (optional) - no strap-on for the woman who asked for it.
+[*]Partners up to 50 m away (adjustable) are brought next to each other when the scene starts.
+[*]Any nearby NPC can be named as a partner, not only NPCs CHIM already knows.
+[*]Agents can arrange a scene for others and just watch ("you take her from behind, I'll watch").
+[*]When they agree on it among themselves, they start it without waiting for a separate order.
+[*]If the asked act or position is not installed, a missionary scene is used; group scenes fall back to two people when no animation fits the group.
+[/list]
+
+[b]Reactions[/b] (each with its own toggle, plus chance and cooldown)
+[list]
+[*]Arriving in, leaving and travelling between Whiterun, Solitude, Windhelm, Riften, Markarth and Raven Rock (fast travel included)
+[*]Walking into a shop or into your own home
+[*]Waking up, absorbing a dragon soul, you stripping naked
+[*]An OStim scene starting nearby
+[*][b]Talking after a scene[/b] - who took part, how it ended and who came is passed to the AI, so the comments fit what actually happened
+[/list]
+
+[b]Needs[/b] (for the NPCs you name in the MCM)
+[list]
+[*][b]Hunger for sex[/b] - restless, then burning, then angry the longer it has been. Any OStim scene they are in feeds it.
+[*][b]Blood thirst[/b] for vampires - thirsty, then starving, until they use Feed_On_Blood.
+[*][b]Drinking[/b] - any agent who drinks ale, mead or wine gets tipsy, then drunk; it wears off with game time.
+[*][b]Arousal[/b] during and right after a scene.
+[*][b]Jealousy[/b] - between the companions you list, when one gets much more of your attention.
+[/list]
+
+[b]Two fixes for CHIM itself[/b]
+[list]
+[*][b]Speech only[/b] - stops NPCs from narrating themselves in the third person ("she smiles and steps closer..."), which the voice would read out.
+[*][b]Nobody talks after a long session[/b] - CHIM can abort every reply after you restart the game following a very long session (stale player-input stamps). This resets them on load.
+[/list]
+
+[b]Languages[/b]
+The MCM is translated into English, Russian, Ukrainian, German, French, Spanish, Italian, Polish, Czech, Portuguese, Japanese and Chinese and follows the game language; other game languages show it in English.
+
+[size=4][b]Requirements[/b][/size]
+[list]
+[*][url=https://skse.silverlock.org/]SKSE64[/url] and [url=https://www.nexusmods.com/skyrimspecialedition/mods/32444]Address Library for SKSE Plugins[/url]
+[*][url=https://www.nexusmods.com/skyrimspecialedition/mods/126330]CHIM[/url] - game plugin and server (tested with 3.4.2)
+[*][url=https://www.nexusmods.com/skyrimspecialedition/mods/98163]OStim Standalone[/url] 7.3.1 or newer (tested with 7.5.1)
+[*][url=https://www.nexusmods.com/skyrimspecialedition/mods/13048]PapyrusUtil SE/AE[/url]
+[*][url=https://www.nexusmods.com/skyrimspecialedition/mods/12604]SkyUI[/url]
+[*][url=https://www.nexusmods.com/skyrimspecialedition/mods/53000]MCM Helper[/url]
+[*]Dawnguard (for the feeding animation; part of every SE/AE install)
+[/list]
+[b]Optional:[/b] OStim animation packs with 3+ actors for group scenes, e.g. [url=https://www.nexusmods.com/skyrimspecialedition/mods/106582]Billyy MFF Pack[/url].
+
+[size=4][b]Installation[/b][/size]
+[list=1]
+[*]Install with Vortex or Mod Organizer 2 and enable [b]CHIMOStimBridge.esp[/b] (ESL flagged - it does not use a load order slot; load order does not matter).
+[*]Start the CHIM server as usual, then the game. CHIM finds the bundled server plugin in [i]Data/CHIM/server-plugins[/i] and installs it on its server by itself; the six actions are added to CHIM's action list on the first request.
+[*]Load a save. The MCM "CHIM OStim Bridge" appears after a few seconds.
+[/list]
+If your CHIM version does not install bundled server plugins, choose "Manual server install tools" in the installer and run [i]Install-ServerPlugin.bat[/i] once.
+
+[b]Updating:[/b] install the new version over the old one; CHIM updates the server side automatically on the next game start.
+[b]Uninstalling:[/b] run [i]Uninstall-ServerPlugin.bat[/i] (manual tools option) to remove the server plugin and its actions, then remove the mod. Safe to add to and remove from existing saves.
+
+[size=4][b]Compatibility[/b][/size]
+[list]
+[*]Uses its own plugin, scripts (COB_*) and CHIM action codes (ExtCmdCOB_*).
+[*]Do not combine with other mods that add actions with the same names to CHIM (Start_Intimate_Scene, Undress, ...). The server plugin skips names already in use and logs it.
+[*]Works alongside OStim NPCs, ORomance and similar mods; scenes they start are commented on like any other.
+[/list]
+
+[size=4][b]FAQ[/b][/size]
+[b]The AI never starts a scene.[/b] Check that the actions are enabled in CHIM's action list, and turn on "Show notifications" in the MCM to see every action result in game. Ask plainly and in an allowed place - agents follow their own profile about where and when.
+[b]A woman still gets a strap-on.[/b] Make sure "Men always take the active role" is on. In OStim's own MCM, "Intended Sex Only" also helps for scenes you start yourself.
+[b]Group scenes become two people.[/b] No installed animation fits that group - install 3P animation packs.
+[b]Names in the Needs page?[/b] Exactly as shown in game, separated by commas, for example "Name One, Name Two".
+
+[size=4][b]Credits[/b][/size]
+Dwemer Dynamics for CHIM, the OStim team for OStim Standalone, exiledviper and meh321 for PapyrusUtil, the SkyUI team, Exit-9B for MCM Helper.

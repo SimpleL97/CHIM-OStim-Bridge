@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fomod>
+  <Name>CHIM OStim Bridge</Name>
+  <Author>SaurOff</Author>
+  <Version MachineVersion="1.0.0">1.0.0</Version>
+  <Description>Lets CHIM AI agents start, change and stop OStim Standalone scenes by themselves (with partners, groups and the kind of scene they talk about), undress and dress, and feed on blood if they are vampires. Agents also comment on cities, shops, sleep, dragon souls and scenes, talk about a scene after it ends, and can live with simple needs (hunger for sex, blood thirst, drinking, arousal, jealousy). Configured in the MCM.</Description>
+  <Groups>
+    <element>Gameplay</element>
+    <element>Immersion</element>
+  </Groups>
+</fomod>

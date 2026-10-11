@@ -1,0 +1,329 @@
+{
+    "modName": "CHIMOStimBridge",
+    "displayName": "CHIM OStim Bridge",
+    "minMcmVersion": 9,
+    "cursorFillMode": "topToBottom",
+    "pages": [
+        {
+            "pageDisplayName": "$COB_pGeneral",
+            "cursorFillMode": "topToBottom",
+            "content": [
+                {
+                    "text": "CHIM OStim Bridge 1.0.0 by SaurOff",
+                    "type": "header"
+                },
+                {
+                    "id": "bEnabled:General",
+                    "text": "$COB_Enabled",
+                    "type": "toggle",
+                    "help": "$COB_EnabledH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "text": "$COB_hScenes",
+                    "type": "header"
+                },
+                {
+                    "id": "fRange:General",
+                    "text": "$COB_Range",
+                    "type": "slider",
+                    "help": "$COB_RangeH",
+                    "valueOptions": {
+                        "min": 5,
+                        "max": 100,
+                        "step": 5,
+                        "formatString": "{0} m",
+                        "sourceType": "ModSettingFloat"
+                    }
+                },
+                {
+                    "id": "bMenActive:General",
+                    "text": "$COB_MenActive",
+                    "type": "toggle",
+                    "help": "$COB_MenActiveH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "id": "bGroups:General",
+                    "text": "$COB_Groups",
+                    "type": "toggle",
+                    "help": "$COB_GroupsH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "id": "bAnyNPC:General",
+                    "text": "$COB_AnyNPC",
+                    "type": "toggle",
+                    "help": "$COB_AnyNPCH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "text": "$COB_hDebug",
+                    "type": "header"
+                },
+                {
+                    "id": "bNotify:Debug",
+                    "text": "$COB_Notify",
+                    "type": "toggle",
+                    "help": "$COB_NotifyH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                }
+            ]
+        },
+        {
+            "pageDisplayName": "$COB_pReactions",
+            "cursorFillMode": "topToBottom",
+            "content": [
+                {
+                    "text": "$COB_hReactWhat",
+                    "type": "header"
+                },
+                {
+                    "id": "bCity:Reactions",
+                    "text": "$COB_City",
+                    "type": "toggle",
+                    "help": "$COB_CityH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "id": "bShop:Reactions",
+                    "text": "$COB_Shop",
+                    "type": "toggle",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "id": "bHome:Reactions",
+                    "text": "$COB_Home",
+                    "type": "toggle",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "id": "bWake:Reactions",
+                    "text": "$COB_Wake",
+                    "type": "toggle",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "id": "bDragonSoul:Reactions",
+                    "text": "$COB_DragonSoul",
+                    "type": "toggle",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "id": "bNaked:Reactions",
+                    "text": "$COB_Naked",
+                    "type": "toggle",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "id": "bSceneNear:Reactions",
+                    "text": "$COB_SceneNear",
+                    "type": "toggle",
+                    "help": "$COB_SceneNearH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "id": "bAfter:Reactions",
+                    "text": "$COB_After",
+                    "type": "toggle",
+                    "help": "$COB_AfterH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "text": "$COB_hHowOften",
+                    "type": "header"
+                },
+                {
+                    "id": "iChance:Reactions",
+                    "text": "$COB_Chance",
+                    "type": "slider",
+                    "help": "$COB_ChanceH",
+                    "valueOptions": {
+                        "min": 0,
+                        "max": 100,
+                        "step": 5,
+                        "formatString": "{0}%",
+                        "sourceType": "ModSettingInt"
+                    }
+                },
+                {
+                    "id": "iAfterChance:Reactions",
+                    "text": "$COB_AfterChance",
+                    "type": "slider",
+                    "valueOptions": {
+                        "min": 0,
+                        "max": 100,
+                        "step": 5,
+                        "formatString": "{0}%",
+                        "sourceType": "ModSettingInt"
+                    }
+                },
+                {
+                    "id": "fCooldown:Reactions",
+                    "text": "$COB_Cooldown",
+                    "type": "slider",
+                    "help": "$COB_CooldownH",
+                    "valueOptions": {
+                        "min": 10,
+                        "max": 600,
+                        "step": 5,
+                        "formatString": "{0} s",
+                        "sourceType": "ModSettingFloat"
+                    }
+                }
+            ]
+        },
+        {
+            "pageDisplayName": "$COB_pNeeds",
+            "cursorFillMode": "topToBottom",
+            "content": [
+                {
+                    "id": "bNeeds:Needs",
+                    "text": "$COB_Needs",
+                    "type": "toggle",
+                    "help": "$COB_NeedsH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "text": "$COB_hSexHunger",
+                    "type": "header"
+                },
+                {
+                    "id": "sSexHunger:Needs",
+                    "text": "$COB_SexNPCs",
+                    "type": "input",
+                    "help": "$COB_SexNPCsH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingString"
+                    }
+                },
+                {
+                    "id": "iSexHours:Needs",
+                    "text": "$COB_SexHours",
+                    "type": "slider",
+                    "help": "$COB_SexHoursH",
+                    "valueOptions": {
+                        "min": 1,
+                        "max": 72,
+                        "step": 1,
+                        "formatString": "{0} h",
+                        "sourceType": "ModSettingInt"
+                    }
+                },
+                {
+                    "text": "$COB_hVampires",
+                    "type": "header"
+                },
+                {
+                    "id": "sVampires:Needs",
+                    "text": "$COB_Vampires",
+                    "type": "input",
+                    "help": "$COB_VampiresH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingString"
+                    }
+                },
+                {
+                    "id": "iBloodHours:Needs",
+                    "text": "$COB_BloodHours",
+                    "type": "slider",
+                    "help": "$COB_BloodHoursH",
+                    "valueOptions": {
+                        "min": 1,
+                        "max": 120,
+                        "step": 1,
+                        "formatString": "{0} h",
+                        "sourceType": "ModSettingInt"
+                    }
+                },
+                {
+                    "text": "$COB_hOther",
+                    "type": "header"
+                },
+                {
+                    "id": "bDrunk:Needs",
+                    "text": "$COB_Drunk",
+                    "type": "toggle",
+                    "help": "$COB_DrunkH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "id": "bArousal:Needs",
+                    "text": "$COB_Arousal",
+                    "type": "toggle",
+                    "help": "$COB_ArousalH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "id": "sJealous:Needs",
+                    "text": "$COB_Jealous",
+                    "type": "input",
+                    "help": "$COB_JealousH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingString"
+                    }
+                }
+            ]
+        },
+        {
+            "pageDisplayName": "$COB_pFixes",
+            "cursorFillMode": "topToBottom",
+            "content": [
+                {
+                    "text": "$COB_hFixes",
+                    "type": "header"
+                },
+                {
+                    "id": "bSpeechOnly:Fixes",
+                    "text": "$COB_SpeechOnly",
+                    "type": "toggle",
+                    "help": "$COB_SpeechOnlyH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "id": "bStaleInput:Fixes",
+                    "text": "$COB_Stale",
+                    "type": "toggle",
+                    "help": "$COB_StaleH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                }
+            ]
+        }
+    ]
+}

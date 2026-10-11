@@ -1,0 +1,14 @@
+CHIM OStim Bridge - changelog
+=============================
+
+1.0.0
+- First public release.
+- AI actions: Start / Change / Stop intimate scene (partners, groups, kind of
+  scene), Undress / Get_Dressed, Feed_On_Blood for vampires.
+- Event reactions: cities, shops, own home, waking up, dragon souls, undressing,
+  scenes nearby, talking after a scene.
+- Needs: hunger for sex, blood thirst, drinking, arousal, jealousy.
+- CHIM fixes: speech only, nobody talks after a long session.
+- MCM through MCM Helper; settings are sent to the CHIM server automatically.
+- MCM translated into 12 languages, following the game language (English otherwise).
+- Server plugin installs and updates its CHIM actions by itself.
