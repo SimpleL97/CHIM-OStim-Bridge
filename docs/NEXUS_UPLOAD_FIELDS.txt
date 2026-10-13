@@ -25,7 +25,7 @@ DLC requirement
   Dawnguard
 
 FILE UPLOAD
-  File:            CHIM OStim Bridge-1.0.1.zip
+  File:            CHIM OStim Bridge.zip   (older versions: archive/CHIM OStim Bridge-<version>.zip)
   File name:       CHIM OStim Bridge
   Version:         1.0.1   (must match fomod/info.xml; Vortex shows and tracks versions from this)
   Category:        Main Files

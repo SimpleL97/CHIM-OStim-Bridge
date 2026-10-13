@@ -98,7 +98,7 @@ Short version (details, requirements and options in [BUILDING.md](BUILDING.md)):
 python3 -I make_esp.py
 powershell -ExecutionPolicy Bypass -File compile_scripts.ps1 -Compiler "<Papyrus Compiler folder>" -GameData "<Skyrim>\Data"
 python3 -I build.py
-python3 -I verify_release.py "release/CHIM OStim Bridge-1.0.1.zip"
+python3 -I verify_release.py "release/CHIM OStim Bridge.zip"
 ```
 
 ## Installing (players)

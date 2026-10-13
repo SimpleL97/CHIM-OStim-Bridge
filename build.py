@@ -4,7 +4,9 @@ Run with any Python 3.8+ (python3 -I build.py [release dir]) after make_esp.py h
 written build/CHIMOStimBridge.esp and compile_scripts.ps1 has compiled build/Scripts.
 See BUILDING.md. Produces:
   build/cob_ostim_bridge-<version>.dwpkg   CHIM server plugin package (schema 4)
-  <release dir>/CHIM OStim Bridge-<version>.zip   FOMOD archive for Nexus / Vortex
+  <release dir>/CHIM OStim Bridge.zip   FOMOD archive for Nexus / Vortex; the version it
+                                         replaces goes to <release dir>/archive/
+                                         CHIM OStim Bridge-<old version>.zip
 """
 import hashlib, json, os, re, shutil, sys, zipfile
 
@@ -71,10 +73,31 @@ for f in ["info.xml", "ModuleConfig.xml"]:
 for f in ["README.txt", "CHANGELOG.txt"]:
     copy(os.path.join(ROOT, "docs", f), os.path.join(stage, f))
 
+def zip_version(path):
+    try:
+        with zipfile.ZipFile(path) as z:
+            return re.search(r'MachineVersion="([^"]+)"', z.read("fomod/info.xml").decode("utf-8")).group(1)
+    except Exception:
+        return None
+
+
+# the current release is always "CHIM OStim Bridge.zip"; a previous version found there
+# is moved to archive/ as "CHIM OStim Bridge-<its version>.zip" (a rebuild of the same
+# version simply replaces it)
 os.makedirs(RELEASE_DIR, exist_ok=True)
-out = os.path.join(RELEASE_DIR, f"CHIM OStim Bridge-{version}.zip")
+out = os.path.join(RELEASE_DIR, "CHIM OStim Bridge.zip")
 if os.path.exists(out):
-    os.remove(out)
+    old = zip_version(out)
+    if old and old != version:
+        archive = os.path.join(RELEASE_DIR, "archive")
+        os.makedirs(archive, exist_ok=True)
+        dest = os.path.join(archive, f"CHIM OStim Bridge-{old}.zip")
+        if os.path.exists(dest):
+            os.remove(dest)
+        shutil.move(out, dest)
+        print("archived", dest)
+    else:
+        os.remove(out)
 with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
     for dirpath, _, names in os.walk(stage):
         for n in sorted(names):

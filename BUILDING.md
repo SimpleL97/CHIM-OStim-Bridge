@@ -97,12 +97,15 @@ in all four places (see *Versioning*), then:
 1. Builds the CHIM server plugin package `build/cob_ostim_bridge-<version>.dwpkg`
    from `server/cob_ostim_bridge/`.
 2. Lays out the FOMOD tree in `build/stage/`.
-3. Zips it to `<release folder>/CHIM OStim Bridge-<version>.zip`.
+3. Zips it to `<release folder>/CHIM OStim Bridge.zip`. The current release never has a
+   version in its name; if that file already holds an older version, it is first moved
+   to `<release folder>/archive/CHIM OStim Bridge-<old version>.zip`. Rebuilding the
+   same version just replaces the file.
 
 ### Step 5 - check the archive
 
 ```
-python3 -I verify_release.py "release/CHIM OStim Bridge-1.0.1.zip"
+python3 -I verify_release.py "release/CHIM OStim Bridge.zip"
 ```
 
 Compares every file in the zip with its source or build output, checks that each `.pex`
