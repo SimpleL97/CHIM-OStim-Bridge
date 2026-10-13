@@ -9,7 +9,7 @@
  * real time because they only matter for minutes.
  */
 
-const COB_VERSION = "1.0.0";
+const COB_VERSION = "1.0.1";
 const COB_CONFIG_KEY = "cob_ostim_bridge_config";
 const COB_STATE_KEY = "cob_ostim_bridge_state";
 const COB_HOUR = 416666.6667;

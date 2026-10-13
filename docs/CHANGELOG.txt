@@ -1,6 +1,12 @@
 CHIM OStim Bridge - changelog
 =============================
 
+1.0.1
+- Fixed: Feed_On_Blood did nothing (and Undress / Get_Dressed could fail) when the AI left the
+  target empty (feeding on the player, undressing oneself). CHIM's command queue
+  crashed on the empty last field before the game received the command; empty
+  fields are now always sent as "-".
+
 1.0.0
 - First public release.
 - AI actions: Start / Change / Stop intimate scene (partners, groups, kind of

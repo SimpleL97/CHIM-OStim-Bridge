@@ -123,7 +123,7 @@ foreach ($GLOBALS["COB_ACTIONS"] as $code => $def) {
  * CHIM sends "<npc>|command|<Action_Name>@<parameter>" to the game, but the Papyrus
  * side needs to know which agent asked. Scenes become
  * "<agent>~<partners>~<OStim actions CSV>~<scene tags CSV>" ("-" = empty field),
- * everything else "<agent>~<target>". Also watches CHIM's Consume for drinking.
+ * everything else "<agent>~<target>" (also "-" when empty). Also watches CHIM's Consume for drinking.
  */
 $GLOBALS["action_post_process_fnct_ex"][] = function ($actions) {
     if (!is_array($actions)) {
@@ -183,7 +183,9 @@ $GLOBALS["action_post_process_fnct_ex"][] = function ($actions) {
                 list($sceneActions, $sceneTags) = cobMapSceneKind($item);
                 $parts[2] = $actionName . "@" . $actorName . "~" . $field($parameter) . "~" . $field($sceneActions) . "~" . $field($sceneTags);
             } else {
-                $parts[2] = $actionName . "@" . $actorName . "~" . $parameter;
+                // never end the parameter with an empty field: CHIM's command queue
+                // crashes on "Name~" (null read) before the game ever sees the command
+                $parts[2] = $actionName . "@" . $actorName . "~" . $field($parameter);
             }
             $actions[$n] = implode("|", $parts);
         } catch (Throwable $e) {

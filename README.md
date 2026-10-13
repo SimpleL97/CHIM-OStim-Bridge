@@ -54,7 +54,7 @@ instead of building it.
  |  COB_MCM (MCM Helper)         |  cob_* events   |                  to every prompt          |
  +-------------------------------+                 |  cob_lib.php     shared code, state in    |
    Data/CHIM/server-plugins/                       |                  conf_opts                |
-   cob_ostim_bridge/1.0.0.dwpkg ---- installed ---->+------------------------------------------+
+   cob_ostim_bridge/<ver>.dwpkg ---- installed ---->+------------------------------------------+
                                      by CHIM at game start
 ```
 
@@ -98,7 +98,7 @@ Short version (details, requirements and options in [BUILDING.md](BUILDING.md)):
 python3 -I make_esp.py
 powershell -ExecutionPolicy Bypass -File compile_scripts.ps1 -Compiler "<Papyrus Compiler folder>" -GameData "<Skyrim>\Data"
 python3 -I build.py
-python3 -I verify_release.py "release/CHIM OStim Bridge-1.0.0.zip"
+python3 -I verify_release.py "release/CHIM OStim Bridge-1.0.1.zip"
 ```
 
 ## Installing (players)

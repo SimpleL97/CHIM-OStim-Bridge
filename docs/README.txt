@@ -1,4 +1,4 @@
-CHIM OStim Bridge 1.0.0 by SaurOff
+CHIM OStim Bridge 1.0.1 by SaurOff
 ==================================
 
 Lets CHIM AI agents use OStim Standalone by themselves, react to the world, and
@@ -23,7 +23,7 @@ INSTALLATION
 1. Install with Vortex or MO2 and enable CHIMOStimBridge.esp (ESL flagged,
    it does not use a load order slot). Load order does not matter.
 2. Start the CHIM server as usual, then the game. The server side installs
-   itself: the mod ships it as Data/CHIM/server-plugins/cob_ostim_bridge/1.0.0.dwpkg,
+   itself: the mod ships it as Data/CHIM/server-plugins/cob_ostim_bridge/1.0.1.dwpkg,
    and CHIM's game plugin uploads bundled server plugins to its server at startup
    (HerikaServer/ext/cob_ostim_bridge). The six actions are added to CHIM's
    action list on the first request.

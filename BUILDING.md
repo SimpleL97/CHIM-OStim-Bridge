@@ -102,7 +102,7 @@ in all four places (see *Versioning*), then:
 ### Step 5 - check the archive
 
 ```
-python3 -I verify_release.py "release/CHIM OStim Bridge-1.0.0.zip"
+python3 -I verify_release.py "release/CHIM OStim Bridge-1.0.1.zip"
 ```
 
 Compares every file in the zip with its source or build output, checks that each `.pex`
@@ -134,7 +134,7 @@ server plugin, for CHIM versions that do not install bundled server plugins) and
 A plain zip in the format CHIM's `ServerPluginSync` / `DwemerPluginPackageManager` reads:
 
 ```
-manifest.json      {"schema_version": 4, "name": "cob_ostim_bridge", "version": "1.0.0",
+manifest.json      {"schema_version": 4, "name": "cob_ostim_bridge", "version": "1.0.1",
                     "author": "SaurOff", "description": "...", "server": {"mutable_paths": []}}
 checksums.sha256   sha256 of every other file in the package
 server/cob_lib.php, context_pre.php, functions.php, manifest.json, preprocessing.php, prompts.php
