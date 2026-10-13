@@ -64,6 +64,12 @@ $GLOBALS["COB_ACTIONS"] = [
         "params" => ["target" => "Who to drink from. Empty = #PLAYER_NAME#."],
         "description" => "ONLY if you are a vampire: bite someone who is here and drink their blood. Leave target empty to drink from #PLAYER_NAME# (when they allow it), or give the exact name of another person present. Use it when your thirst for blood is strong, or when #PLAYER_NAME# offers their neck. Not in combat. Call the action instead of only describing the bite.",
     ],
+    "ExtCmdCOB_VampireLord" => [
+        "name" => "Turn_Into_Vampire_Lord",
+        "return" => "#HERIKA_NAME# gives #PLAYER_NAME# their blood.",
+        "params" => ["target" => "leave empty"],
+        "description" => "ONLY if you are a Vampire Lord: give #PLAYER_NAME# your blood and turn them into a Vampire Lord right now, the way the Vampire Lords of Dawnguard do. Only when #PLAYER_NAME# asks for it or clearly accepts your offer - never on your own. Not in combat. Call the action instead of only describing it.",
+    ],
 ];
 
 foreach ($GLOBALS["COB_ACTIONS"] as $code => $def) {

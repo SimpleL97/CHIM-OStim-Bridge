@@ -13,7 +13,8 @@ On top of that the agents react to the world around them, talk about a scene aft
 [*][b]Change_Intimate_Scene[/b] - switch position or act mid-scene ("now from behind").
 [*][b]Stop_Intimate_Scene[/b]
 [*][b]Undress / Get_Dressed[/b] - strip without a scene and later put exactly those clothes back on.
-[*][b]Feed_On_Blood[/b] - vampires bite someone present, with the vanilla feeding animation.
+[*][b]Feed_On_Blood[/b] - vampires bite someone present, with the vanilla feeding animation, right after saying so.
+[*][b]Turn_Into_Vampire_Lord[/b] - a Vampire Lord turns you into a Vampire Lord at once, through Dawnguard's own code (the bite, the vampire change, the Vampire Lord power and its perk tree).
 [/list]
 Every result is reported back to CHIM. When something is not possible ("weapons are still drawn", "she is not here", "there is a fight going on") the agent answers in character instead of the action silently failing.
 
@@ -40,6 +41,8 @@ Every result is reported back to CHIM. When something is not possible ("weapons 
 [list]
 [*][b]Hunger for sex[/b] - restless, then burning, then angry the longer it has been. Any OStim scene they are in feeds it.
 [*][b]Blood thirst[/b] for vampires - thirsty, then starving, until they use Feed_On_Blood.
+[*][b]Vampirism by bite[/b] (optional) - the bite passes on the game's Sanguinare Vampiris. Not cured in time, the player turns the vanilla way after 3 days, and an NPC is treated as a vampire from then on.
+[*][b]Vampire Lords[/b] - Dawnguard's own Vampire Lords count by default; add anyone else by name in the MCM.
 [*][b]Drinking[/b] - any agent who drinks ale, mead or wine gets tipsy, then drunk; it wears off with game time.
 [*][b]Arousal[/b] during and right after a scene.
 [*][b]Jealousy[/b] - between the companions you list, when one gets much more of your attention.
@@ -69,7 +72,7 @@ The MCM is translated into English, Russian, Ukrainian, German, French, Spanish,
 [size=4][b]Installation[/b][/size]
 [list=1]
 [*]Install with Vortex or Mod Organizer 2 and enable [b]CHIMOStimBridge.esp[/b] (ESL flagged - it does not use a load order slot; load order does not matter).
-[*]Start the CHIM server as usual, then the game. CHIM finds the bundled server plugin in [i]Data/CHIM/server-plugins[/i] and installs it on its server by itself; the six actions are added to CHIM's action list on the first request.
+[*]Start the CHIM server as usual, then the game. CHIM finds the bundled server plugin in [i]Data/CHIM/server-plugins[/i] and installs it on its server by itself; the seven actions are added to CHIM's action list on the first request.
 [*]Load a save. The MCM "CHIM OStim Bridge" appears after a few seconds.
 [/list]
 If your CHIM version does not install bundled server plugins, choose "Manual server install tools" in the installer and run [i]Install-ServerPlugin.bat[/i] once.

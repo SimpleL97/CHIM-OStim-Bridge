@@ -1,7 +1,8 @@
 Scriptname COB_Bridge extends Quest
 {CHIM OStim Bridge by SaurOff.
- Lets CHIM AI agents start, change and stop OStim scenes, undress and dress, and
- (vampires) feed on blood. CHIM hands the actions over through the mod event
+ Lets CHIM AI agents start, change and stop OStim scenes, undress and dress,
+ (vampires) feed on blood and (Vampire Lords) turn the player into a Vampire Lord.
+ CHIM hands the actions over through the mod event
  "CHIM_CommandReceived" (npc name, command, parameter); every outcome is reported
  back to CHIM as a "funcret" so the agent knows what really happened.
  Server half: HerikaServer/ext/cob_ostim_bridge.}
@@ -51,6 +52,8 @@ Event OnChimCommand(String npcname, String command, String parameter)
 		Redress(command, parameter)
 	ElseIf command == "ExtCmdCOB_Feed"
 		Feed(command, parameter)
+	ElseIf command == "ExtCmdCOB_VampireLord"
+		VampireLordGift(command, parameter)
 	EndIf
 EndEvent
 
@@ -415,8 +418,7 @@ Function Feed(String command, String parameter)
 		Report(command, parameter, "cannot feed: the AI agent could not be identified in the game")
 		Return
 	EndIf
-	Keyword kVampire = Game.GetFormFromFile(0x0A82BB, "Skyrim.esm") as Keyword
-	If !(kVampire && npc.HasKeyword(kVampire)) && !COB_Config.InList("sVampires:Needs", npc.GetDisplayName())
+	If !COB_Config.IsVampire(npc)
 		Report(command, parameter, "cannot feed: " + npc.GetDisplayName() + " is not a vampire")
 		Return
 	EndIf
@@ -436,6 +438,13 @@ Function Feed(String command, String parameter)
 		Report(command, parameter, "cannot feed: busy in a scene")
 		Return
 	EndIf
+	If npc.GetDistance(victim) > RangeUnits()
+		Report(command, parameter, "cannot feed: " + victim.GetDisplayName() + " is too far away")
+		Return
+	EndIf
+	; the action arrives together with the line that announces it: let that line be
+	; spoken first, then bite
+	WaitUntilSilent(npc)
 	If !BringTogether(npc, victim)
 		Report(command, parameter, "cannot feed: " + victim.GetDisplayName() + " is too far away")
 		Return
@@ -448,7 +457,118 @@ Function Feed(String command, String parameter)
 	If victim.GetActorValuePercentage("Health") > 0.4
 		victim.DamageActorValue("Health", victim.GetActorValue("Health") * 0.1)
 	EndIf
-	Report(command, parameter, npc.GetDisplayName() + " feeds on " + victim.GetDisplayName() + "'s blood")
+	Report(command, parameter, npc.GetDisplayName() + " feeds on " + victim.GetDisplayName() + "'s blood" + Infect(victim))
+EndFunction
+
+; A Vampire Lord gives the player their blood the way it happens in Dawnguard: its
+; own DLC1VampireTurnScript.ReceiveHarkonsGift - the bite, the vanilla vampire change
+; (skipped when the player already is one, ends lycanthropy like in the game), the
+; Vampire Lord power and its perk tree. Immediate, no disease. Player only.
+Function VampireLordGift(String command, String parameter)
+	Actor npc = ResolveInitiator(parameter)
+	If !npc
+		Report(command, parameter, "cannot: the AI agent could not be identified in the game")
+		Return
+	EndIf
+	If !COB_Config.B("bLordGift:Needs")
+		Report(command, parameter, "cannot: giving the Vampire Lord gift is turned off in the MCM")
+		Return
+	EndIf
+	If !COB_Config.IsVampireLord(npc)
+		Report(command, parameter, "cannot: " + npc.GetDisplayName() + " is not a Vampire Lord")
+		Return
+	EndIf
+	Actor player = Game.GetPlayer()
+	Actor target = ResolvePartner(parameter)
+	If target && target != player && target != npc
+		Report(command, parameter, "cannot: only " + player.GetDisplayName() + " can receive the Vampire Lord gift")
+		Return
+	EndIf
+	Spell lordPower = Game.GetFormFromFile(0x00283B, "Dawnguard.esm") as Spell ; DLC1VampireChange
+	DLC1VampireTurnScript turn = Game.GetFormFromFile(0x00588C, "Dawnguard.esm") as DLC1VampireTurnScript ; DLC1VampireTurn
+	If !lordPower || !turn
+		Report(command, parameter, "cannot: Dawnguard is not loaded")
+		Return
+	EndIf
+	If player.HasSpell(lordPower)
+		Report(command, parameter, "cannot: " + player.GetDisplayName() + " already is a Vampire Lord")
+		Return
+	EndIf
+	If npc.IsInCombat() || player.IsInCombat()
+		Report(command, parameter, "refuses: there is a fight going on")
+		Return
+	EndIf
+	If ThreadOf(npc) > -1 || ThreadOf(player) > -1
+		Report(command, parameter, "cannot: busy in a scene")
+		Return
+	EndIf
+	If npc.GetDistance(player) > RangeUnits()
+		Report(command, parameter, "cannot: " + player.GetDisplayName() + " is too far away")
+		Return
+	EndIf
+	WaitUntilSilent(npc)
+	BringTogether(npc, player)
+	turn.ReceiveHarkonsGift(npc, True, True)
+	; the gift cures the disease too; nothing left to track
+	Spell disease = COB_Config.SanguinareVampiris()
+	If disease && player.HasSpell(disease)
+		player.RemoveSpell(disease)
+	EndIf
+	Report(command, parameter, npc.GetDisplayName() + " gave " + player.GetDisplayName() + " their blood: " + player.GetDisplayName() + " is now a Vampire Lord")
+EndFunction
+
+; MCM "The bite passes on vampirism": the game's Sanguinare Vampiris, with the chance
+; lowered by disease resistance. The player then follows the game's own course (a vampire
+; after 3 days unless cured); NPCs are tracked by COB_Events.CheckInfected. Returns the
+; text added to the action result, so the AI knows what happened.
+String Function Infect(Actor victim)
+	If !COB_Config.B("bBiteCurse:Needs") || COB_Config.IsVampire(victim)
+		Return ""
+	EndIf
+	Spell disease = COB_Config.SanguinareVampiris()
+	If !disease || victim.HasSpell(disease)
+		Return ""
+	EndIf
+	float resist = victim.GetActorValue("DiseaseResist")
+	If resist >= 100.0
+		Return ""
+	EndIf
+	int chance = COB_Config.I("iCurseChance:Needs")
+	If resist > 0.0
+		chance = (chance * (100.0 - resist) / 100.0) as int
+	EndIf
+	If !COB_Config.Roll(chance)
+		Return ""
+	EndIf
+	victim.AddSpell(disease, False)
+	int days = 3
+	If victim != Game.GetPlayer()
+		days = COB_Config.I("iTurnDays:Needs")
+		If days <= 0
+			days = 3
+		EndIf
+		StorageUtil.FormListAdd(None, "COB_Infected", victim, False)
+		StorageUtil.SetFloatValue(victim, "COB_InfectedAt", Utility.GetCurrentGameTime())
+	EndIf
+	COB_Config.Note(victim.GetDisplayName() + " caught Sanguinare Vampiris")
+	Return "; the bite passed on Sanguinare Vampiris: unless " + victim.GetDisplayName() + " is cured within " + days + " days, they will turn into a vampire"
+EndFunction
+
+; waits (at most about half a minute) until the agent has finished speaking; the line
+; can start a moment after the command arrives, so first give it a chance to begin
+Function WaitUntilSilent(Actor npc)
+	string n = npc.GetDisplayName()
+	float t = 0.0
+	While t < 2.0 && AIAgentFunctions.isActorTalking(n) == 0
+		Utility.Wait(0.25)
+		t += 0.25
+	EndWhile
+	t = 0.0
+	While t < 30.0 && AIAgentFunctions.isActorTalking(n) != 0
+		Utility.Wait(0.25)
+		t += 0.25
+	EndWhile
+	Utility.Wait(0.3)
 EndFunction
 
 ; ---------------------------------------------------------------- helpers

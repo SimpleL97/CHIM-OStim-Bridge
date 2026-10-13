@@ -1,4 +1,4 @@
-CHIM OStim Bridge 1.0.1 by SaurOff
+CHIM OStim Bridge 1.1.0 by SaurOff
 ==================================
 
 Lets CHIM AI agents use OStim Standalone by themselves, react to the world, and
@@ -23,9 +23,9 @@ INSTALLATION
 1. Install with Vortex or MO2 and enable CHIMOStimBridge.esp (ESL flagged,
    it does not use a load order slot). Load order does not matter.
 2. Start the CHIM server as usual, then the game. The server side installs
-   itself: the mod ships it as Data/CHIM/server-plugins/cob_ostim_bridge/1.0.1.dwpkg,
+   itself: the mod ships it as Data/CHIM/server-plugins/cob_ostim_bridge/1.1.0.dwpkg,
    and CHIM's game plugin uploads bundled server plugins to its server at startup
-   (HerikaServer/ext/cob_ostim_bridge). The six actions are added to CHIM's
+   (HerikaServer/ext/cob_ostim_bridge). The seven actions are added to CHIM's
    action list on the first request.
 3. Load a save. The MCM "CHIM OStim Bridge" appears after a few seconds.
 
@@ -38,7 +38,7 @@ click the mod > Open in File Manager).
 Updating: install the new version; CHIM updates the server side on the next
 game start.
 Uninstalling: run Uninstall-ServerPlugin.bat from the manual tools (removes the
-server folder and the six actions), then remove the mod.
+server folder and the seven actions), then remove the mod.
 
 
 The MCM is translated into English, Russian, Ukrainian, German, French, Spanish, Italian, Polish, Czech, Portuguese, Japanese and Chinese and follows the game language; other game languages show it in English.
@@ -58,7 +58,15 @@ off there like any other action):
   Undress / Get_Dressed  take clothes off without a scene and put exactly those
                          back on later.
   Feed_On_Blood          vampires only (real game vampires, or NPCs you list in
-                         the MCM): bite someone present.
+                         the MCM): bite someone present, after finishing the
+                         line that announces it. The bite can pass on the
+                         game's Sanguinare Vampiris (MCM, see Needs).
+  Turn_Into_Vampire_Lord Vampire Lords only (Dawnguard's own, anyone in Vampire
+                         Lord form, or NPCs you list in the MCM): turn you into
+                         a Vampire Lord at once, through Dawnguard's own code -
+                         the bite, the vampire change, the Vampire Lord power
+                         and its perk tree. A werewolf loses lycanthropy, as in
+                         the game.
 Every outcome is reported back to CHIM, so a refused action ("weapons are still
 drawn", "she is not here") is answered in character instead of failing quietly.
 
@@ -82,6 +90,12 @@ it ended is passed to the AI).
 Needs (MCM: names of the NPCs it applies to):
   - Hunger for sex: restless, then burning, then angry the longer it has been.
   - Blood thirst for vampires: thirsty, then starving.
+  - Vampirism by bite (can be switched off): whoever a vampire bites catches
+    Sanguinare Vampiris (chance in the MCM, lowered by disease resistance). Cure
+    it in time (Cure Disease potion, a shrine) or turn: the player after the
+    game's own 3 days, an NPC after the days set in the MCM - from then on the
+    mod treats that NPC as a vampire (blood thirst, can bite). The NPC's race and
+    looks do not change.
   - Drinking: any agent who drinks ale, mead or wine gets tipsy, then drunk;
     it wears off with game time.
   - Arousal during a scene and right after it.

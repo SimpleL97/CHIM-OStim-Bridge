@@ -1,11 +1,22 @@
 CHIM OStim Bridge - changelog
 =============================
 
-1.0.1
-- Fixed: Feed_On_Blood did nothing (and Undress / Get_Dressed could fail) when the AI left the
-  target empty (feeding on the player, undressing oneself). CHIM's command queue
-  crashed on the empty last field before the game received the command; empty
-  fields are now always sent as "-".
+1.1.0
+- New: the vampire bite passes on Sanguinare Vampiris, the game's own disease
+  (MCM toggle, chance per bite, lowered by disease resistance). The player turns
+  the vanilla way after 3 days unless cured; an NPC turns after the days set in
+  the MCM and is treated as a vampire by the mod from then on. The AI agents
+  hear about it.
+- New: Vampire Lords. Dawnguard's Vampire Lords, anyone in Vampire Lord form and
+  NPCs listed in the MCM count as Vampire Lords; when asked, they can turn the
+  player into a Vampire Lord at once with the new Turn_Into_Vampire_Lord action
+  (Dawnguard's own code, like in the game; can be switched off in the MCM).
+- Changed: Feed_On_Blood waits until the agent has finished the line announcing
+  the bite.
+- Fixed: Feed_On_Blood did nothing (and Undress / Get_Dressed could fail) when the
+  AI left the target empty (feeding on the player, undressing oneself). CHIM's
+  command queue crashed on the empty last field before the game received the
+  command; empty fields are now always sent as "-".
 
 1.0.0
 - First public release.

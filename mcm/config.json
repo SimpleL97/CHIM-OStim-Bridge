@@ -9,7 +9,7 @@
             "cursorFillMode": "topToBottom",
             "content": [
                 {
-                    "text": "CHIM OStim Bridge 1.0.1 by SaurOff",
+                    "text": "CHIM OStim Bridge 1.1.0 by SaurOff",
                     "type": "header"
                 },
                 {
@@ -262,6 +262,59 @@
                         "step": 1,
                         "formatString": "{0} h",
                         "sourceType": "ModSettingInt"
+                    }
+                },
+                {
+                    "id": "bBiteCurse:Needs",
+                    "text": "$COB_BiteCurse",
+                    "type": "toggle",
+                    "help": "$COB_BiteCurseH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "id": "iCurseChance:Needs",
+                    "text": "$COB_CurseChance",
+                    "type": "slider",
+                    "help": "$COB_CurseChanceH",
+                    "valueOptions": {
+                        "min": 0,
+                        "max": 100,
+                        "step": 5,
+                        "formatString": "{0}%",
+                        "sourceType": "ModSettingInt"
+                    }
+                },
+                {
+                    "id": "iTurnDays:Needs",
+                    "text": "$COB_TurnDays",
+                    "type": "slider",
+                    "help": "$COB_TurnDaysH",
+                    "valueOptions": {
+                        "min": 1,
+                        "max": 30,
+                        "step": 1,
+                        "formatString": "{0} d",
+                        "sourceType": "ModSettingInt"
+                    }
+                },
+                {
+                    "id": "sVampireLords:Needs",
+                    "text": "$COB_VampireLords",
+                    "type": "input",
+                    "help": "$COB_VampireLordsH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingString"
+                    }
+                },
+                {
+                    "id": "bLordGift:Needs",
+                    "text": "$COB_LordGift",
+                    "type": "toggle",
+                    "help": "$COB_LordGiftH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
                     }
                 },
                 {

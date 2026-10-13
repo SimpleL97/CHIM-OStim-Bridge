@@ -9,7 +9,7 @@
  * real time because they only matter for minutes.
  */
 
-const COB_VERSION = "1.0.1";
+const COB_VERSION = "1.1.0";
 const COB_CONFIG_KEY = "cob_ostim_bridge_config";
 const COB_STATE_KEY = "cob_ostim_bridge_state";
 const COB_HOUR = 416666.6667;
@@ -42,7 +42,7 @@ function cobConfig(): array
         $defaults = [
             "enabled" => 1, "needs" => 1, "sex_names" => "", "sex_hours" => 6, "vampires" => "",
             "blood_hours" => 24, "drunk" => 1, "jealous_names" => "", "arousal" => 1,
-            "speech_only" => 1, "stale_input" => 1,
+            "speech_only" => 1, "stale_input" => 1, "vampire_lords" => "", "lord_gift" => 1,
         ];
         $cfg = array_merge($defaults, cobOptGet(COB_CONFIG_KEY) ?? []);
     }
@@ -130,6 +130,15 @@ function cobApplyGameState(string $data, float $now): void
         if (is_array($cfg)) {
             cobOptSet(COB_CONFIG_KEY, $cfg);
         }
+        return;
+    }
+    if (preg_match('/lords\|([^()\r\n]+)/u', $data, $m)) {
+        // Dawnguard's Vampire Lords seen near the player can give their gift by default
+        $state = cobOptGet(COB_STATE_KEY) ?? [];
+        foreach (array_filter(array_map('trim', explode(",", $m[1]))) as $n) {
+            $state["game_lords"][mb_strtolower($n)] = 1;
+        }
+        cobOptSet(COB_STATE_KEY, $state);
         return;
     }
     if (preg_match('/vampires\|([^()\r\n]+)/u', $data, $m)) {
@@ -373,14 +382,18 @@ function cobNeedsPromptFor(string $npc, float $now): string
         }
         $lines[] = cobSexText(cobHoursSince($state["last_sex"][$npc] ?? null, $now), intval($cfg["sex_hours"] ?? 6));
     }
-    // real game vampires by default, plus anyone listed in the MCM
-    if (cobListed("vampires", $npc) || !empty($state["game_vampires"][mb_strtolower($npc)])) {
+    // real game vampires by default, plus anyone listed in the MCM; Vampire Lords are vampires too
+    $lord = cobListed("vampire_lords", $npc) || !empty($state["game_lords"][mb_strtolower($npc)]);
+    if ($lord || cobListed("vampires", $npc) || !empty($state["game_vampires"][mb_strtolower($npc)])) {
         if (!isset($state["last_blood"][$npc]) && $now > 0) {
             $state["last_blood"][$npc] = $now;
             $dirty = true;
         }
         $lines[] = cobBloodText(cobHoursSince($state["last_blood"][$npc] ?? null, $now), intval($cfg["blood_hours"] ?? 24));
         $lines[] = "To actually drink blood, use the Feed_On_Blood action.";
+        if ($lord && !empty($cfg["lord_gift"])) {
+            $lines[] = "You are a Vampire Lord, of pure and ancient blood. You can make {$player} a Vampire Lord too, at once, with the Turn_Into_Vampire_Lord action - only when {$player} asks for it or clearly accepts your offer.";
+        }
     }
     if ($dirty) {
         cobOptSet(COB_STATE_KEY, $state);

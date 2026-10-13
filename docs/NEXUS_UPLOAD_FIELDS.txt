@@ -4,7 +4,7 @@ CHIM OStim Bridge - values for the Nexus Mods upload form
 MOD PAGE
   Name:            CHIM OStim Bridge
   Author:          SaurOff
-  Version:         1.0.1
+  Version:         1.1.0
   Category:        Gameplay   (Skyrim SE has no separate adult category; adult content is a flag)
   Adult content:   YES (sexual content)
   Language:        English
@@ -27,7 +27,7 @@ DLC requirement
 FILE UPLOAD
   File:            CHIM OStim Bridge.zip   (older versions: archive/CHIM OStim Bridge-<version>.zip)
   File name:       CHIM OStim Bridge
-  Version:         1.0.1   (must match fomod/info.xml; Vortex shows and tracks versions from this)
+  Version:         1.1.0   (must match fomod/info.xml; Vortex shows and tracks versions from this)
   Category:        Main Files
   Description:     First public release. FOMOD installer; the CHIM server plugin installs itself at game start.
   Remove old versions: when uploading a newer version, move the old file to "Old versions"
