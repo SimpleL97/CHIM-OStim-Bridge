@@ -508,13 +508,25 @@ Function VampireLordGift(String command, String parameter)
 	EndIf
 	WaitUntilSilent(npc)
 	BringTogether(npc, player)
+	Keyword kVampire = Game.GetFormFromFile(0x0A82BB, "Skyrim.esm") as Keyword
+	bool wasVampire = kVampire && player.GetRace().HasKeyword(kVampire)
 	turn.ReceiveHarkonsGift(npc, True, True)
 	; the gift cures the disease too; nothing left to track
 	Spell disease = COB_Config.SanguinareVampiris()
 	If disease && player.HasSpell(disease)
 		player.RemoveSpell(disease)
 	EndIf
-	Report(command, parameter, npc.GetDisplayName() + " gave " + player.GetDisplayName() + " their blood: " + player.GetDisplayName() + " is now a Vampire Lord")
+	If !player.HasSpell(lordPower)
+		Report(command, parameter, "cannot: the gift did not take, " + player.GetDisplayName() + " has no Vampire Lord power")
+		Return
+	EndIf
+	string who = player.GetDisplayName()
+	If wasVampire
+		; Dawnguard skips the vampire change for someone who already is a vampire
+		Report(command, parameter, npc.GetDisplayName() + " gave " + who + " their blood: " + who + " already was a vampire and now is a Vampire Lord too - the Vampire Lord power is in their powers")
+	Else
+		Report(command, parameter, npc.GetDisplayName() + " gave " + who + " their blood: " + who + " is now a Vampire Lord")
+	EndIf
 EndFunction
 
 ; MCM "The bite passes on vampirism": the game's Sanguinare Vampiris, with the chance
