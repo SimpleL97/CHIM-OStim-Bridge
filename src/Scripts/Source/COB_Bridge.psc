@@ -95,6 +95,9 @@ Function StartScene(String command, String parameter)
 		i += 1
 	EndWhile
 	bool selfNamed = named.Find(initiator) > -1
+	; the agent alone, pleasuring herself: only her own name, and a solo kind of scene
+	; (the server fills in her name when the target was left empty)
+	bool solo = count == 1 && selfNamed && IsSoloKind(ArgOf(parameter, 2))
 	bool agentTakesPart = count < 2 || selfNamed
 	If count >= 2 && !COB_Config.B("bGroups:General")
 		count = 1 ; groups off: only the first named partner
@@ -114,8 +117,12 @@ Function StartScene(String command, String parameter)
 		EndIf
 		i += 1
 	EndWhile
-	If acts.Length == 1 && acts[0] != player
+	If acts.Length == 1 && acts[0] != player && !solo
 		acts = PapyrusUtil.PushActor(acts, player) ; nobody else named: the player
+	EndIf
+	If solo
+		StartSolo(command, parameter, initiator)
+		Return
 	EndIf
 	If acts.Length == 1
 		Report(command, parameter, "cannot start: initiator and partner are the same person")
@@ -225,6 +232,50 @@ Function StartScene(String command, String parameter)
 	Else
 		Report(command, parameter, initiator.GetDisplayName() + " gets " + JoinAnd(acts) + " started" + what + note + "; " + initiator.GetDisplayName() + " is not part of it")
 	EndIf
+EndFunction
+
+; OStim action types the server sends for "masturbation"
+bool Function IsSoloKind(String actions)
+	Return StringUtil.Find(actions, "masturbation") > -1 || StringUtil.Find(actions, "toying") > -1
+EndFunction
+
+; a solo scene: the agent pleasures themselves while the others watch
+Function StartSolo(String command, String parameter, Actor npc)
+	If ThreadOf(npc) > -1
+		Report(command, parameter, "cannot start: " + npc.GetDisplayName() + " is already busy in a scene")
+		Return
+	EndIf
+	If npc.IsInCombat() || npc.GetCombatState() > 0
+		Report(command, parameter, "refuses: there is a fight going on")
+		Return
+	EndIf
+	If npc.IsWeaponDrawn()
+		Report(command, parameter, "refuses: weapons are still drawn, this is not a safe moment")
+		Return
+	EndIf
+	Actor[] acts = PapyrusUtil.ActorArray(1)
+	acts[0] = npc
+	String actions = ArgOf(parameter, 2)
+	String sceneId = OLibrary.GetRandomSceneWithAnyActionCSV(acts, actions)
+	If sceneId == ""
+		sceneId = OLibrary.GetRandomSceneWithAnyActionCSV(acts, "femalemasturbation,malemasturbation,rubbingclitoris,vaginaltoying,analtoying,vaginalfingering,analfingering")
+	EndIf
+	If sceneId == ""
+		Report(command, parameter, "cannot start: no solo animation is installed for " + npc.GetDisplayName())
+		Return
+	EndIf
+	AIAgentFunctions.setAnimationBusy(1, npc.GetDisplayName())
+	LastBridgeAction = Utility.GetCurrentRealTime()
+	If OThread.QuickStart(acts, sceneId) < 0
+		AIAgentFunctions.setAnimationBusy(0, npc.GetDisplayName())
+		Report(command, parameter, "cannot start: OStim refused the scene")
+		Return
+	EndIf
+	String oneself = "himself"
+	If npc.GetActorBase().GetSex() == 1
+		oneself = "herself"
+	EndIf
+	Report(command, parameter, npc.GetDisplayName() + " starts pleasuring " + oneself + " where everyone can watch: " + OMetadata.GetName(sceneId))
 EndFunction
 
 String Function JoinAnd(Actor[] acts)
@@ -460,10 +511,12 @@ Function Feed(String command, String parameter)
 	Report(command, parameter, npc.GetDisplayName() + " feeds on " + victim.GetDisplayName() + "'s blood" + Infect(victim))
 EndFunction
 
-; A Vampire Lord gives the player their blood the way it happens in Dawnguard: its
-; own DLC1VampireTurnScript.ReceiveHarkonsGift - the bite, the vanilla vampire change
-; (skipped when the player already is one, ends lycanthropy like in the game), the
-; Vampire Lord power and its perk tree. Immediate, no disease. Player only.
+; A Vampire Lord gives the player their blood the way it happens in Dawnguard. The steps
+; are those of Dawnguard's DLC1VampireTurnScript.ReceiveHarkonsGift, but the bite is
+; played to its end first: there the vampire change starts in the same instant and its
+; race swap cuts the bite off (the quest hides that behind a fade to black). After the
+; bite: the vanilla vampire change (skipped when the player already is one), the end of
+; lycanthropy like in the game, the Vampire Lord power and its perk tree. Player only.
 Function VampireLordGift(String command, String parameter)
 	Actor npc = ResolveInitiator(parameter)
 	If !npc
@@ -485,8 +538,10 @@ Function VampireLordGift(String command, String parameter)
 		Return
 	EndIf
 	Spell lordPower = Game.GetFormFromFile(0x00283B, "Dawnguard.esm") as Spell ; DLC1VampireChange
-	DLC1VampireTurnScript turn = Game.GetFormFromFile(0x00588C, "Dawnguard.esm") as DLC1VampireTurnScript ; DLC1VampireTurn
-	If !lordPower || !turn
+	Perk lordPerk = Game.GetFormFromFile(0x00588B, "Dawnguard.esm") as Perk ; DLC1VampireTurnPerk
+	PlayerVampireQuestScript vampireQuest = Game.GetFormFromFile(0x0EAFD5, "Skyrim.esm") as PlayerVampireQuestScript ; PlayerVampireQuest
+	CompanionsHousekeepingScript companions = Game.GetFormFromFile(0x04B2D9, "Skyrim.esm") as CompanionsHousekeepingScript ; C00
+	If !lordPower || !vampireQuest
 		Report(command, parameter, "cannot: Dawnguard is not loaded")
 		Return
 	EndIf
@@ -510,7 +565,17 @@ Function VampireLordGift(String command, String parameter)
 	BringTogether(npc, player)
 	Keyword kVampire = Game.GetFormFromFile(0x0A82BB, "Skyrim.esm") as Keyword
 	bool wasVampire = kVampire && player.GetRace().HasKeyword(kVampire)
-	turn.ReceiveHarkonsGift(npc, True, True)
+	PlayBite(npc, player)
+	If !wasVampire
+		vampireQuest.VampireChange(player)
+	EndIf
+	If companions && companions.PlayerHasBeastBlood
+		companions.CurePlayer()
+	EndIf
+	player.AddSpell(lordPower, True)
+	If lordPerk
+		player.AddPerk(lordPerk)
+	EndIf
 	; the gift cures the disease too; nothing left to track
 	Spell disease = COB_Config.SanguinareVampiris()
 	If disease && player.HasSpell(disease)
@@ -564,6 +629,47 @@ String Function Infect(Actor victim)
 	EndIf
 	COB_Config.Note(victim.GetDisplayName() + " caught Sanguinare Vampiris")
 	Return "; the bite passed on Sanguinare Vampiris: unless " + victim.GetDisplayName() + " is cured within " + days + " days, they will turn into a vampire"
+EndFunction
+
+; the vanilla feeding bite, played to its end: third person so it can be seen, weapons
+; away (a paired animation does not start otherwise), a few tries while the game is
+; still busy, then wait while the two are locked in the synced animation
+Function PlayBite(Actor npc, Actor victim)
+	Idle bite = Game.GetFormFromFile(0x00E6A8, "Dawnguard.esm") as Idle ; IdleVampireStandingFeedFront_Loose
+	If !bite
+		Return
+	EndIf
+	If victim == Game.GetPlayer()
+		Game.ForceThirdPerson()
+	EndIf
+	If victim.IsWeaponDrawn()
+		victim.SheatheWeapon()
+	EndIf
+	If npc.IsWeaponDrawn()
+		npc.SheatheWeapon()
+	EndIf
+	bool started = False
+	int tries = 0
+	While !started && tries < 8
+		started = npc.PlayIdleWithTarget(bite, victim)
+		If !started
+			Utility.Wait(0.5)
+		EndIf
+		tries += 1
+	EndWhile
+	If !started
+		Return
+	EndIf
+	Utility.Wait(1.0)
+	float t = 0.0
+	While t < 12.0 && (npc.GetAnimationVariableBool("bIsSynced") || victim.GetAnimationVariableBool("bIsSynced"))
+		Utility.Wait(0.25)
+		t += 0.25
+	EndWhile
+	If t == 0.0
+		Utility.Wait(3.0) ; no sync flag to watch: give the bite its usual length
+	EndIf
+	Utility.Wait(0.5)
 EndFunction
 
 ; waits (at most about half a minute) until the agent has finished speaking; the line

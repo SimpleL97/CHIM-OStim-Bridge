@@ -9,10 +9,14 @@ CHIM OStim Bridge - changelog
   hear about it.
 - New: Vampire Lords. Dawnguard's Vampire Lords, anyone in Vampire Lord form and
   NPCs listed in the MCM count as Vampire Lords; when asked, they can turn the
-  player into a Vampire Lord at once with the new Turn_Into_Vampire_Lord action
-  (Dawnguard's own code, like in the game; can be switched off in the MCM).
-- Changed: Feed_On_Blood waits until the agent has finished the line announcing
-  the bite.
+  player into a Vampire Lord with the new Turn_Into_Vampire_Lord action: the
+  vanilla feeding bite, played to its end, then Dawnguard's own steps (vampire
+  change, Vampire Lord power and perk tree; can be switched off in the MCM).
+- New: solo scenes. An agent can pleasure themselves while the others watch
+  (Start_Intimate_Scene with the kind "masturbation" and no partner), uses the
+  installed solo animations.
+- Changed: Feed_On_Blood and Turn_Into_Vampire_Lord wait until the agent has
+  finished the line announcing the bite.
 - Fixed: Feed_On_Blood did nothing (and Undress / Get_Dressed could fail) when the
   AI left the target empty (feeding on the player, undressing oneself). CHIM's
   command queue crashed on the empty last field before the game received the

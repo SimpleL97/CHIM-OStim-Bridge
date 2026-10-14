@@ -9,12 +9,12 @@ On top of that the agents react to the world around them, talk about a scene aft
 [size=4][b]Features[/b][/size]
 [b]AI actions[/b] (appear in CHIM's action list)
 [list]
-[*][b]Start_Intimate_Scene[/b] - with you, any named NPC nearby, or several people at once. The AI picks the kind of scene from the conversation: oral, cunnilingus, vaginal, anal, handjob, boobjob, kissing, 69, cowgirl, reverse cowgirl, doggystyle, missionary.
+[*][b]Start_Intimate_Scene[/b] - with you, any named NPC nearby, or several people at once. The AI picks the kind of scene from the conversation: oral, cunnilingus, vaginal, anal, handjob, boobjob, kissing, 69, cowgirl, reverse cowgirl, doggystyle, missionary - or masturbation, alone, while you watch.
 [*][b]Change_Intimate_Scene[/b] - switch position or act mid-scene ("now from behind").
 [*][b]Stop_Intimate_Scene[/b]
 [*][b]Undress / Get_Dressed[/b] - strip without a scene and later put exactly those clothes back on.
 [*][b]Feed_On_Blood[/b] - vampires bite someone present, with the vanilla feeding animation, right after saying so.
-[*][b]Turn_Into_Vampire_Lord[/b] - a Vampire Lord turns you into a Vampire Lord at once, through Dawnguard's own code (the bite, the vampire change, the Vampire Lord power and its perk tree).
+[*][b]Turn_Into_Vampire_Lord[/b] - a Vampire Lord bites you with the vanilla feeding animation and turns you into a Vampire Lord through Dawnguard's own steps (the vampire change, the Vampire Lord power and its perk tree).
 [/list]
 Every result is reported back to CHIM. When something is not possible ("weapons are still drawn", "she is not here", "there is a fight going on") the agent answers in character instead of the action silently failing.
 

@@ -52,7 +52,9 @@ off there like any other action):
                          "target" = partners (comma separated), "item" = the
                          kind: oral, cunnilingus, vaginal, anal, handjob, boobjob,
                          kissing, sixtynine, cowgirl, reverse cowgirl,
-                         doggystyle, missionary.
+                         doggystyle, missionary, masturbation. Masturbation
+                         with no partner named is a solo scene: the agent
+                         pleasures themselves while the others watch.
   Change_Intimate_Scene  switch the running scene to another act or position.
   Stop_Intimate_Scene    end the scene.
   Undress / Get_Dressed  take clothes off without a scene and put exactly those

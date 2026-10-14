@@ -81,10 +81,19 @@ function cobHoursSince($then, float $now): ?float
  * Words the model puts into "item" mapped to OStim action types and scene tags.
  * Returns [actions CSV, tags CSV]; the game tries actions, then tags, then any scene.
  */
+// pleasuring oneself, alone: the game plays a solo scene of the agent
+const COB_SOLO_RE = '/masturbat|solo|alone|by (my|her|him)self|touch(ing)? (my|her|him)self|pleasur(e|ing) (my|her|him)self|play(ing)? with (my|her|him)self|мастурб|дроч|ласка(ть|ю|ет) себя|трога(ть|ю|ет) себя/u';
+
+function cobIsSoloKind(string $text): bool
+{
+    return (bool) preg_match(COB_SOLO_RE, mb_strtolower($text));
+}
+
 function cobMapSceneKind(string $text): array
 {
     $t = mb_strtolower($text);
     $rules = [
+        COB_SOLO_RE                                           => [['femalemasturbation', 'malemasturbation', 'rubbingclitoris', 'vaginaltoying', 'vaginalfingering'], []],
         '/oral|blow ?job|suck|deepthroat|минет|отсос|ротом/u' => [['blowjob', 'deepthroating', 'penilelicking'], []],
         '/cunni|eat her|lick her|куни/u'                      => [['cunnilingus', 'vulvallicking', 'vulvaleating'], []],
         '/69|sixty ?nine/u'                                   => [[], ['sixtynine']],

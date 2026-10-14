@@ -17,7 +17,7 @@ $GLOBALS["COB_ACTIONS"] = [
         "return" => "#HERIKA_NAME# starts an intimate scene.",
         "params" => [
             "target" => "Partner(s). Empty = #PLAYER_NAME#. Several people: exact names separated by commas.",
-            "item" => "Kind of scene, e.g. oral, cunnilingus, vaginal, anal, doggystyle, cowgirl, missionary, sixtynine, kissing. Empty = anything.",
+            "item" => "Kind of scene, e.g. oral, cunnilingus, vaginal, anal, doggystyle, cowgirl, missionary, sixtynine, kissing, masturbation. Empty = anything.",
         ],
         "description" => "Begin a physically intimate scene with someone who is here. This is what actually starts it in the game; describing it in words alone does nothing.\n\n"
             . "Conditions: nobody is in combat, no weapons are drawn, nobody is badly wounded, and the other person wants it (#PLAYER_NAME# asking for it directly counts). "
@@ -29,7 +29,8 @@ $GLOBALS["COB_ACTIONS"] = [
             . "Two or more names = exactly the people named and nobody else, so add your own name only if you join in. "
             . "Example: it was agreed that #PLAYER_NAME# takes <her name> from behind while you watch -> target \"#PLAYER_NAME#, <her name>\", item \"doggystyle\". "
             . "You join #PLAYER_NAME# and <her name> -> target \"#PLAYER_NAME#, <her name>, <your own name>\".\n"
-            . "KIND OF SCENE: put what kind of sex into item when it was asked for or you want something specific: oral (you use your mouth on him), cunnilingus, vaginal, anal, handjob, boobjob, kissing, sixtynine, cowgirl, reverse cowgirl, doggystyle, missionary. Leave item empty to let the game choose.",
+            . "KIND OF SCENE: put what kind of sex into item when it was asked for or you want something specific: oral (you use your mouth on him), cunnilingus, vaginal, anal, handjob, boobjob, kissing, sixtynine, cowgirl, reverse cowgirl, doggystyle, missionary. Leave item empty to let the game choose.\n"
+            . "ALONE: to pleasure yourself while others watch (to tease or invite #PLAYER_NAME#, or because you are asked to), use item \"masturbation\" with target empty or your own name - only you take part.",
     ],
     "ExtCmdCOB_ChangeScene" => [
         "name" => "Change_Intimate_Scene",
@@ -187,6 +188,11 @@ $GLOBALS["action_post_process_fnct_ex"][] = function ($actions) {
                 // Change keeps its target: when no scene is running the game starts
                 // one, and these are the partners the model meant
                 list($sceneActions, $sceneTags) = cobMapSceneKind($item);
+                // alone: the game plays a solo scene when the agent is the only one named
+                if ($codeName === "ExtCmdCOB_StartScene" && cobIsSoloKind($item)
+                    && (trim($parameter) === "" || mb_strtolower(trim($parameter)) === mb_strtolower($actorName))) {
+                    $parameter = $actorName;
+                }
                 $parts[2] = $actionName . "@" . $actorName . "~" . $field($parameter) . "~" . $field($sceneActions) . "~" . $field($sceneTags);
             } else {
                 // never end the parameter with an empty field: CHIM's command queue
