@@ -1,5 +1,6 @@
 [center][size=6][b]CHIM OStim Bridge[/b][/size]
-[size=3]Let your CHIM AI companions decide for themselves - and actually do it.[/size][/center]
+[size=3]Let your CHIM AI companions decide for themselves - and actually do it.[/size]
+[b]Open source:[/b] [url=https://github.com/SimpleL97/CHIM-OStim-Bridge]github.com/SimpleL97/CHIM-OStim-Bridge[/url][/center]
 
 [size=4][b]What is this?[/b][/size]
 [url=https://www.nexusmods.com/skyrimspecialedition/mods/126330]CHIM[/url] gives NPCs a mind and a voice. [url=https://www.nexusmods.com/skyrimspecialedition/mods/98163]OStim Standalone[/url] gives them a body. This mod connects the two: when an AI agent agrees, flirts, insists or gets drunk enough, it can start, change and end OStim scenes on its own, with you, with another NPC or with a whole group - and the kind of scene follows what was said ("use your mouth", "from behind", "all of us together").
@@ -94,7 +95,13 @@ If your CHIM version does not install bundled server plugins, choose "Manual ser
 [b]Names in the Needs page?[/b] Exactly as shown in game, separated by commas, for example "Name One, Name Two".
 
 [size=4][b]Source code[/b][/size]
-Full source and step-by-step build instructions: [url=https://github.com/SimpleL97/CHIM-OStim-Bridge]github.com/SimpleL97/CHIM-OStim-Bridge[/url] ([url=https://github.com/SimpleL97/CHIM-OStim-Bridge/blob/main/BUILDING.md]BUILDING.md[/url], [url=https://github.com/SimpleL97/CHIM-OStim-Bridge/blob/main/DEPENDENCIES.md]DEPENDENCIES.md[/url]).
+The mod is open source (MIT license). The complete source code is on GitHub: [url=https://github.com/SimpleL97/CHIM-OStim-Bridge]github.com/SimpleL97/CHIM-OStim-Bridge[/url]
+[list]
+[*][url=https://github.com/SimpleL97/CHIM-OStim-Bridge/blob/main/BUILDING.md]BUILDING.md[/url] - how to build this exact release from the sources, step by step, and where every file in the archive comes from
+[*][url=https://github.com/SimpleL97/CHIM-OStim-Bridge/blob/main/DEPENDENCIES.md]DEPENDENCIES.md[/url] - every requirement and what it is used for
+[*][url=https://github.com/SimpleL97/CHIM-OStim-Bridge/releases]Releases[/url] - each Nexus version is tagged there (v1.0.0, v1.1.0, ...)
+[/list]
+Bug reports and suggestions are welcome here in the Posts tab or as GitHub issues.
 
 [size=4][b]Credits[/b][/size]
 Dwemer Dynamics for CHIM, the OStim team for OStim Standalone, exiledviper and meh321 for PapyrusUtil, the SkyUI team, Exit-9B for MCM Helper.
