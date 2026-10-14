@@ -21,7 +21,7 @@ $GLOBALS["COB_ACTIONS"] = [
         ],
         "description" => "Begin a physically intimate scene with someone who is here. This is what actually starts it in the game; describing it in words alone does nothing.\n\n"
             . "Conditions: nobody is in combat, no weapons are drawn, nobody is badly wounded, and the other person wants it (#PLAYER_NAME# asking for it directly counts). "
-            . "Never in a dungeon, cave, ruin, tomb, bandit camp or enemy fort, nor in a house you broke into. Follow your own character profile about where and when.\n\n"
+            . "By default not in a dungeon, cave, ruin, tomb, bandit camp or enemy fort, nor in a house you broke into - unless your own character profile says you like such places, and then only once it is quiet and no enemy is near. Follow your own character profile about where and when.\n\n"
             . "When #PLAYER_NAME# asks for it and the place is allowed, call this action right away in the same reply.\n"
             . "This also covers kissing, making out and touching between any two people present, and #PLAYER_NAME# asking two others to do it with each other (\"kiss her\", \"lick her\"): call it with the other person's name in target and the kind in item (kissing, cunnilingus, ...).\n"
             . "NO ORDER NEEDED: when the people involved have just agreed on it in this conversation (even among themselves, e.g. that #PLAYER_NAME# takes her from behind) and #PLAYER_NAME# has already shown they want it, the one speaking starts it right away with exactly what was agreed (who in target, how in item). Do not wait for a separate order. If you say \"let's start\", \"enough talk\" or similar, call this action in that same reply.\n"
@@ -51,7 +51,7 @@ $GLOBALS["COB_ACTIONS"] = [
         "name" => "Undress",
         "return" => "#HERIKA_NAME# takes their clothes off.",
         "params" => ["target" => "leave empty"],
-        "description" => "Take off your own clothes and armor, right here, without starting an intimate scene: when #PLAYER_NAME# asks you to undress, or to tease or seduce in a place where that fits. Never in combat, in a dungeon or hostile place, or in a house you broke into. Call the action instead of only describing it.",
+        "description" => "Take off your own clothes and armor, right here, without starting an intimate scene: when #PLAYER_NAME# asks you to undress, or to tease or seduce in a place where that fits. Never in combat. By default not in a dungeon or hostile place, or in a house you broke into - unless your own character profile says you like such places and it is quiet with no enemy near. Call the action instead of only describing it.",
     ],
     "ExtCmdCOB_Redress" => [
         "name" => "Get_Dressed",
