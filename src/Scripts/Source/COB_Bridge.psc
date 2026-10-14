@@ -194,7 +194,7 @@ Function StartScene(String command, String parameter)
 	i = 0
 	While i < acts.Length
 		If acts[i] != player
-			AIAgentFunctions.setAnimationBusy(1, acts[i].GetDisplayName())
+			COB_Config.SetBusy(acts[i])
 		EndIf
 		i += 1
 	EndWhile
@@ -204,7 +204,7 @@ Function StartScene(String command, String parameter)
 		i = 0
 		While i < acts.Length
 			If acts[i] != player
-				AIAgentFunctions.setAnimationBusy(0, acts[i].GetDisplayName())
+				COB_Config.ClearBusy(acts[i])
 			EndIf
 			i += 1
 		EndWhile
@@ -264,10 +264,10 @@ Function StartSolo(String command, String parameter, Actor npc)
 		Report(command, parameter, "cannot start: no solo animation is installed for " + npc.GetDisplayName())
 		Return
 	EndIf
-	AIAgentFunctions.setAnimationBusy(1, npc.GetDisplayName())
+	COB_Config.SetBusy(npc)
 	LastBridgeAction = Utility.GetCurrentRealTime()
 	If OThread.QuickStart(acts, sceneId) < 0
-		AIAgentFunctions.setAnimationBusy(0, npc.GetDisplayName())
+		COB_Config.ClearBusy(npc)
 		Report(command, parameter, "cannot start: OStim refused the scene")
 		Return
 	EndIf
@@ -393,7 +393,7 @@ Function StopScene(String command, String parameter)
 	LastBridgeAction = Utility.GetCurrentRealTime()
 	OThread.Stop(tid)
 	If initiator
-		AIAgentFunctions.setAnimationBusy(0, initiator.GetDisplayName())
+		COB_Config.ClearBusy(initiator)
 		Report(command, parameter, initiator.GetDisplayName() + " stops and gets dressed")
 	Else
 		Report(command, parameter, "the scene is over")

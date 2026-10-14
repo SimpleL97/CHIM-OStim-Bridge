@@ -342,10 +342,12 @@ Event OnSceneEnd(string eventName, string json, float numArg, Form sender)
 	; but only cleared it when it stopped the scene itself. A scene that ended on its
 	; own left the flag set, and CHIM's command queue then crashed (null read) on the
 	; next command, so nothing after the first scene of a session reached the bridge.
+	; ClearBusy only touches actors the bridge marked itself: clearing it on others
+	; (companions in a scene another mod started) broke CHIM's queue the same way.
 	i = 0
 	While i < acts.Length
 		If acts[i] && acts[i] != Game.GetPlayer()
-			AIAgentFunctions.setAnimationBusy(0, acts[i].GetDisplayName())
+			COB_Config.ClearBusy(acts[i])
 		EndIf
 		i += 1
 	EndWhile

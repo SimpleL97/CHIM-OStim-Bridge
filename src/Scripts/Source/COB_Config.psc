@@ -88,6 +88,25 @@ bool Function IsVampireLord(Actor a) global
 	Return False
 EndFunction
 
+; CHIM's "animation busy" flag keeps an agent from being moved during a scene. The bridge
+; only ever clears the flag on actors it set it on itself (StorageUtil list "COB_Busy"):
+; clearing it on an agent CHIM did not have marked busy - say a companion in a scene some
+; other mod started - broke CHIM's command queue for that agent (a null read on every
+; following command until the game was restarted).
+Function SetBusy(Actor a) global
+	If a && a != Game.GetPlayer()
+		AIAgentFunctions.setAnimationBusy(1, a.GetDisplayName())
+		StorageUtil.FormListAdd(None, "COB_Busy", a, False)
+	EndIf
+EndFunction
+
+Function ClearBusy(Actor a) global
+	If a && StorageUtil.FormListFind(None, "COB_Busy", a) > -1
+		StorageUtil.FormListRemove(None, "COB_Busy", a, True)
+		AIAgentFunctions.setAnimationBusy(0, a.GetDisplayName())
+	EndIf
+EndFunction
+
 ; the game's own vampirism disease
 Spell Function SanguinareVampiris() global
 	Return Game.GetFormFromFile(0x0B8780, "Skyrim.esm") as Spell ; DiseaseSanguinareVampiris

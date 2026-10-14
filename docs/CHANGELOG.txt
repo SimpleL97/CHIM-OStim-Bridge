@@ -17,6 +17,12 @@ CHIM OStim Bridge - changelog
   installed solo animations.
 - Changed: Feed_On_Blood and Turn_Into_Vampire_Lord wait until the agent has
   finished the line announcing the bite.
+- Fixed: after an OStim scene started by another mod (OStim NPCs and the like)
+  with an AI companion in it, every bridge action of that companion stopped
+  working until the game was restarted. The bridge cleared CHIM's "animation
+  busy" flag on everyone in any finished scene, which breaks CHIM's command queue
+  for an agent it had not marked busy; now it only clears the flag on actors it
+  marked itself.
 - Fixed: Feed_On_Blood did nothing (and Undress / Get_Dressed could fail) when the
   AI left the target empty (feeding on the player, undressing oneself). CHIM's
   command queue crashed on the empty last field before the game received the
