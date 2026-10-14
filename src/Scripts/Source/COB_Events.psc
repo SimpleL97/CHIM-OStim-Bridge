@@ -79,6 +79,7 @@ EndFunction
 ; called by COB_MCM when a setting changes, the menu is first built, or a save loads
 Function ConfigChanged()
 	configSent = False
+	Hook() ; every game load: mod event registrations added by an update reach existing saves
 EndFunction
 
 ; ---------------------------------------------------------------- polling
@@ -88,7 +89,7 @@ Event OnUpdate()
 		Setup()
 	EndIf
 	polls += 1
-	If polls % 100 == 0
+	If polls == 1 || polls % 100 == 0
 		Hook() ; cheap, keeps the registrations alive whatever happens to the save
 	EndIf
 	If !configSent
