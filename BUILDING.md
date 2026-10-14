@@ -74,7 +74,7 @@ Example with the Creation Kit:
 powershell -ExecutionPolicy Bypass -File compile_scripts.ps1 -Compiler "C:\Steam\steamapps\common\Skyrim Special Edition\Papyrus Compiler" -GameData "C:\Steam\steamapps\common\Skyrim Special Edition\Data"
 ```
 
-Compiles `src/Scripts/Source/COB_Config.psc`, `COB_Bridge.psc`, `COB_Events.psc`,
+Compiles `src/Scripts/Source/COB.psc`, `COB_Config.psc`, `COB_Bridge.psc`, `COB_Events.psc`,
 `COB_MCM.psc` into `build/Scripts/*.pex`. Import order: `src/Scripts/Source`, the game's
 `Data\Scripts\Source` and `Data\Source\Scripts`, any `-Imports` you add, then `stubs` and
 `stubs/vanilla`. The compiler takes the first file it finds for each type, so real
@@ -120,13 +120,13 @@ extra arguments compare against a live CHIM server plugin folder and an installe
 | `fomod/info.xml`, `fomod/ModuleConfig.xml` | `fomod/` | copied |
 | `README.txt`, `CHANGELOG.txt` | `docs/` | copied |
 | `00 Core/CHIMOStimBridge.esp` | `make_esp.py` | step 2 |
-| `00 Core/Scripts/COB_*.pex` | `src/Scripts/Source/COB_*.psc` | step 3 |
+| `00 Core/Scripts/COB.pex`, `COB_*.pex` | `src/Scripts/Source/COB.psc`, `COB_*.psc` | step 3 |
 | `00 Core/MCM/Config/CHIMOStimBridge/config.json`, `settings.ini` | `mcm/` | copied (config.json from step 1) |
 | `00 Core/Interface/Translations/CHIMOStimBridge_*.txt` | `mcm/translations/` | copied (from step 1) |
 | `00 Core/CHIM/server-plugins/cob_ostim_bridge/<version>.dwpkg` | `server/cob_ostim_bridge/*` | step 4 |
 | `10 Server Tools/CHIM OStim Bridge Server Tools/*.bat, *.ps1` | `server/*.bat`, `server/*.ps1` | copied |
 | `10 Server Tools/CHIM OStim Bridge Server Tools/cob_ostim_bridge/*` | `server/cob_ostim_bridge/*` | copied |
-| `20 Source/Source/Scripts/COB_*.psc` | `src/Scripts/Source/` | copied |
+| `20 Source/Source/Scripts/COB.psc`, `COB_*.psc` | `src/Scripts/Source/` | copied |
 
 FOMOD options: `00 Core` is always installed. `10 Server Tools` (manual install of the
 server plugin, for CHIM versions that do not install bundled server plugins) and

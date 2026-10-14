@@ -15,6 +15,8 @@ string Property UndressKey = "COB_Undressed" AutoReadOnly Hidden
 
 ; the agent of the last command, in case a parameter carries no name
 string LastCommandNpc = ""
+string LastCommandKey = ""
+float LastCommandTime = -100.0
 
 ; ---------------------------------------------------------------- registration
 
@@ -30,7 +32,8 @@ EndEvent
 
 ; COB_Events calls this too, so the registration survives whatever happens to a save
 Function Hook()
-	RegisterForModEvent("CHIM_CommandReceived", "OnChimCommand")
+	RegisterForModEvent("COB_Command", "OnChimCommand")          ; from COB.DispatchExternalCommand
+	RegisterForModEvent("CHIM_CommandReceived", "OnChimCommand") ; CHIM's fallback path
 EndFunction
 
 ; ---------------------------------------------------------------- entry point
@@ -39,6 +42,14 @@ Event OnChimCommand(String npcname, String command, String parameter)
 	If StringUtil.Find(command, "ExtCmdCOB_") != 0
 		Return
 	EndIf
+	; the same command can come in both ways; act on it once
+	float now = Utility.GetCurrentRealTime()
+	String cmdKey = command + "@" + parameter
+	If cmdKey == LastCommandKey && now - LastCommandTime < 5.0
+		Return
+	EndIf
+	LastCommandKey = cmdKey
+	LastCommandTime = now
 	LastCommandNpc = npcname
 	If !COB_Config.B("bEnabled:General")
 		Report(command, parameter, "cannot: the CHIM OStim Bridge is turned off in its MCM")

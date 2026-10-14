@@ -75,7 +75,7 @@ plugin uploads to its own server at game start - players never copy server files
 ## Repository layout
 
 ```
-src/Scripts/Source/   Papyrus sources: COB_Bridge, COB_Events, COB_MCM, COB_Config
+src/Scripts/Source/   Papyrus sources: COB (CHIM entry point), COB_Bridge, COB_Events, COB_MCM, COB_Config
 server/
   cob_ostim_bridge/   CHIM server plugin (PHP) - packaged into the .dwpkg
   *.bat, *.ps1        optional manual install / uninstall of the server plugin

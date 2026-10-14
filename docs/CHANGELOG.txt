@@ -19,8 +19,10 @@ CHIM OStim Bridge - changelog
   finished the line announcing the bite.
 - Fixed: only the first bridge action after starting the game worked; every
   later one silently never reached the game (CHIM's command queue crashed on it).
-  Action results are now reported the way CHIM's own actions report theirs
-  (logMessageForActor with the agent's name), which closes the agent's command.
+  The bridge now has the direct entry point CHIM looks for first (the script COB
+  with DispatchExternalCommand, the way other CHIM plugins receive their
+  commands), instead of relying on CHIM's fallback mod event; results are
+  reported the way CHIM's own actions report theirs (logMessageForActor).
 - Fixed: after an OStim scene started by another mod (OStim NPCs and the like)
   with an AI companion in it, every bridge action of that companion stopped
   working until the game was restarted. The bridge cleared CHIM's "animation
