@@ -25,6 +25,7 @@ int lastCity = -1
 float lastCityMsg = -1000.0
 float lastShopMsg = -1000.0
 float lastSceneMsg = -1000.0
+float lastAfterMsg = -1000.0
 float lastNakedMsg = -1000.0
 float lastHomeMsg = -1000.0
 float lastSouls = -1.0
@@ -80,6 +81,22 @@ EndFunction
 Function ConfigChanged()
 	configSent = False
 	Hook() ; every game load: mod event registrations added by an update reach existing saves
+	; the cooldowns hold real time, which restarts with the game: a time saved in an
+	; earlier game session would hold its message back until the clock caught up
+	float now = Utility.GetCurrentRealTime()
+	lastCityMsg = Past(lastCityMsg, now)
+	lastShopMsg = Past(lastShopMsg, now)
+	lastSceneMsg = Past(lastSceneMsg, now)
+	lastAfterMsg = Past(lastAfterMsg, now)
+	lastNakedMsg = Past(lastNakedMsg, now)
+	lastHomeMsg = Past(lastHomeMsg, now)
+EndFunction
+
+float Function Past(float t, float now)
+	If t > now
+		Return -1000.0
+	EndIf
+	Return t
 EndFunction
 
 ; ---------------------------------------------------------------- polling
@@ -279,7 +296,8 @@ bool Function RecentBridgeAction()
 	If !bridge
 		Return False
 	EndIf
-	Return Utility.GetCurrentRealTime() - bridge.LastBridgeAction < 10.0
+	float ago = Utility.GetCurrentRealTime() - bridge.LastBridgeAction
+	Return ago >= 0.0 && ago < 10.0
 EndFunction
 
 ; ---------------------------------------------------------------- events
@@ -352,15 +370,43 @@ Event OnSceneEnd(string eventName, string json, float numArg, Form sender)
 		EndIf
 		i += 1
 	EndWhile
-	If NamesNear(acts) != ""
-		string what = ""
-		string sceneId = OJSON.GetScene(json)
-		If sceneId != ""
-			what = " (it ended with: " + OMetadata.GetName(sceneId) + ")"
+	If NamesNear(acts) == ""
+		Return
+	EndIf
+	; Every reaction is a reply the LLM has to write. Mods that keep NPCs busy with
+	; scenes of their own (an inn full of them) ended eight at once, and the replies
+	; to them held up the answers to the player for a minute. The player's own scene
+	; is always talked about; a companion's at most every 30 s, anyone else's every 2 min.
+	float now = Utility.GetCurrentRealTime()
+	If acts.Find(Game.GetPlayer()) < 0
+		float gap = 120.0
+		If HasTeammate(acts)
+			gap = 30.0
 		EndIf
-		Send(JoinAnd(acts) + " finished their intimate scene" + what, "cob_after", "bAfter:Reactions")
+		If now - lastAfterMsg < gap
+			Return
+		EndIf
+	EndIf
+	string what = ""
+	string sceneId = OJSON.GetScene(json)
+	If sceneId != ""
+		what = " (it ended with: " + OMetadata.GetName(sceneId) + ")"
+	EndIf
+	If Send(JoinAnd(acts) + " finished their intimate scene" + what, "cob_after", "bAfter:Reactions")
+		lastAfterMsg = now
 	EndIf
 EndEvent
+
+bool Function HasTeammate(Actor[] acts)
+	int i = 0
+	While i < acts.Length
+		If acts[i] && acts[i].IsPlayerTeammate()
+			Return True
+		EndIf
+		i += 1
+	EndWhile
+	Return False
+EndFunction
 
 ; ---------------------------------------------------------------- send
 

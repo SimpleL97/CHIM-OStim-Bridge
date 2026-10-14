@@ -23,6 +23,16 @@ CHIM OStim Bridge - changelog
   with DispatchExternalCommand, the way other CHIM plugins receive their
   commands), instead of relying on CHIM's fallback mod event; results are
   reported the way CHIM's own actions report theirs (logMessageForActor).
+- Fixed: replies got slow in places full of NPC scenes from other mods (an inn with
+  OStim NPCs): every scene that ended nearby asked the AI for a comment, up to eight
+  at once, and those requests held up the answers to the player for a minute. The
+  player's own scene is still always talked about; a companion's at most every 30 s,
+  anyone else's every 2 minutes.
+- Fixed: "who climaxed" after a scene was read from the location text ("The Bee
+  and Barb") instead of the names, so the agents were told the wrong people came.
+- Fixed: after restarting the game, a reaction or an action identical to one from
+  the previous session could be held back (timers in the save were ahead of the
+  new session's clock).
 - Fixed: after an OStim scene started by another mod (OStim NPCs and the like)
   with an AI companion in it, every bridge action of that companion stopped
   working until the game was restarted. The bridge cleared CHIM's "animation

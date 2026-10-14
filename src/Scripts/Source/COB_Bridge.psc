@@ -42,10 +42,11 @@ Event OnChimCommand(String npcname, String command, String parameter)
 	If StringUtil.Find(command, "ExtCmdCOB_") != 0
 		Return
 	EndIf
-	; the same command can come in both ways; act on it once
+	; the same command can come in both ways; act on it once. Real time restarts with
+	; the game, so a time from before a restart (now < LastCommandTime) never matches.
 	float now = Utility.GetCurrentRealTime()
 	String cmdKey = command + "@" + parameter
-	If cmdKey == LastCommandKey && now - LastCommandTime < 5.0
+	If cmdKey == LastCommandKey && now >= LastCommandTime && now - LastCommandTime < 5.0
 		Return
 	EndIf
 	LastCommandKey = cmdKey

@@ -230,7 +230,9 @@ function cobDescribeAfterScene(string $data): string
     $now = time();
     $came = [];
     $none = [];
-    if (preg_match('/\(?(.+?) finished their intimate scene/u', $data, $m)) {
+    // CHIM puts "(Context location: ...)Player:" in front: the names are what follows
+    // the last "(" before the phrase, never the location ("The Bee and Barb")
+    if (preg_match('/(?:^|\()([^()]+?) finished their intimate scene/u', $data, $m)) {
         foreach (preg_split('/,\s*|\s+and\s+/u', trim($m[1], "( ")) as $n) {
             $n = trim($n);
             if ($n === "") {
