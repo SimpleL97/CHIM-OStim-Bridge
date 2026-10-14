@@ -27,7 +27,8 @@ instead of building it.
 - **AI actions** added to CHIM's action list: `Start_Intimate_Scene`,
   `Change_Intimate_Scene`, `Stop_Intimate_Scene`, `Undress`, `Get_Dressed`,
   `Feed_On_Blood` (vampires; the bite can pass on vampirism), `Turn_Into_Vampire_Lord`
-  (Vampire Lords turn the player, through Dawnguard's own code). Every result is reported back to the AI, so a refusal
+  (Vampire Lords turn the player, through Dawnguard's own code), `Marry_Player`
+  (the agent marries the player through ORomance Plus, optional). Every result is reported back to the AI, so a refusal
   ("weapons are still drawn") is answered in character.
 - **Scene logic**: partners and groups by name, the act or position taken from what
   was said, men in the active role (optional), partners brought together, a missionary

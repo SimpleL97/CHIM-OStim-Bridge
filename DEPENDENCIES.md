@@ -17,9 +17,21 @@ None of these are bundled: the release ships only this mod's own files.
 | **SkyUI** | [Nexus 12604](https://www.nexusmods.com/skyrimspecialedition/mods/12604) | The MCM framework: `SKI_ConfigBase` and `SKI_PlayerLoadGameAlias` (re-registers the menu on every game load), plus the `Interface/Translations` loader for the 12 menu languages. |
 | **MCM Helper** | [Nexus 53000](https://www.nexusmods.com/skyrimspecialedition/mods/53000) | Builds the MCM from `MCM/Config/CHIMOStimBridge/config.json` and stores the settings. The scripts read them with `MCM.GetModSettingBool/Int/Float/String`; `COB_MCM` extends `MCM_ConfigBase`. |
 
-Optional: OStim animation packs with 3+ actor scenes for group scenes
-(for example [Billyy MFF Pack](https://www.nexusmods.com/skyrimspecialedition/mods/106582)).
-Without them a group request falls back to the two main people.
+Optional:
+
+- OStim animation packs with 3+ actor scenes for group scenes
+  (for example [Billyy MFF Pack](https://www.nexusmods.com/skyrimspecialedition/mods/106582)).
+  Without them a group request falls back to the two main people.
+- [ORomance Plus](https://www.nexusmods.com/skyrimspecialedition/mods/81635) for the
+  `Marry_Player` action: `COB_ORomance` calls its quest script `ORomanceScript`
+  (`ORomance.esp` 0x000800) - `Marry`, which runs the vanilla engagement for the first
+  spouse and ORomance Plus's own marriage for later ones (several spouses), and
+  `IsMarried`, `IsPlayerSpouse`, `isVanillaMarriageLocked`, `isORMarriageLocked`. ORomance's
+  proposal odds (`TryPropose`) are deliberately not used. The marriage itself needs the
+  vanilla `Amulet of Mara` (`Skyrim.esm` 0x0C891B) and the quest `RelationshipMarriage`
+  (0x074793). Without ORomance Plus the action only answers that it is missing:
+  `COB_Bridge` checks `Game.IsPluginInstalled("ORomancePlus.esp")` first, and the calls
+  live in their own script so nothing else depends on it.
 
 ## To build
 
@@ -38,7 +50,9 @@ See [BUILDING.md](BUILDING.md) for the steps.
 ### About the stubs
 
 `stubs/` holds declaration-only `.psc` files: script names and function signatures,
-no code. They exist only so the compiler can type-check calls into SkyUI, MCM Helper
+no code. `stubs/optional` (ORomance Plus) is read before the game's own sources,
+because the real ORomance sources pull in the sources of many other mods that a build
+does not need; the other stubs come last and only fill gaps. They exist only so the compiler can type-check calls into SkyUI, MCM Helper
 and a few base game types when their sources are not installed. They are never
 compiled into the release and never shipped; in the game the real scripts of those
 mods run. They describe the public APIs of their respective owners (Bethesda,
