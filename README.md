@@ -46,8 +46,8 @@ instead of building it.
           Skyrim (game)                                    CHIM server (WSL, HerikaServer)
  +-------------------------------+                 +------------------------------------------+
  | CHIMOStimBridge.esp (ESL)     |                 | ext/cob_ostim_bridge/                     |
- |  COB_Bridge  <----------------+-- CHIM_Command  |  functions.php   actions for the LLM,     |
- |   runs actions via OStim,     |   Received      |                  installed into           |
+ |  COB_Bridge  <----------------+-- ExtCmdCOB_*   |  functions.php   actions for the LLM,     |
+ |   runs actions via OStim,     |   (via COB)     |                  installed into           |
  |   reports results ------------+---------------->|                  core_action_custom      |
  |  COB_Events                   |   funcret       |  prompts.php     cues for the events      |
  |   OStim events, locations,    |                 |  preprocessing   silent state, CHIM fix   |
@@ -59,10 +59,13 @@ instead of building it.
                                      by CHIM at game start
 ```
 
-1. The LLM picks one of the bridge's actions while replying. CHIM sends it to the game
-   as the mod event `CHIM_CommandReceived` (`ExtCmdCOB_StartScene`, ...).
+1. The LLM picks one of the bridge's actions while replying (`ExtCmdCOB_StartScene`, ...).
+   CHIM's game plugin hands it to the global function `COB.DispatchExternalCommand`, the
+   entry point it looks for first; `COB` forwards it to `COB_Bridge` as the mod event
+   `COB_Command`. (CHIM's fallback mod event `CHIM_CommandReceived` is heard too.)
 2. `COB_Bridge` resolves the people involved, sorts roles, finds a matching OStim scene
-   and starts it, then reports the outcome back to CHIM (`funcret`).
+   and starts it, then reports the outcome back to CHIM (`funcret`, through
+   `AIAgentFunctions.logMessageForActor`, addressed to the agent).
 3. `COB_Events` tells CHIM about things worth commenting on (`cob_city`, `cob_after`, ...)
    and sends silent state (`cob_state`: scenes, orgasms, settings) that the server stores
    without showing it to the AI.

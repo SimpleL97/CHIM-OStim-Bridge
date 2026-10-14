@@ -87,7 +87,9 @@ Scene logic:
 Reactions (MCM toggles, chance and cooldown): entering, leaving and travelling
 between the big cities, shops, your own home, waking up, dragon souls, you
 undressing, a scene starting nearby, and talking after a scene (who came and how
-it ended is passed to the AI).
+it ended is passed to the AI). Your own scenes are always talked about; scenes of
+your companions at most every 30 s and anyone else's every 2 minutes, so an inn
+full of scenes from other mods does not hold up the replies to you.
 
 Needs (MCM: names of the NPCs it applies to):
   - Hunger for sex: restless, then burning, then angry the longer it has been.

@@ -2,8 +2,9 @@ Scriptname COB_Bridge extends Quest
 {CHIM OStim Bridge by SaurOff.
  Lets CHIM AI agents start, change and stop OStim scenes, undress and dress,
  (vampires) feed on blood and (Vampire Lords) turn the player into a Vampire Lord.
- CHIM hands the actions over through the mod event
- "CHIM_CommandReceived" (npc name, command, parameter); every outcome is reported
+ CHIM hands the actions over through COB.DispatchExternalCommand, which forwards
+ them as the mod event "COB_Command" (npc name, command, parameter); CHIM's own
+ fallback event "CHIM_CommandReceived" is heard too. Every outcome is reported
  back to CHIM as a "funcret" so the agent knows what really happened.
  Server half: HerikaServer/ext/cob_ostim_bridge.}
 

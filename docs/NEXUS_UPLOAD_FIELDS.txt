@@ -29,7 +29,15 @@ FILE UPLOAD
   File name:       CHIM OStim Bridge
   Version:         1.1.0   (must match fomod/info.xml; Vortex shows and tracks versions from this)
   Category:        Main Files
-  Description:     First public release. FOMOD installer; the CHIM server plugin installs itself at game start.
+  Description:     1.1.0: vampirism by bite, Vampire Lords (Turn_Into_Vampire_Lord), solo scenes; fixes: every action after the first one in a session, slow replies near NPC scenes from other mods. FOMOD installer; the CHIM server plugin installs and updates itself at game start.
+  Update notes (Nexus "Changelog" field for 1.1.0, see docs/CHANGELOG.txt for the full list):
+    - New: the vampire bite can pass on Sanguinare Vampiris (MCM toggle and chance).
+    - New: Vampire Lords can turn the player into a Vampire Lord (Turn_Into_Vampire_Lord).
+    - New: solo scenes - an agent can pleasure themselves while the others watch.
+    - Bites wait until the agent has finished the line announcing them.
+    - Fixed: only the first bridge action after starting the game worked.
+    - Fixed: slow replies in places full of NPC scenes from other mods.
+    - Fixed: wrong "who climaxed" after a scene; Feed_On_Blood with no target.
   Remove old versions: when uploading a newer version, move the old file to "Old versions"
                    (do not delete it) so players can pick an older version in Vortex.
 

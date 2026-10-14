@@ -84,7 +84,7 @@ If your CHIM version does not install bundled server plugins, choose "Manual ser
 [list]
 [*]Uses its own plugin, scripts (COB_*) and CHIM action codes (ExtCmdCOB_*).
 [*]Do not combine with other mods that add actions with the same names to CHIM (Start_Intimate_Scene, Undress, ...). The server plugin skips names already in use and logs it.
-[*]Works alongside OStim NPCs, ORomance and similar mods; scenes they start are commented on like any other.
+[*]Works alongside OStim NPCs, ORomance and similar mods. Your own scenes are always talked about; scenes of your companions at most every 30 seconds and anyone else's every 2 minutes, so an inn full of NPC scenes does not hold up the replies to you.
 [/list]
 
 [size=4][b]FAQ[/b][/size]
