@@ -13,6 +13,9 @@ float Property LastBridgeAction = 0.0 Auto Hidden
 
 string Property UndressKey = "COB_Undressed" AutoReadOnly Hidden
 
+; the agent of the last command, in case a parameter carries no name
+string LastCommandNpc = ""
+
 ; ---------------------------------------------------------------- registration
 
 Event OnInit()
@@ -36,6 +39,7 @@ Event OnChimCommand(String npcname, String command, String parameter)
 	If StringUtil.Find(command, "ExtCmdCOB_") != 0
 		Return
 	EndIf
+	LastCommandNpc = npcname
 	If !COB_Config.B("bEnabled:General")
 		Report(command, parameter, "cannot: the CHIM OStim Bridge is turned off in its MCM")
 		Return
@@ -789,7 +793,16 @@ Int Function ThreadOf(Actor a)
 	Return -1
 EndFunction
 
+; The result goes back the way CHIM's own actions report theirs: logMessageForActor with
+; "funcret" and the agent's name. CHIM keeps the agent's command open until that arrives;
+; an unaddressed requestMessage left it open, and from then on every further command of
+; the session crashed CHIM's queue (null read) before it reached the game - only the
+; first action after starting the game ever worked.
 Function Report(String command, String parameter, String result)
 	COB_Config.Note(command + " -> " + result)
-	AIAgentFunctions.requestMessage("command@" + command + "@" + parameter + "@" + result, "funcret")
+	String npc = ArgOf(parameter, 0)
+	If npc == ""
+		npc = LastCommandNpc
+	EndIf
+	AIAgentFunctions.logMessageForActor("command@" + command + "@" + parameter + "@" + result, "funcret", npc)
 EndFunction

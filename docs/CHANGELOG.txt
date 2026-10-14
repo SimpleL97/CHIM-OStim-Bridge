@@ -17,6 +17,10 @@ CHIM OStim Bridge - changelog
   installed solo animations.
 - Changed: Feed_On_Blood and Turn_Into_Vampire_Lord wait until the agent has
   finished the line announcing the bite.
+- Fixed: only the first bridge action after starting the game worked; every
+  later one silently never reached the game (CHIM's command queue crashed on it).
+  Action results are now reported the way CHIM's own actions report theirs
+  (logMessageForActor with the agent's name), which closes the agent's command.
 - Fixed: after an OStim scene started by another mod (OStim NPCs and the like)
   with an AI companion in it, every bridge action of that companion stopped
   working until the game was restarted. The bridge cleared CHIM's "animation
