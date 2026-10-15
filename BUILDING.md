@@ -75,12 +75,10 @@ powershell -ExecutionPolicy Bypass -File compile_scripts.ps1 -Compiler "C:\Steam
 ```
 
 Compiles `src/Scripts/Source/COB.psc`, `COB_Config.psc`, `COB_Bridge.psc`, `COB_Events.psc`,
-`COB_MCM.psc`, `COB_ORomance.psc` into `build/Scripts/*.pex`. Import order:
-`src/Scripts/Source`, `stubs/optional`, the game's `Data\Scripts\Source` and
-`Data\Source\Scripts`, any `-Imports` you add, then `stubs` and `stubs/vanilla`. The
-compiler takes the first file it finds for each type, so real sources win over `stubs`
-and `stubs/vanilla`, which only fill gaps. `stubs/optional` (ORomance Plus) comes first
-on purpose: the real ORomance sources need the sources of many other mods to compile. Options: `-Flags <path to .flg>` if it is
+`COB_MCM.psc` into `build/Scripts/*.pex`. Import order: `src/Scripts/Source`, the game's
+`Data\Scripts\Source` and `Data\Source\Scripts`, any `-Imports` you add, then `stubs` and
+`stubs/vanilla`. The compiler takes the first file it finds for each type, so real
+sources always win and the stubs only fill gaps. Options: `-Flags <path to .flg>` if it is
 not found automatically, `-Out <folder>` for another output folder.
 
 Note: Bethesda's compiler writes the compile time and an unordered string table into
@@ -155,7 +153,7 @@ version changes. The PHP files are the same as in `server/cob_ostim_bridge/`; re
 `Install-ServerPlugin.bat` starts `Install-ServerPlugin.ps1`, which finds the WSL distro
 running the CHIM server (normally `DwemerAI4Skyrim3`) and copies the `cob_ostim_bridge`
 folder next to it into `/var/www/html/HerikaServer/ext/`. `Uninstall-ServerPlugin.*`
-removes that folder, and the plugin's eight actions and its stored settings and state from
+removes that folder, and the plugin's seven actions and its stored settings and state from
 CHIM's database (`core_action_custom` rows `ExtCmdCOB_*`, `conf_opts` rows
 `cob_ostim_bridge*`). They do nothing
 else, download nothing and change no system settings; read them in `server/`.

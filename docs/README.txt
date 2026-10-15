@@ -1,4 +1,4 @@
-CHIM OStim Bridge 1.2.0 by SaurOff
+CHIM OStim Bridge 1.1.0 by SaurOff
 ==================================
 
 Lets CHIM AI agents use OStim Standalone by themselves, react to the world, and
@@ -15,8 +15,7 @@ REQUIREMENTS
 - MCM Helper (Nexus 53000)
 - Dawnguard (for the blood-feeding animation; part of every SE/AE install)
 Optional: OStim animation packs with 3+ actor scenes for group scenes
-(for example Billyy MFF Pack, Nexus 106582); ORomance Plus (Nexus 81635) for
-the Marry_Player action.
+(for example Billyy MFF Pack, Nexus 106582).
 
 
 INSTALLATION
@@ -24,9 +23,9 @@ INSTALLATION
 1. Install with Vortex or MO2 and enable CHIMOStimBridge.esp (ESL flagged,
    it does not use a load order slot). Load order does not matter.
 2. Start the CHIM server as usual, then the game. The server side installs
-   itself: the mod ships it as Data/CHIM/server-plugins/cob_ostim_bridge/1.2.0.dwpkg,
+   itself: the mod ships it as Data/CHIM/server-plugins/cob_ostim_bridge/1.1.0.dwpkg,
    and CHIM's game plugin uploads bundled server plugins to its server at startup
-   (HerikaServer/ext/cob_ostim_bridge). The eight actions are added to CHIM's
+   (HerikaServer/ext/cob_ostim_bridge). The seven actions are added to CHIM's
    action list on the first request.
 3. Load a save. The MCM "CHIM OStim Bridge" appears after a few seconds.
 
@@ -39,7 +38,7 @@ click the mod > Open in File Manager).
 Updating: install the new version; CHIM updates the server side on the next
 game start.
 Uninstalling: run Uninstall-ServerPlugin.bat from the manual tools (removes the
-server folder and the eight actions), then remove the mod.
+server folder and the seven actions), then remove the mod.
 
 
 The MCM is translated into English, Russian, Ukrainian, German, French, Spanish, Italian, Polish, Czech, Portuguese, Japanese and Chinese and follows the game language; other game languages show it in English.
@@ -70,12 +69,6 @@ off there like any other action):
                          the bite, the vampire change, the Vampire Lord power
                          and its perk tree. A werewolf loses lycanthropy, as in
                          the game.
-  Marry_Player           the agent says yes to your proposal and marries you
-                         for real (needs ORomance Plus, Nexus 81635, which
-                         allows several spouses; you wear an Amulet of Mara).
-                         The first spouse is engaged and married at the Temple
-                         of Mara, later ones at once. ORomance's own odds are
-                         not used: the agent decides in the conversation.
 Every outcome is reported back to CHIM, so a refused action ("weapons are still
 drawn", "she is not here") is answered in character instead of failing quietly.
 

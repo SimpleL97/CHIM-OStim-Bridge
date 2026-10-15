@@ -40,11 +40,8 @@ if (-not $Flags) {
     if (-not $Flags) { throw "TESV_Papyrus_Flags.flg not found, pass -Flags" }
 }
 
-# stubs\optional come before the game: the real sources of optional mods (ORomance Plus)
-# pull in long chains of other mods' sources that a build machine does not need
 $import = @(
     (Join-Path $root 'src\Scripts\Source'),
-    (Join-Path $root 'stubs\optional'),
     (Join-Path $GameData 'Scripts\Source'),
     (Join-Path $GameData 'Source\Scripts')
 ) + $Imports + @(
@@ -54,7 +51,7 @@ $import = @(
 
 New-Item -ItemType Directory -Force $Out | Out-Null
 $failed = 0
-foreach ($s in 'COB', 'COB_Config', 'COB_Bridge', 'COB_Events', 'COB_MCM', 'COB_ORomance') {
+foreach ($s in 'COB', 'COB_Config', 'COB_Bridge', 'COB_Events', 'COB_MCM') {
     $log = & $exe $s "-f=$Flags" "-i=$($import -join ';')" "-o=$Out" 2>&1 | ForEach-Object { "$_" }
     $ok = ($LASTEXITCODE -eq 0) -and ($log -match '0 failed')
     if ($ok) { Write-Host "$s.pex compiled" -ForegroundColor Green }

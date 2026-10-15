@@ -71,8 +71,6 @@ Event OnChimCommand(String npcname, String command, String parameter)
 		Feed(command, parameter)
 	ElseIf command == "ExtCmdCOB_VampireLord"
 		VampireLordGift(command, parameter)
-	ElseIf command == "ExtCmdCOB_Marry"
-		MarryPlayer(command, parameter)
 	EndIf
 EndEvent
 
@@ -536,47 +534,6 @@ EndFunction
 ; race swap cuts the bite off (the quest hides that behind a fade to black). After the
 ; bite: the vanilla vampire change (skipped when the player already is one), the end of
 ; lycanthropy like in the game, the Vampire Lord power and its perk tree. Player only.
-; ---------------------------------------------------------------- marriage
-
-; The agent accepts the player's proposal (or the player accepts theirs). Needs
-; ORomance Plus, which allows more than one spouse; its odds are left out on purpose:
-; whether to say yes is the agent's own decision in the conversation.
-Function MarryPlayer(String command, String parameter)
-	Actor npc = ResolveInitiator(parameter)
-	If !npc
-		Report(command, parameter, "cannot: the AI agent could not be identified in the game")
-		Return
-	EndIf
-	Actor player = Game.GetPlayer()
-	If !Game.IsPluginInstalled("ORomancePlus.esp")
-		Report(command, parameter, "cannot: marrying needs the mod ORomance Plus, which is not installed")
-		Return
-	EndIf
-	Armor amulet = Game.GetFormFromFile(0x0C891B, "Skyrim.esm") as Armor ; Amulet of Mara
-	If !player.IsEquipped(amulet)
-		Report(command, parameter, "cannot: " + player.GetDisplayName() + " is not wearing an Amulet of Mara")
-		Return
-	EndIf
-	If npc.IsInCombat() || player.IsInCombat()
-		Report(command, parameter, "refuses: there is a fight going on")
-		Return
-	EndIf
-	If ThreadOf(npc) > -1 || ThreadOf(player) > -1
-		Report(command, parameter, "cannot: busy in a scene")
-		Return
-	EndIf
-	If npc.GetDistance(player) > RangeUnits()
-		Report(command, parameter, "cannot: " + player.GetDisplayName() + " is too far away")
-		Return
-	EndIf
-	WaitUntilSilent(npc)
-	string result = COB_ORomance.Marry(npc)
-	If result == ""
-		result = "cannot: ORomance Plus did not answer"
-	EndIf
-	Report(command, parameter, result)
-EndFunction
-
 Function VampireLordGift(String command, String parameter)
 	Actor npc = ResolveInitiator(parameter)
 	If !npc

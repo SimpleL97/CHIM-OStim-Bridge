@@ -1,13 +1,6 @@
 CHIM OStim Bridge - changelog
 =============================
 
-1.2.0
-- New: Marry_Player - an AI agent can say yes to the player's proposal and really
-  marry them. Needs ORomance Plus (optional, Nexus 81635), which allows several
-  spouses, and the player wearing an Amulet of Mara. The first spouse is engaged
-  and married at the Temple of Mara, later ones at once. ORomance's own odds are
-  not used: the agent decides in the conversation.
-
 1.1.0
 - New: the vampire bite passes on Sanguinare Vampiris, the game's own disease
   (MCM toggle, chance per bite, lowered by disease resistance). The player turns

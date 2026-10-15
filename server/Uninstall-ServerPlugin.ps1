@@ -1,5 +1,5 @@
 # CHIM OStim Bridge by SaurOff - removes the server plugin and its database rows
-# (the eight actions in core_action_custom and the bridge's settings/state in conf_opts).
+# (the seven actions in core_action_custom and the bridge's settings/state in conf_opts).
 
 $ErrorActionPreference = 'Stop'
 $distros = @(wsl.exe -l -q 2>$null | ForEach-Object { ($_ -replace "`0", '').Trim() } | Where-Object { $_ -ne '' })

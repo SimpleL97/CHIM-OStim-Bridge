@@ -24,7 +24,7 @@ def read(p):
 
 print("game files vs build:")
 check("CHIMOStimBridge.esp", z.read("00 Core/CHIMOStimBridge.esp") == read(os.path.join(ROOT, "build", "CHIMOStimBridge.esp")))
-for s in ["COB", "COB_Config", "COB_Bridge", "COB_Events", "COB_MCM", "COB_ORomance"]:
+for s in ["COB", "COB_Config", "COB_Bridge", "COB_Events", "COB_MCM"]:
     pex = os.path.join(ROOT, "build", "Scripts", s + ".pex")
     psc = os.path.join(ROOT, "src", "Scripts", "Source", s + ".psc")
     check(f"{s}.pex newer than its .psc", os.path.getmtime(pex) >= os.path.getmtime(psc))
@@ -63,7 +63,7 @@ if live:
 if data:
     print("deployed game files vs zip:")
     check("Data/CHIMOStimBridge.esp", read(os.path.join(data, "CHIMOStimBridge.esp")) == z.read("00 Core/CHIMOStimBridge.esp"))
-    for s in ["COB", "COB_Config", "COB_Bridge", "COB_Events", "COB_MCM", "COB_ORomance"]:
+    for s in ["COB", "COB_Config", "COB_Bridge", "COB_Events", "COB_MCM"]:
         p = os.path.join(data, "Scripts", s + ".pex")
         check(f"Data/Scripts/{s}.pex", os.path.exists(p) and read(p) == z.read(f"00 Core/Scripts/{s}.pex"))
 

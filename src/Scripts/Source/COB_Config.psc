@@ -6,7 +6,7 @@ string Function ModName() global
 EndFunction
 
 string Function Version() global
-	Return "1.2.0"
+	Return "1.1.0"
 EndFunction
 
 bool Function B(string id) global
