@@ -158,7 +158,25 @@ CHIM's database (`core_action_custom` rows `ExtCmdCOB_*`, `conf_opts` rows
 `cob_ostim_bridge*`). They do nothing
 else, download nothing and change no system settings; read them in `server/`.
 
-## 4. Versioning
+## 4. Releasing
+
+`.github/workflows/nexus.yml` publishes a GitHub release on Nexus Mods. GitHub's runners
+cannot build the mod (no Papyrus compiler, no game sources), so the archive built and
+checked with the steps above is committed:
+
+1. Build and verify the new version (steps 1-5), then copy the archive to
+   `dist/CHIM OStim Bridge.zip`, commit it with the version change and tag the commit
+   (`v<version>`), push both.
+2. Publish a GitHub release from that tag; its text becomes the changelog.
+3. The workflow checks that the archive's FOMOD version matches the tag, attaches the
+   archive to the release and uploads it with the official
+   [Nexus-Mods/upload-action](https://github.com/Nexus-Mods/upload-action) as a new version
+   of the main file (file ID in the workflow): the previous version moves to "Old
+   versions", the mod's version is updated. It needs the environment `Nexus` with the
+   secret `NEXUSMODS_API_KEY`. A failed upload can be retried from the Actions tab
+   (Run workflow, with the tag).
+
+## 5. Versioning
 
 The version must be the same in four places - `build.py` stops if they differ:
 
@@ -171,7 +189,7 @@ Also update `docs/CHANGELOG.txt` and the version line in `docs/README.txt`. Ever
 published change needs a new version: CHIM only re-installs the server package when the
 version changes.
 
-## 5. Other files
+## 6. Other files
 
 - `docs/NEXUS_DESCRIPTION.bbcode.txt`, `docs/NEXUS_UPLOAD_FIELDS.txt` - the Nexus page
   text and upload form values. Not part of the archive.
@@ -180,7 +198,7 @@ version changes.
   third-party logos.
 - `stubs/` - declaration-only Papyrus files for the compiler; see DEPENDENCIES.md.
 
-## 6. Quick test in game
+## 7. Quick test in game
 
 1. Install the release zip with Vortex or MO2 (choose nothing extra in the installer).
 2. Start the CHIM server, then the game, and load a save.

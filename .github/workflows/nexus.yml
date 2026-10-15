@@ -1,0 +1,96 @@
+# CHIM OStim Bridge - publishes a GitHub release on Nexus Mods.
+#
+# The release archive is built and checked locally (see BUILDING.md: it needs Bethesda's
+# Papyrus compiler and the game's script sources, which a GitHub runner does not have)
+# and committed as dist/CHIM OStim Bridge.zip in the tagged commit. When a release is
+# published from that tag, this workflow:
+#   1. checks that the archive's FOMOD version matches the tag (v1.2.0 -> 1.2.0),
+#   2. attaches the archive to the GitHub release,
+#   3. uploads it to Nexus Mods as a new version of the main file, moves the previous
+#      version to "Old versions", updates the mod's version and posts the release
+#      text as the changelog (official action Nexus-Mods/upload-action, Upload API).
+#
+# Needs: environment "Nexus" with the secret NEXUSMODS_API_KEY (personal API key from
+# nexusmods.com/settings/api-keys). Run it by hand (Actions -> Run workflow) to retry a
+# failed upload for an existing tag.
+
+name: Publish on Nexus Mods
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag of an existing release, e.g. v1.2.0"
+        required: true
+
+permissions:
+  contents: write  # attach the archive to the release
+
+env:
+  MOD_ID: "194761"     # nexusmods.com/skyrimspecialedition/mods/194761
+  FILE_ID: "820230"    # the main file "CHIM OStim Bridge"; new versions are added to it
+  ARCHIVE: "dist/CHIM OStim Bridge.zip"
+
+jobs:
+  nexus:
+    runs-on: ubuntu-latest
+    environment: Nexus
+    steps:
+      - name: Release tag
+        id: tag
+        run: |
+          TAG="${{ github.event.release.tag_name || github.event.inputs.tag }}"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Check out the tagged commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.tag.outputs.tag }}
+
+      - name: Check the archive
+        run: |
+          test -f "$ARCHIVE" || { echo "::error::$ARCHIVE is missing in ${{ steps.tag.outputs.tag }}"; exit 1; }
+          FOUND=$(unzip -p "$ARCHIVE" fomod/info.xml | grep -o 'MachineVersion="[^"]*"' | cut -d'"' -f2)
+          if [ "$FOUND" != "${{ steps.tag.outputs.version }}" ]; then
+            echo "::error::the archive is version $FOUND, the tag is ${{ steps.tag.outputs.tag }}"; exit 1
+          fi
+          echo "archive version $FOUND OK"
+
+      - name: Release notes as the Nexus changelog
+        id: notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          BODY=$(gh release view "${{ steps.tag.outputs.tag }}" --repo "$GITHUB_REPOSITORY" --json body --jq .body)
+          # plain lines for Nexus: no markdown headings, bold or links
+          CLEAN=$(printf '%s\n' "$BODY" | sed -E 's/^#+ *//; s/\*\*//g; s/\[([^]]*)\]\([^)]*\)/\1/g')
+          {
+            echo "changelog<<CHANGELOG_EOF"
+            printf '%s\n' "$CLEAN"
+            echo "CHANGELOG_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Attach the archive to the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ steps.tag.outputs.tag }}" "$ARCHIVE" --repo "$GITHUB_REPOSITORY" --clobber
+
+      - name: Upload to Nexus Mods
+        uses: Nexus-Mods/upload-action@v1.0.0-beta.11
+        with:
+          api_key: ${{ secrets.NEXUSMODS_API_KEY }}
+          mod_id: ${{ env.MOD_ID }}
+          file_id: ${{ env.FILE_ID }}
+          filename: ${{ env.ARCHIVE }}
+          version: ${{ steps.tag.outputs.version }}
+          display_name: CHIM OStim Bridge
+          description: "FOMOD installer; the CHIM server plugin installs and updates itself at game start. Source and build instructions: https://github.com/SimpleL97/CHIM-OStim-Bridge"
+          category: main
+          archive_existing_version: true
+          update_mod_version: true
+          primary_mod_manager_download: true
+          allow_mod_manager_download: true
+          changelog: ${{ steps.notes.outputs.changelog }}
