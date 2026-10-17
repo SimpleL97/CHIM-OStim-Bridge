@@ -9,6 +9,11 @@ CHIM OStim Bridge - changelog
   Release_Thrall; the player gets the lesser power "Vampire's Thrall" (shout key)
   while a Vampire Lord - biting one's own thrall again sets them free. The vanilla
   feeding bite is played every time. MCM: Needs > Thralls.
+- Thralls are kept in the save and told to the CHIM server on every load; AI agents
+  who are thralls answer and act as thralls, the others know who obeys. A thrall who
+  is not an AI agent still obeys: agents can undress / dress them (Undress and
+  Get_Dressed now take a thrall's name) and bring them into scenes. A released
+  thrall remembers having been one.
 
 1.1.0
 - New: the vampire bite passes on Sanguinare Vampiris, the game's own disease

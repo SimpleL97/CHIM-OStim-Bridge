@@ -67,7 +67,9 @@ off there like any other action):
                          Lord (ordinary vampires too) and bind their will - the
                          thrall obeys their master and you in everything, scenes
                          included, and is never hostile again.
-  Release_Thrall         set a thrall free.
+  Release_Thrall         set a thrall free; they remember having been a thrall.
+  Undress / Get_Dressed  can also be used on a thrall by name, so a thrall who is
+                         not an AI agent (and cannot answer) still obeys.
   Turn_Into_Vampire_Lord Vampire Lords only (Dawnguard's own, anyone in Vampire
                          Lord form, or NPCs you list in the MCM): turn you into
                          a Vampire Lord at once, through Dawnguard's own code -

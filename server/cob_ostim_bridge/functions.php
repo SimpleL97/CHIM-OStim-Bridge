@@ -50,13 +50,13 @@ $GLOBALS["COB_ACTIONS"] = [
     "ExtCmdCOB_Undress" => [
         "name" => "Undress",
         "return" => "#HERIKA_NAME# takes their clothes off.",
-        "params" => ["target" => "leave empty"],
+        "params" => ["target" => "Leave empty to undress yourself. The exact name of a thrall to undress that thrall instead."],
         "description" => "Take off your own clothes and armor, right here, without starting an intimate scene: when #PLAYER_NAME# asks you to undress, or to tease or seduce in a place where that fits. Never in combat. By default not in a dungeon or hostile place, or in a house you broke into - unless your own character profile says you like such places and it is quiet with no enemy near. Call the action instead of only describing it.",
     ],
     "ExtCmdCOB_Redress" => [
         "name" => "Get_Dressed",
         "return" => "#HERIKA_NAME# gets dressed again.",
-        "params" => ["target" => "leave empty"],
+        "params" => ["target" => "Leave empty to dress yourself. The exact name of a thrall to dress that thrall instead."],
         "description" => "Put back on the clothes and armor you took off earlier with Undress: when #PLAYER_NAME# asks, when you are about to leave or travel, when danger appears, or when the moment is over.",
     ],
     "ExtCmdCOB_Feed" => [

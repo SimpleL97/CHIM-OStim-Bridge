@@ -112,6 +112,8 @@ EndFunction
 
 string Function Release(Actor target) Global
 	string who = target.GetDisplayName()
+	; the server keeps this for good: the freed one remembers having been a thrall
+	AIAgentFunctions.requestMessage("released|" + Clean(who) + "=" + Clean(StorageUtil.GetStringValue(target, "COB_ThrallMaster")), "cob_state")
 	StorageUtil.FormListRemove(None, "COB_Thralls", target, True)
 	target.SetActorValue("Aggression", StorageUtil.GetFloatValue(target, "COB_ThrallAggression", target.GetBaseActorValue("Aggression")))
 	If StorageUtil.GetIntValue(target, "COB_ThrallTeammate") == 1

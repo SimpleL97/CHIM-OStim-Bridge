@@ -150,8 +150,17 @@ function cobApplyGameState(string $data, float $now): void
             $kv = explode("=", $pair, 2);
             if (count($kv) === 2 && trim($kv[0]) !== "" && trim($kv[0]) !== "-") {
                 $state["thralls"][trim($kv[0])] = trim($kv[1]);
+                unset($state["former_thralls"][trim($kv[0])]);
             }
         }
+        cobOptSet(COB_STATE_KEY, $state);
+        return;
+    }
+    if (preg_match('/released\|([^=()\r\n]+)=([^()\r\n]*)/u', $data, $m)) {
+        // set free in the game (not merely missing after loading an older save): they
+        // remember having been a thrall, for good
+        $state = cobOptGet(COB_STATE_KEY) ?? [];
+        $state["former_thralls"][trim($m[1])] = trim($m[2]);
         cobOptSet(COB_STATE_KEY, $state);
         return;
     }
@@ -470,6 +479,18 @@ function cobThrallPromptFor(string $npc): string
     }
     if ($others) {
         $lines[] = "Thralls whose will a Vampire Lord has bound: " . implode(", ", $others) . ". They obey {$player} in everything and never refuse an order.";
+    }
+    if ($mine || $others) {
+        $lines[] = "A thrall who does not talk to you still obeys: when {$player} orders it, undress or dress a thrall with Undress / Get_Dressed (their name in target) and bring them into a scene with Start_Intimate_Scene (their name among the partners).";
+    }
+    $former = null;
+    foreach (($state["former_thralls"] ?? []) as $name => $master) {
+        if (mb_strtolower($name) === mb_strtolower($npc)) {
+            $former = $master;
+        }
+    }
+    if ($former !== null && !isset($thralls[$npc])) {
+        $lines[] = "You were once the thrall of {$former}: their bite bound your will, and you remember everything you did and were made to do in that time. How you feel about it - and about {$former} and {$player} - now follows your own character.";
     }
     if ($lord) {
         $lines[] = "As a Vampire Lord you can bind anyone who is not a Vampire Lord with a bite: Enthrall (when {$player} asks for it or agrees). Release_Thrall sets a thrall free.";

@@ -421,12 +421,28 @@ EndFunction
 
 ; ---------------------------------------------------------------- clothes
 
+; Undress / Get_Dressed act on the agent itself - or on a thrall the agent names: a thrall
+; obeys, and one that is not a CHIM agent cannot be told anything directly. Any other name
+; keeps the old behaviour (the agent's own clothes).
+Actor Function WhoToDress(String parameter, Actor npc)
+	String name = ArgOf(parameter, 1)
+	If name == "" || name == npc.GetDisplayName()
+		Return npc
+	EndIf
+	Actor t = ResolvePartnerName(name)
+	If t && t != Game.GetPlayer() && COB_Thralls.IsThrall(t)
+		Return t
+	EndIf
+	Return npc
+EndFunction
+
 Function Undress(String command, String parameter)
 	Actor npc = ResolveInitiator(parameter)
 	If !npc
 		Report(command, parameter, "cannot undress: the AI agent could not be identified in the game")
 		Return
 	EndIf
+	npc = WhoToDress(parameter, npc)
 	If npc.IsInCombat() || npc.GetCombatState() > 0
 		Report(command, parameter, "refuses: there is a fight going on")
 		Return
@@ -463,6 +479,7 @@ Function Redress(String command, String parameter)
 		Report(command, parameter, "cannot get dressed: the AI agent could not be identified in the game")
 		Return
 	EndIf
+	npc = WhoToDress(parameter, npc)
 	Int n = StorageUtil.FormListCount(npc, UndressKey)
 	If n == 0
 		Report(command, parameter, "nothing to put back on: " + npc.GetDisplayName() + " took nothing off")
