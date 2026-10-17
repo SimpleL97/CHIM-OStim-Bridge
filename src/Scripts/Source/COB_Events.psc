@@ -116,6 +116,7 @@ Event OnUpdate()
 	If polls % 10 == 1
 		SendVampires()
 		CheckInfected()
+		COB_Thralls.UpdatePlayerPower()
 	EndIf
 	Poll()
 	RegisterForSingleUpdate(PollSeconds)
@@ -530,6 +531,7 @@ Function SendConfig()
 	j += ",\"blood_hours\":" + COB_Config.I("iBloodHours:Needs")
 	j += ",\"vampire_lords\":\"" + Clean(COB_Config.S("sVampireLords:Needs")) + "\""
 	j += ",\"lord_gift\":" + Bit(COB_Config.B("bLordGift:Needs"))
+	j += ",\"thralls\":" + Bit(COB_Config.B("bThralls:Needs"))
 	j += ",\"drunk\":" + Bit(COB_Config.B("bDrunk:Needs"))
 	j += ",\"jealous_names\":\"" + Clean(COB_Config.S("sJealous:Needs")) + "\""
 	j += ",\"arousal\":" + Bit(COB_Config.B("bArousal:Needs"))
@@ -537,6 +539,7 @@ Function SendConfig()
 	j += ",\"stale_input\":" + Bit(COB_Config.B("bStaleInput:Fixes"))
 	j += "}"
 	SendState("config|" + j)
+	COB_Thralls.SendThralls() ; the server learns the thralls of this save too
 EndFunction
 
 string Function Clean(string s)

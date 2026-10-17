@@ -9,7 +9,7 @@
             "cursorFillMode": "topToBottom",
             "content": [
                 {
-                    "text": "CHIM OStim Bridge 1.1.0 by SaurOff",
+                    "text": "CHIM OStim Bridge 1.2.0 by SaurOff",
                     "type": "header"
                 },
                 {
@@ -313,6 +313,37 @@
                     "text": "$COB_LordGift",
                     "type": "toggle",
                     "help": "$COB_LordGiftH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "text": "$COB_hThralls",
+                    "type": "header"
+                },
+                {
+                    "id": "bThralls:Needs",
+                    "text": "$COB_Thralls",
+                    "type": "toggle",
+                    "help": "$COB_ThrallsH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "id": "bThrallPower:Needs",
+                    "text": "$COB_ThrallPower",
+                    "type": "toggle",
+                    "help": "$COB_ThrallPowerH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "id": "bThrallTeammate:Needs",
+                    "text": "$COB_ThrallTeammate",
+                    "type": "toggle",
+                    "help": "$COB_ThrallTeammateH",
                     "valueOptions": {
                         "sourceType": "ModSettingBool"
                     }

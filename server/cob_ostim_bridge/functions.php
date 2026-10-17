@@ -71,6 +71,19 @@ $GLOBALS["COB_ACTIONS"] = [
         "params" => ["target" => "leave empty"],
         "description" => "ONLY if you are a Vampire Lord: give #PLAYER_NAME# your blood and turn them into a Vampire Lord right now, the way the Vampire Lords of Dawnguard do. Only when #PLAYER_NAME# asks for it or clearly accepts your offer - never on your own. Not in combat. Call the action instead of only describing it.",
     ],
+    "ExtCmdCOB_Enthrall" => [
+        "name" => "Enthrall",
+        "return" => "#HERIKA_NAME# bites someone and binds their will.",
+        "params" => ["target" => "Exact name of the one to enthrall (who is here)."],
+        "description" => "ONLY if you are a Vampire Lord: bite someone who is here and bind their will - they become your thrall and #PLAYER_NAME#'s, and obey you both in everything. Works on mortals and on ordinary vampires, never on another Vampire Lord. "
+            . "When #PLAYER_NAME# asks you to make someone your (or their) thrall, or when your own character would do it and #PLAYER_NAME# agrees. Not in combat. Call the action instead of only describing it.",
+    ],
+    "ExtCmdCOB_Release" => [
+        "name" => "Release_Thrall",
+        "return" => "#HERIKA_NAME# releases a thrall.",
+        "params" => ["target" => "Exact name of the thrall to set free."],
+        "description" => "Set a thrall free: their will is their own again. When #PLAYER_NAME# asks you to release them, or you as their master decide to.",
+    ],
 ];
 
 foreach ($GLOBALS["COB_ACTIONS"] as $code => $def) {

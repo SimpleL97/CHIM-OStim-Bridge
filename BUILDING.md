@@ -32,7 +32,7 @@ Run everything from the repository root.
 python3 -I localize.py
 ```
 
-Reads the string table `T` inside `localize.py` (70 strings x 12 languages) and writes:
+Reads the string table `T` inside `localize.py` (77 strings x 12 languages) and writes:
 
 - `mcm/config.json` - the MCM Helper menu, with every visible text as a `$COB_...` key
 - `mcm/translations/CHIMOStimBridge_<LANGUAGE>.txt` - one file per game language,
@@ -49,16 +49,18 @@ Running it on an unchanged tree changes nothing.
 python3 -I make_esp.py
 ```
 
-Writes `build/CHIMOStimBridge.esp` (732 bytes). The plugin has no art or world edits -
-just three start-game-enabled quests that carry the scripts - so it is written byte by
-byte from `make_esp.py` instead of being saved in the Creation Kit. The output is
-deterministic: it is byte-identical to the released 1.0.0 plugin.
+Writes `build/CHIMOStimBridge.esp`. The plugin has no art or world edits - three
+start-game-enabled quests that carry the scripts and the player's lesser power - so it is
+written byte by byte from `make_esp.py` instead of being saved in the Creation Kit. The
+output is deterministic: the same bytes on every run.
 
 | FormID | EditorID | Script | Purpose |
 |---|---|---|---|
 | `xx000800` | `COB_BridgeQuest` | `COB_Bridge` | executes the AI actions |
 | `xx000801` | `COB_EventsQuest` | `COB_Events` | events, needs, sends settings to CHIM |
 | `xx000802` | `COB_MCMQuest` | `COB_MCM` + `SKI_PlayerLoadGameAlias` on a player alias | MCM menu |
+| `xx000803` | MGEF `COB_ThrallEffect` | `COB_EnthrallEffect` | the bite of the lesser power (script archetype, self) |
+| `xx000804` | SPEL `COB_ThrallPower` | - | lesser power "Vampire's Thrall" (shout key), given to a Vampire Lord player |
 
 ESL flagged, master `Skyrim.esm` only, author SaurOff.
 
@@ -75,7 +77,7 @@ powershell -ExecutionPolicy Bypass -File compile_scripts.ps1 -Compiler "C:\Steam
 ```
 
 Compiles `src/Scripts/Source/COB.psc`, `COB_Config.psc`, `COB_Bridge.psc`, `COB_Events.psc`,
-`COB_MCM.psc` into `build/Scripts/*.pex`. Import order: `src/Scripts/Source`, the game's
+`COB_MCM.psc`, `COB_Thralls.psc`, `COB_EnthrallEffect.psc` into `build/Scripts/*.pex`. Import order: `src/Scripts/Source`, the game's
 `Data\Scripts\Source` and `Data\Source\Scripts`, any `-Imports` you add, then `stubs` and
 `stubs/vanilla`. The compiler takes the first file it finds for each type, so real
 sources always win and the stubs only fill gaps. Options: `-Flags <path to .flg>` if it is
@@ -137,7 +139,7 @@ server plugin, for CHIM versions that do not install bundled server plugins) and
 A plain zip in the format CHIM's `ServerPluginSync` / `DwemerPluginPackageManager` reads:
 
 ```
-manifest.json      {"schema_version": 4, "name": "cob_ostim_bridge", "version": "1.1.0",
+manifest.json      {"schema_version": 4, "name": "cob_ostim_bridge", "version": "1.2.0",
                     "author": "SaurOff", "description": "...", "server": {"mutable_paths": []}}
 checksums.sha256   sha256 of every other file in the package
 server/cob_lib.php, context_pre.php, functions.php, manifest.json, preprocessing.php, prompts.php
@@ -153,7 +155,7 @@ version changes. The PHP files are the same as in `server/cob_ostim_bridge/`; re
 `Install-ServerPlugin.bat` starts `Install-ServerPlugin.ps1`, which finds the WSL distro
 running the CHIM server (normally `DwemerAI4Skyrim3`) and copies the `cob_ostim_bridge`
 folder next to it into `/var/www/html/HerikaServer/ext/`. `Uninstall-ServerPlugin.*`
-removes that folder, and the plugin's seven actions and its stored settings and state from
+removes that folder, and the plugin's nine actions and its stored settings and state from
 CHIM's database (`core_action_custom` rows `ExtCmdCOB_*`, `conf_opts` rows
 `cob_ostim_bridge*`). They do nothing
 else, download nothing and change no system settings; read them in `server/`.

@@ -1,6 +1,15 @@
 CHIM OStim Bridge - changelog
 =============================
 
+1.2.0
+- New: thralls. A Vampire Lord - an AI agent, or the player once they are one - bites
+  someone who is not a Vampire Lord (ordinary vampires too) and binds their will:
+  the thrall obeys their master and the player in everything, scenes included, is
+  never hostile and (MCM) fights on the player's side. AI actions Enthrall and
+  Release_Thrall; the player gets the lesser power "Vampire's Thrall" (shout key)
+  while a Vampire Lord - biting one's own thrall again sets them free. The vanilla
+  feeding bite is played every time. MCM: Needs > Thralls.
+
 1.1.0
 - New: the vampire bite passes on Sanguinare Vampiris, the game's own disease
   (MCM toggle, chance per bite, lowered by disease resistance). The player turns

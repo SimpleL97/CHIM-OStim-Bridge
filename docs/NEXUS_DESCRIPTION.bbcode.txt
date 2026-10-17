@@ -15,6 +15,7 @@ On top of that the agents react to the world around them, talk about a scene aft
 [*][b]Stop_Intimate_Scene[/b]
 [*][b]Undress / Get_Dressed[/b] - strip without a scene and later put exactly those clothes back on.
 [*][b]Feed_On_Blood[/b] - vampires bite someone present, with the vanilla feeding animation, right after saying so.
+[*][b]Enthrall / Release_Thrall[/b] - a Vampire Lord bites someone who is not a Vampire Lord (ordinary vampires too) and binds their will: the thrall obeys their master and you in everything, intimate scenes included, and is never hostile. Ask your Vampire Lord companion to make someone your thrall - or do it yourself: once you are a Vampire Lord you get the lesser power [i]Vampire's Thrall[/i] on the shout key (Z).
 [*][b]Turn_Into_Vampire_Lord[/b] - a Vampire Lord bites you with the vanilla feeding animation and turns you into a Vampire Lord through Dawnguard's own steps (the vampire change, the Vampire Lord power and its perk tree).
 [/list]
 Every result is reported back to CHIM. When something is not possible ("weapons are still drawn", "she is not here", "there is a fight going on") the agent answers in character instead of the action silently failing.
@@ -73,7 +74,7 @@ The MCM is translated into English, Russian, Ukrainian, German, French, Spanish,
 [size=4][b]Installation[/b][/size]
 [list=1]
 [*]Install with Vortex or Mod Organizer 2 and enable [b]CHIMOStimBridge.esp[/b] (ESL flagged - it does not use a load order slot; load order does not matter).
-[*]Start the CHIM server as usual, then the game. CHIM finds the bundled server plugin in [i]Data/CHIM/server-plugins[/i] and installs it on its server by itself; the seven actions are added to CHIM's action list on the first request.
+[*]Start the CHIM server as usual, then the game. CHIM finds the bundled server plugin in [i]Data/CHIM/server-plugins[/i] and installs it on its server by itself; the nine actions are added to CHIM's action list on the first request.
 [*]Load a save. The MCM "CHIM OStim Bridge" appears after a few seconds.
 [/list]
 If your CHIM version does not install bundled server plugins, choose "Manual server install tools" in the installer and run [i]Install-ServerPlugin.bat[/i] once.

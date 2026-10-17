@@ -10,8 +10,11 @@ the same file. It holds:
   0x802 QUST    COB_MCMQuest     - script COB_MCM     (MCM Helper menu) and a player
                                    alias with SkyUI's SKI_PlayerLoadGameAlias, which
                                    MCM Helper needs to re-register the menu on load
+  0x803 MGEF    COB_ThrallEffect - script COB_EnthrallEffect (the bite)
+  0x804 SPEL    COB_ThrallPower  - lesser power "Vampire's Thrall" (shout key) for a
+                                   Vampire Lord player
 
-All three quests are start-game-enabled (DNAM flags 0x0111), so they also start
+The three quests are start-game-enabled (DNAM flags 0x0111), so they also start
 on an existing save. Run: python3 -I make_esp.py [output path]
 """
 import os, struct, sys
@@ -66,12 +69,40 @@ def quest(fid, edid, full, vmad, alias=False):
     return b'QUST' + struct.pack('<IIIIHH', len(d), 0, fid, 0, 44, 0) + d
 
 
+def group(tag, content):
+    return b'GRUP' + struct.pack('<I', 24 + len(content)) + tag + struct.pack('<IHHHH', 0, 0, 0, 0, 0) + content
+
+
+def record(tag, fid, body):
+    return tag + struct.pack('<IIIIHH', len(body), 0, fid, 0, 44, 0) + body
+
+
+# "Vampire's Thrall": a lesser power (shout key) laid out like the vanilla PowerKhajiitNightEye
+# (SPEL 0AA01D) and its scripted self effect; the script COB_EnthrallEffect bites the
+# person under the crosshair. MGEF DATA, 152 bytes: flags NoDuration|NoMagnitude|NoArea|
+# HideInUI|Painless, no magic school, archetype Script (1), fire and forget, self.
+MGEF_DATA = struct.pack('<IfIiiHHIfIIIIffffIiIIIIiIIIfIfIIIIIIIff',
+                        0x04008E00, 0.0, 0, -1, -1, 0, 0, 0, 0.0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0.0,
+                        1, -1, 0, 0, 1, 0, -1, 0, 0, 0, 0.0, 0, 1.0, 0, 0, 0, 0, 0, 0, 0, 0.0, 0.0)
+assert len(MGEF_DATA) == 152
+THRALL_DESC = ("Bite the one you are looking at and bind their will: they become your thrall and obey you "
+               "and your Vampire Lord companions in everything. Use it on your own thrall to set them free.")
+mgef = record(b'MGEF', 0x01000803,
+              sub(b'EDID', zstr('COB_ThrallEffect')) + sub(b'VMAD', vmad_plain('COB_EnthrallEffect'))
+              + sub(b'FULL', zstr("Vampire's Thrall")) + sub(b'DATA', MGEF_DATA) + sub(b'DNAM', zstr(THRALL_DESC)))
+spel = record(b'SPEL', 0x01000804,
+              sub(b'EDID', zstr('COB_ThrallPower')) + sub(b'OBND', bytes(12)) + sub(b'FULL', zstr("Vampire's Thrall"))
+              + sub(b'MDOB', struct.pack('<I', 0x0435A5)) + sub(b'ETYP', struct.pack('<I', 0x025BEE))  # equip: voice (shout key)
+              + sub(b'DESC', zstr(THRALL_DESC))
+              + sub(b'SPIT', struct.pack('<IIIfIIfff', 0, 0, 3, 0.0, 1, 0, 0.0, 0.0, 0.0))  # lesser power, fire and forget, self
+              + sub(b'EFID', struct.pack('<I', 0x01000803)) + sub(b'EFIT', struct.pack('<fII', 0.0, 0, 1)))
+
 recs = quest(0x01000800, 'COB_BridgeQuest', 'CHIM OStim Bridge', vmad_plain('COB_Bridge'))
 recs += quest(0x01000801, 'COB_EventsQuest', 'CHIM OStim Bridge Events', vmad_plain('COB_Events'))
 recs += quest(0x01000802, 'COB_MCMQuest', 'CHIM OStim Bridge MCM', vmad_mcm('COB_MCM', 0x01000802), alias=True)
-grup = b'GRUP' + struct.pack('<I', 24 + len(recs)) + b'QUST' + struct.pack('<IHHHH', 0, 0, 0, 0, 0) + recs
+grup = group(b'MGEF', mgef) + group(b'SPEL', spel) + group(b'QUST', recs)
 
-hdr = sub(b'HEDR', struct.pack('<fII', 1.71, 3, 0x803))  # version 1.71, 3 records, next object id
+hdr = sub(b'HEDR', struct.pack('<fII', 1.71, 8, 0x805))  # version 1.71, 5 records + 3 groups, next object id
 hdr += sub(b'CNAM', zstr('SaurOff'))
 hdr += sub(b'SNAM', zstr('CHIM OStim Bridge - lets CHIM AI agents drive OStim scenes, react to events and live with simple needs.'))
 hdr += sub(b'MAST', zstr('Skyrim.esm')) + sub(b'DATA', b'\0' * 8)

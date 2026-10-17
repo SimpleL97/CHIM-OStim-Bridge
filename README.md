@@ -27,13 +27,16 @@ instead of building it.
 - **AI actions** added to CHIM's action list: `Start_Intimate_Scene`,
   `Change_Intimate_Scene`, `Stop_Intimate_Scene`, `Undress`, `Get_Dressed`,
   `Feed_On_Blood` (vampires; the bite can pass on vampirism), `Turn_Into_Vampire_Lord`
-  (Vampire Lords turn the player, through Dawnguard's own code). Every result is reported back to the AI, so a refusal
+  (Vampire Lords turn the player, through Dawnguard's own code), `Enthrall` / `Release_Thrall`
+  (a Vampire Lord's bite binds someone's will: the thrall obeys their master and the player). Every result is reported back to the AI, so a refusal
   ("weapons are still drawn") is answered in character.
 - **Scene logic**: partners and groups by name, the act or position taken from what
   was said, men in the active role (optional), partners brought together, a missionary
   or any scene as fallback.
 - **Reactions** the AI comments on: cities, shops, the player's home, waking up,
   dragon souls, undressing, scenes nearby, and the scene that just ended.
+- **Thralls**: Vampire Lords - AI agents, and the player once they are one (lesser power on
+  the shout key) - bite anyone who is not a Vampire Lord and bind their will.
 - **Needs** for NPCs named in the MCM: hunger for sex, blood thirst (game vampires by
   default), drinking, arousal, jealousy.
 - **Two CHIM fixes**: "speech only" (no third-person self-narration) and replies being
@@ -78,7 +81,8 @@ plugin uploads to its own server at game start - players never copy server files
 ## Repository layout
 
 ```
-src/Scripts/Source/   Papyrus sources: COB (CHIM entry point), COB_Bridge, COB_Events, COB_MCM, COB_Config
+src/Scripts/Source/   Papyrus sources: COB (CHIM entry point), COB_Bridge, COB_Events, COB_MCM, COB_Config,
+                      COB_Thralls, COB_EnthrallEffect (the player's lesser power)
 server/
   cob_ostim_bridge/   CHIM server plugin (PHP) - packaged into the .dwpkg
   *.bat, *.ps1        optional manual install / uninstall of the server plugin

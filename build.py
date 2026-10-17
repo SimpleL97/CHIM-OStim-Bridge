@@ -51,7 +51,7 @@ build_dwpkg(pkg)
 
 core = os.path.join(stage, "00 Core")
 copy(os.path.join(ROOT, "build", "CHIMOStimBridge.esp"), os.path.join(core, "CHIMOStimBridge.esp"))
-for s in ["COB", "COB_Config", "COB_Bridge", "COB_Events", "COB_MCM"]:
+for s in ["COB", "COB_Config", "COB_Bridge", "COB_Events", "COB_MCM", "COB_Thralls", "COB_EnthrallEffect"]:
     copy(os.path.join(ROOT, "build", "Scripts", s + ".pex"), os.path.join(core, "Scripts", s + ".pex"))
     copy(os.path.join(ROOT, "src", "Scripts", "Source", s + ".psc"), os.path.join(stage, "20 Source", "Source", "Scripts", s + ".psc"))
 for f in ["config.json", "settings.ini"]:

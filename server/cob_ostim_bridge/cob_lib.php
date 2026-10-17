@@ -9,7 +9,7 @@
  * real time because they only matter for minutes.
  */
 
-const COB_VERSION = "1.1.0";
+const COB_VERSION = "1.2.0";
 const COB_CONFIG_KEY = "cob_ostim_bridge_config";
 const COB_STATE_KEY = "cob_ostim_bridge_state";
 const COB_HOUR = 416666.6667;
@@ -43,6 +43,7 @@ function cobConfig(): array
             "enabled" => 1, "needs" => 1, "sex_names" => "", "sex_hours" => 6, "vampires" => "",
             "blood_hours" => 24, "drunk" => 1, "jealous_names" => "", "arousal" => 1,
             "speech_only" => 1, "stale_input" => 1, "vampire_lords" => "", "lord_gift" => 1,
+            "thralls" => 1,
         ];
         $cfg = array_merge($defaults, cobOptGet(COB_CONFIG_KEY) ?? []);
     }
@@ -139,6 +140,19 @@ function cobApplyGameState(string $data, float $now): void
         if (is_array($cfg)) {
             cobOptSet(COB_CONFIG_KEY, $cfg);
         }
+        return;
+    }
+    if (preg_match('/thralls\|([^()\r\n]*)/u', $data, $m)) {
+        // the whole current list from COB_Thralls: "Name=Master,Name2=Master2" or "-"
+        $state = cobOptGet(COB_STATE_KEY) ?? [];
+        $state["thralls"] = [];
+        foreach (array_filter(array_map('trim', explode(",", $m[1]))) as $pair) {
+            $kv = explode("=", $pair, 2);
+            if (count($kv) === 2 && trim($kv[0]) !== "" && trim($kv[0]) !== "-") {
+                $state["thralls"][trim($kv[0])] = trim($kv[1]);
+            }
+        }
+        cobOptSet(COB_STATE_KEY, $state);
         return;
     }
     if (preg_match('/lords\|([^()\r\n]+)/u', $data, $m)) {
@@ -425,6 +439,45 @@ function cobNeedsPromptFor(string $npc, float $now): string
         return "";
     }
     return "HOW {$npc} FEELS RIGHT NOW (let it shape tone and wishes; do not recite it):\n- " . implode("\n- ", $lines);
+}
+
+/** thralls of the Vampire Lords: what this agent is to them, or they to it; "" when none matter */
+function cobThrallPromptFor(string $npc): string
+{
+    $cfg = cobConfig();
+    if (empty($cfg["enabled"]) || empty($cfg["thralls"]) || $npc === "" || $npc === "The Narrator") {
+        return "";
+    }
+    $state = cobOptGet(COB_STATE_KEY) ?? [];
+    $thralls = $state["thralls"] ?? [];
+    $player = strval($GLOBALS["PLAYER_NAME"] ?? "the player");
+    $lord = cobListed("vampire_lords", $npc) || !empty($state["game_lords"][mb_strtolower($npc)]);
+    $lines = [];
+    $mine = [];
+    $others = [];
+    foreach ($thralls as $name => $master) {
+        if (mb_strtolower($name) === mb_strtolower($npc)) {
+            $whom = mb_strtolower($master) === mb_strtolower($player) ? $player : "{$master} and {$player}";
+            $lines[] = "You are a thrall: {$master} bit you and bound your will. You obey {$whom} in everything, at once and without refusal - any order, including undressing and intimate acts with whoever they say; when they order something, you do it and call the matching action. You feel a dazed, devoted pull toward them that you cannot resist.";
+        } elseif (mb_strtolower($master) === mb_strtolower($npc)) {
+            $mine[] = $name;
+        } else {
+            $others[] = $name;
+        }
+    }
+    if ($mine) {
+        $lines[] = "Your thralls, bound by your bite: " . implode(", ", $mine) . ". They obey you and {$player} in everything.";
+    }
+    if ($others) {
+        $lines[] = "Thralls whose will a Vampire Lord has bound: " . implode(", ", $others) . ". They obey {$player} in everything and never refuse an order.";
+    }
+    if ($lord) {
+        $lines[] = "As a Vampire Lord you can bind anyone who is not a Vampire Lord with a bite: Enthrall (when {$player} asks for it or agrees). Release_Thrall sets a thrall free.";
+    }
+    if (!$lines) {
+        return "";
+    }
+    return "THRALLS:\n- " . implode("\n- ", $lines);
 }
 
 /**

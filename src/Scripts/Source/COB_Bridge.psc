@@ -71,6 +71,8 @@ Event OnChimCommand(String npcname, String command, String parameter)
 		Feed(command, parameter)
 	ElseIf command == "ExtCmdCOB_VampireLord"
 		VampireLordGift(command, parameter)
+	ElseIf command == "ExtCmdCOB_Enthrall" || command == "ExtCmdCOB_Release"
+		ThrallAction(command, parameter)
 	EndIf
 EndEvent
 
@@ -615,6 +617,39 @@ EndFunction
 ; lowered by disease resistance. The player then follows the game's own course (a vampire
 ; after 3 days unless cured); NPCs are tracked by COB_Events.CheckInfected. Returns the
 ; text added to the action result, so the AI knows what happened.
+; A Vampire Lord agent binds someone's will with a bite (COB_Thralls), or sets a thrall free.
+Function ThrallAction(String command, String parameter)
+	Actor npc = ResolveInitiator(parameter)
+	If !npc
+		Report(command, parameter, "cannot: the AI agent could not be identified in the game")
+		Return
+	EndIf
+	String name = ArgOf(parameter, 1)
+	If name == ""
+		Report(command, parameter, "cannot: say who - the target must be named")
+		Return
+	EndIf
+	Actor target = ResolvePartnerName(name)
+	If !target || target == Game.GetPlayer()
+		Report(command, parameter, "cannot: " + name + " is not here")
+		Return
+	EndIf
+	If command == "ExtCmdCOB_Release"
+		If !COB_Thralls.IsThrall(target)
+			Report(command, parameter, "nothing to do: " + target.GetDisplayName() + " is nobody's thrall")
+			Return
+		EndIf
+		Report(command, parameter, COB_Thralls.Release(target))
+		Return
+	EndIf
+	If npc.GetDistance(target) > RangeUnits()
+		Report(command, parameter, "cannot: " + target.GetDisplayName() + " is too far away")
+		Return
+	EndIf
+	WaitUntilSilent(npc)
+	Report(command, parameter, COB_Thralls.Bite(npc, target))
+EndFunction
+
 String Function Infect(Actor victim)
 	If !COB_Config.B("bBiteCurse:Needs") || COB_Config.IsVampire(victim)
 		Return ""

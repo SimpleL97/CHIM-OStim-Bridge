@@ -17,6 +17,14 @@ if (function_exists('chimRegisterPromptInjection')) {
             return "";
         }
     }, 800);
+    chimRegisterPromptInjection("prompt_bottom", "cob_thralls", function ($slot, $context) {
+        try {
+            return cobThrallPromptFor(trim(strval($GLOBALS["HERIKA_NAME"] ?? "")));
+        } catch (Throwable $e) {
+            error_log("[cob_ostim_bridge] thralls: " . $e->getMessage());
+            return "";
+        }
+    }, 820);
     chimRegisterPromptInjection("prompt_bottom", "cob_action_rule", function ($slot, $context) {
         try {
             return cobActionRule(trim(strval($GLOBALS["HERIKA_NAME"] ?? "")));
