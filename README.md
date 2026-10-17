@@ -25,24 +25,31 @@ instead of building it.
 ## What it does
 
 - **AI actions** added to CHIM's action list: `Start_Intimate_Scene`,
-  `Change_Intimate_Scene`, `Stop_Intimate_Scene`, `Undress`, `Get_Dressed`,
-  `Feed_On_Blood` (vampires; the bite can pass on vampirism), `Turn_Into_Vampire_Lord`
-  (Vampire Lords turn the player, through Dawnguard's own code), `Enthrall` / `Release_Thrall`
-  (a Vampire Lord's bite binds someone's will: the thrall obeys their master and the player;
-  enemies too), `Spare` (companions take an enemy alive instead of killing them). Every result is reported back to the AI, so a refusal
-  ("weapons are still drawn") is answered in character.
+  `Change_Intimate_Scene`, `Stop_Intimate_Scene`, `Undress`, `Get_Dressed`. Every result
+  is reported back to the AI, so a refusal ("weapons are still drawn") is answered in
+  character.
 - **Scene logic**: partners and groups by name, the act or position taken from what
   was said, men in the active role (optional), partners brought together, a missionary
   or any scene as fallback.
 - **Reactions** the AI comments on: cities, shops, the player's home, waking up,
   dragon souls, undressing, scenes nearby, and the scene that just ended.
-- **Thralls**: Vampire Lords and the Volkihar court - AI agents, and the player once a Lord (lesser power on
-  the shout key) - bite anyone who is not a Vampire Lord and bind their will.
-- **Needs** for NPCs named in the MCM: hunger for sex, blood thirst (game vampires by
-  default), drinking, arousal, jealousy.
+- **Needs** for NPCs named in the MCM: hunger for sex, drinking, arousal, jealousy.
+- **Notifications and a log file** in the game and on the CHIM server.
 - **Two CHIM fixes**: "speech only" (no third-person self-narration) and replies being
   aborted after a long session.
 - **MCM** through MCM Helper, translated into 12 languages with English fallback.
+
+## Together with my other mods
+
+The vampire features of 1.x (blood thirst, the bite, Vampire Lords, thralls) are a mod of
+their own since 2.0: **CHIM Vampire Bridge** ([GitHub](https://github.com/SimpleL97/CHIM-Vampire-Bridge)).
+**CHIM ORomance Bridge** ([GitHub](https://github.com/SimpleL97/CHIM-ORomance-Bridge)) adds love,
+marriage and children through ORomance Plus. Each of the three works on its own; installed
+together they see each other - a thrall can be undressed and brought into scenes here by
+name, spouses who ask for the marital duty start their scene here, and what happens in one
+mod reaches every AI agent nearby. None depends on another: in the game they share only a
+StorageUtil list (`COV_Thralls`), and on the server each plugin only reads another one's
+settings when that plugin is installed and switched on.
 
 ## How it works
 
@@ -82,8 +89,7 @@ plugin uploads to its own server at game start - players never copy server files
 ## Repository layout
 
 ```
-src/Scripts/Source/   Papyrus sources: COB (CHIM entry point), COB_Bridge, COB_Events, COB_MCM, COB_Config,
-                      COB_Thralls, COB_EnthrallEffect (the player's lesser power)
+src/Scripts/Source/   Papyrus sources: COB (CHIM entry point), COB_Bridge, COB_Events, COB_MCM, COB_Config
 server/
   cob_ostim_bridge/   CHIM server plugin (PHP) - packaged into the .dwpkg
   *.bat, *.ps1        optional manual install / uninstall of the server plugin

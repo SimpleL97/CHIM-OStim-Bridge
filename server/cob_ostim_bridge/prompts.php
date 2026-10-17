@@ -33,9 +33,3 @@ $GLOBALS["PROMPTS"]["cob_scene"] = [
 $GLOBALS["PROMPTS"]["cob_after"] = [
     "cue" => ["({$cobNpc} talks about the intimate scene that just ended, in character and in their own voice. If they took part: how it was for them, what they liked most, whether they came, how they feel now and what they want next. If they only watched or heard it: their honest reaction. One to three short lines.) {$cobTail}"],
 ];
-$GLOBALS["PROMPTS"]["cob_thrall"] = [
-    "cue" => ["({$cobNpc} reacts in character to what just happened to the thrall described above. If {$cobNpc} is the one who was bound: a dazed, devoted first line to their new masters. If {$cobNpc} was released: confusion, relief or anger. Anyone else: their honest reaction - awe, unease, amusement or desire. One or two short lines.) {$cobTail}"],
-];
-$GLOBALS["PROMPTS"]["cob_vampire_turned"] = [
-    "cue" => ["({$cobNpc} reacts in character to the vampirism described above. If it happened to them: the new hunger, the light hurting their eyes, fear, anger or a dark thrill. If it happened to someone else: their honest reaction to that person now being a vampire. One or two short lines.) {$cobTail}"],
-];

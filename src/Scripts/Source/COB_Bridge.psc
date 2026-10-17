@@ -1,7 +1,8 @@
 Scriptname COB_Bridge extends Quest
 {CHIM OStim Bridge by SaurOff.
- Lets CHIM AI agents start, change and stop OStim scenes, undress and dress,
- (vampires) feed on blood and (Vampire Lords) turn the player into a Vampire Lord.
+ Lets CHIM AI agents start, change and stop OStim scenes, and undress and dress.
+ (The vampire actions moved to CHIM Vampire Bridge in 2.0; its thralls - StorageUtil list
+ "COV_Thralls" - can still be undressed and brought into scenes here by name.)
  CHIM hands the actions over through COB.DispatchExternalCommand, which forwards
  them as the mod event "COB_Command" (npc name, command, parameter); CHIM's own
  fallback event "CHIM_CommandReceived" is heard too. Every outcome is reported
@@ -53,6 +54,7 @@ Event OnChimCommand(String npcname, String command, String parameter)
 	LastCommandKey = cmdKey
 	LastCommandTime = now
 	LastCommandNpc = npcname
+	COB_Config.Log("command " + command + " from " + npcname + ": " + parameter)
 	If !COB_Config.B("bEnabled:General")
 		Report(command, parameter, "cannot: the CHIM OStim Bridge is turned off in its MCM")
 		Return
@@ -67,18 +69,9 @@ Event OnChimCommand(String npcname, String command, String parameter)
 		Undress(command, parameter)
 	ElseIf command == "ExtCmdCOB_Redress"
 		Redress(command, parameter)
-	ElseIf command == "ExtCmdCOB_Feed"
-		Feed(command, parameter)
-	ElseIf command == "ExtCmdCOB_VampireLord"
-		VampireLordGift(command, parameter)
-	ElseIf command == "ExtCmdCOB_Enthrall" || command == "ExtCmdCOB_Release"
-		ThrallAction(command, parameter)
-	ElseIf command == "ExtCmdCOB_Spare"
-		If ArgOf(parameter, 1) == ""
-			Report(command, parameter, "cannot: say whom to spare - a name, or women / men")
-		Else
-			Report(command, parameter, COB_Thralls.Spare(ArgOf(parameter, 1)))
-		EndIf
+	Else
+		; an action of an older version (the vampire ones live in CHIM Vampire Bridge now)
+		Report(command, parameter, "cannot: this action is not part of the CHIM OStim Bridge any more")
 	EndIf
 EndEvent
 
@@ -429,17 +422,23 @@ EndFunction
 
 ; Undress / Get_Dressed act on the agent itself - or on a thrall the agent names: a thrall
 ; obeys, and one that is not a CHIM agent cannot be told anything directly. Any other name
-; keeps the old behaviour (the agent's own clothes).
+; keeps the old behaviour (the agent's own clothes). Thralls come from CHIM Vampire Bridge;
+; without it the list is simply empty.
 Actor Function WhoToDress(String parameter, Actor npc)
 	String name = ArgOf(parameter, 1)
 	If name == "" || name == npc.GetDisplayName()
 		Return npc
 	EndIf
 	Actor t = ResolvePartnerName(name)
-	If t && t != Game.GetPlayer() && COB_Thralls.IsThrall(t)
+	If t && t != Game.GetPlayer() && IsThrall(t)
 		Return t
 	EndIf
 	Return npc
+EndFunction
+
+; a thrall of CHIM Vampire Bridge (its StorageUtil list; nothing to read without that mod)
+bool Function IsThrall(Actor a)
+	Return a && StorageUtil.FormListFind(None, "COV_Thralls", a) > -1
 EndFunction
 
 Function Undress(String command, String parameter)
@@ -503,267 +502,6 @@ Function Redress(String command, String parameter)
 	Report(command, parameter, npc.GetDisplayName() + " gets dressed again")
 EndFunction
 
-; ---------------------------------------------------------------- vampires
-
-Function Feed(String command, String parameter)
-	Actor npc = ResolveInitiator(parameter)
-	If !npc
-		Report(command, parameter, "cannot feed: the AI agent could not be identified in the game")
-		Return
-	EndIf
-	If !COB_Config.IsVampire(npc)
-		Report(command, parameter, "cannot feed: " + npc.GetDisplayName() + " is not a vampire")
-		Return
-	EndIf
-	Actor victim = ResolvePartner(parameter)
-	If !victim
-		Report(command, parameter, "cannot feed: " + ArgOf(parameter, 1) + " is not here")
-		Return
-	EndIf
-	If victim == npc
-		victim = Game.GetPlayer()
-	EndIf
-	If npc.IsInCombat() || npc.GetCombatState() > 0
-		Report(command, parameter, "refuses: there is a fight going on")
-		Return
-	EndIf
-	If ThreadOf(npc) > -1
-		Report(command, parameter, "cannot feed: busy in a scene")
-		Return
-	EndIf
-	If npc.GetDistance(victim) > RangeUnits()
-		Report(command, parameter, "cannot feed: " + victim.GetDisplayName() + " is too far away")
-		Return
-	EndIf
-	; the action arrives together with the line that announces it: let that line be
-	; spoken first, then bite
-	WaitUntilSilent(npc)
-	If !BringTogether(npc, victim)
-		Report(command, parameter, "cannot feed: " + victim.GetDisplayName() + " is too far away")
-		Return
-	EndIf
-	Idle bite = Game.GetFormFromFile(0x00E6A8, "Dawnguard.esm") as Idle ; IdleVampireStandingFeedFront_Loose
-	If bite
-		npc.PlayIdleWithTarget(bite, victim)
-	EndIf
-	; a real bite, but never a dangerous one
-	If victim.GetActorValuePercentage("Health") > 0.4
-		victim.DamageActorValue("Health", victim.GetActorValue("Health") * 0.1)
-	EndIf
-	Report(command, parameter, npc.GetDisplayName() + " feeds on " + victim.GetDisplayName() + "'s blood" + Infect(victim))
-EndFunction
-
-; A Vampire Lord gives the player their blood the way it happens in Dawnguard. The steps
-; are those of Dawnguard's DLC1VampireTurnScript.ReceiveHarkonsGift, but the bite is
-; played to its end first: there the vampire change starts in the same instant and its
-; race swap cuts the bite off (the quest hides that behind a fade to black). After the
-; bite: the vanilla vampire change (skipped when the player already is one), the end of
-; lycanthropy like in the game, the Vampire Lord power and its perk tree. Player only.
-Function VampireLordGift(String command, String parameter)
-	Actor npc = ResolveInitiator(parameter)
-	If !npc
-		Report(command, parameter, "cannot: the AI agent could not be identified in the game")
-		Return
-	EndIf
-	If !COB_Config.B("bLordGift:Needs")
-		Report(command, parameter, "cannot: giving the Vampire Lord gift is turned off in the MCM")
-		Return
-	EndIf
-	If !COB_Config.IsVampireLord(npc)
-		Report(command, parameter, "cannot: " + npc.GetDisplayName() + " is not a Vampire Lord")
-		Return
-	EndIf
-	Actor player = Game.GetPlayer()
-	Actor target = ResolvePartner(parameter)
-	If target && target != player && target != npc
-		Report(command, parameter, "cannot: only " + player.GetDisplayName() + " can receive the Vampire Lord gift")
-		Return
-	EndIf
-	Spell lordPower = Game.GetFormFromFile(0x00283B, "Dawnguard.esm") as Spell ; DLC1VampireChange
-	Perk lordPerk = Game.GetFormFromFile(0x00588B, "Dawnguard.esm") as Perk ; DLC1VampireTurnPerk
-	PlayerVampireQuestScript vampireQuest = Game.GetFormFromFile(0x0EAFD5, "Skyrim.esm") as PlayerVampireQuestScript ; PlayerVampireQuest
-	CompanionsHousekeepingScript companions = Game.GetFormFromFile(0x04B2D9, "Skyrim.esm") as CompanionsHousekeepingScript ; C00
-	If !lordPower || !vampireQuest
-		Report(command, parameter, "cannot: Dawnguard is not loaded")
-		Return
-	EndIf
-	If player.HasSpell(lordPower)
-		Report(command, parameter, "cannot: " + player.GetDisplayName() + " already is a Vampire Lord")
-		Return
-	EndIf
-	If npc.IsInCombat() || player.IsInCombat()
-		Report(command, parameter, "refuses: there is a fight going on")
-		Return
-	EndIf
-	If ThreadOf(npc) > -1 || ThreadOf(player) > -1
-		Report(command, parameter, "cannot: busy in a scene")
-		Return
-	EndIf
-	If npc.GetDistance(player) > RangeUnits()
-		Report(command, parameter, "cannot: " + player.GetDisplayName() + " is too far away")
-		Return
-	EndIf
-	WaitUntilSilent(npc)
-	BringTogether(npc, player)
-	Keyword kVampire = Game.GetFormFromFile(0x0A82BB, "Skyrim.esm") as Keyword
-	bool wasVampire = kVampire && player.GetRace().HasKeyword(kVampire)
-	PlayBite(npc, player)
-	If !wasVampire
-		vampireQuest.VampireChange(player)
-	EndIf
-	If companions && companions.PlayerHasBeastBlood
-		companions.CurePlayer()
-	EndIf
-	player.AddSpell(lordPower, True)
-	If lordPerk
-		player.AddPerk(lordPerk)
-	EndIf
-	; the gift cures the disease too; nothing left to track
-	Spell disease = COB_Config.SanguinareVampiris()
-	If disease && player.HasSpell(disease)
-		player.RemoveSpell(disease)
-	EndIf
-	If !player.HasSpell(lordPower)
-		Report(command, parameter, "cannot: the gift did not take, " + player.GetDisplayName() + " has no Vampire Lord power")
-		Return
-	EndIf
-	string who = player.GetDisplayName()
-	If wasVampire
-		; Dawnguard skips the vampire change for someone who already is a vampire
-		Report(command, parameter, npc.GetDisplayName() + " gave " + who + " their blood: " + who + " already was a vampire and now is a Vampire Lord too - the Vampire Lord power is in their powers")
-	Else
-		Report(command, parameter, npc.GetDisplayName() + " gave " + who + " their blood: " + who + " is now a Vampire Lord")
-	EndIf
-EndFunction
-
-; MCM "The bite passes on vampirism": the game's Sanguinare Vampiris, with the chance
-; lowered by disease resistance. The player then follows the game's own course (a vampire
-; after 3 days unless cured); NPCs are tracked by COB_Events.CheckInfected. Returns the
-; text added to the action result, so the AI knows what happened.
-; A Vampire Lord agent binds someone's will with a bite (COB_Thralls), or sets a thrall free.
-Function ThrallAction(String command, String parameter)
-	Actor npc = ResolveInitiator(parameter)
-	If !npc
-		Report(command, parameter, "cannot: the AI agent could not be identified in the game")
-		Return
-	EndIf
-	String name = ArgOf(parameter, 1)
-	If name == ""
-		Report(command, parameter, "cannot: say who - the target must be named")
-		Return
-	EndIf
-	Actor target = ResolvePartnerName(name)
-	If !target || target == Game.GetPlayer()
-		Report(command, parameter, "cannot: " + name + " is not here")
-		Return
-	EndIf
-	If command == "ExtCmdCOB_Release"
-		If !COB_Thralls.IsThrall(target)
-			Report(command, parameter, "nothing to do: " + target.GetDisplayName() + " is nobody's thrall")
-			Return
-		EndIf
-		Report(command, parameter, COB_Thralls.Release(target))
-		Return
-	EndIf
-	If npc.GetDistance(target) > RangeUnits()
-		Report(command, parameter, "cannot: " + target.GetDisplayName() + " is too far away")
-		Return
-	EndIf
-	WaitUntilSilent(npc)
-	Report(command, parameter, COB_Thralls.Bite(npc, target))
-EndFunction
-
-String Function Infect(Actor victim)
-	If !COB_Config.B("bBiteCurse:Needs") || COB_Config.IsVampire(victim)
-		Return ""
-	EndIf
-	Spell disease = COB_Config.SanguinareVampiris()
-	If !disease || victim.HasSpell(disease)
-		Return ""
-	EndIf
-	float resist = victim.GetActorValue("DiseaseResist")
-	If resist >= 100.0
-		Return ""
-	EndIf
-	int chance = COB_Config.I("iCurseChance:Needs")
-	If resist > 0.0
-		chance = (chance * (100.0 - resist) / 100.0) as int
-	EndIf
-	If !COB_Config.Roll(chance)
-		Return ""
-	EndIf
-	victim.AddSpell(disease, False)
-	int days = 3
-	If victim != Game.GetPlayer()
-		days = COB_Config.I("iTurnDays:Needs")
-		If days <= 0
-			days = 3
-		EndIf
-		StorageUtil.FormListAdd(None, "COB_Infected", victim, False)
-		StorageUtil.SetFloatValue(victim, "COB_InfectedAt", Utility.GetCurrentGameTime())
-	EndIf
-	COB_Config.Note(victim.GetDisplayName() + " caught Sanguinare Vampiris")
-	Return "; the bite passed on Sanguinare Vampiris: unless " + victim.GetDisplayName() + " is cured within " + days + " days, they will turn into a vampire"
-EndFunction
-
-; the vanilla feeding bite, played to its end: third person so it can be seen, weapons
-; away (a paired animation does not start otherwise), a few tries while the game is
-; still busy, then wait while the two are locked in the synced animation
-Function PlayBite(Actor npc, Actor victim)
-	Idle bite = Game.GetFormFromFile(0x00E6A8, "Dawnguard.esm") as Idle ; IdleVampireStandingFeedFront_Loose
-	If !bite
-		Return
-	EndIf
-	If victim == Game.GetPlayer()
-		Game.ForceThirdPerson()
-	EndIf
-	If victim.IsWeaponDrawn()
-		victim.SheatheWeapon()
-	EndIf
-	If npc.IsWeaponDrawn()
-		npc.SheatheWeapon()
-	EndIf
-	bool started = False
-	int tries = 0
-	While !started && tries < 8
-		started = npc.PlayIdleWithTarget(bite, victim)
-		If !started
-			Utility.Wait(0.5)
-		EndIf
-		tries += 1
-	EndWhile
-	If !started
-		Return
-	EndIf
-	Utility.Wait(1.0)
-	float t = 0.0
-	While t < 12.0 && (npc.GetAnimationVariableBool("bIsSynced") || victim.GetAnimationVariableBool("bIsSynced"))
-		Utility.Wait(0.25)
-		t += 0.25
-	EndWhile
-	If t == 0.0
-		Utility.Wait(3.0) ; no sync flag to watch: give the bite its usual length
-	EndIf
-	Utility.Wait(0.5)
-EndFunction
-
-; waits (at most about half a minute) until the agent has finished speaking; the line
-; can start a moment after the command arrives, so first give it a chance to begin
-Function WaitUntilSilent(Actor npc)
-	string n = npc.GetDisplayName()
-	float t = 0.0
-	While t < 2.0 && AIAgentFunctions.isActorTalking(n) == 0
-		Utility.Wait(0.25)
-		t += 0.25
-	EndWhile
-	t = 0.0
-	While t < 30.0 && AIAgentFunctions.isActorTalking(n) != 0
-		Utility.Wait(0.25)
-		t += 0.25
-	EndWhile
-	Utility.Wait(0.3)
-EndFunction
-
 ; ---------------------------------------------------------------- helpers
 
 String Function ArgOf(String parameter, Int index)
@@ -804,16 +542,15 @@ Actor Function ResolvePartnerName(String name)
 	If a
 		Return a
 	EndIf
-	If COB_Config.B("bAnyNPC:General")
-		Actor[] around = MiscUtil.ScanCellNPCs(player, RangeUnits())
-		Int i = 0
-		While i < around.Length
-			If around[i] && around[i].GetDisplayName() == name
-				Return around[i]
-			EndIf
-			i += 1
-		EndWhile
-	EndIf
+	; any NPC around (MCM), and always a thrall: a thrall obeys, CHIM agent or not
+	Actor[] around = MiscUtil.ScanCellNPCs(player, RangeUnits())
+	Int i = 0
+	While i < around.Length
+		If around[i] && around[i].GetDisplayName() == name && (COB_Config.B("bAnyNPC:General") || IsThrall(around[i]))
+			Return around[i]
+		EndIf
+		i += 1
+	EndWhile
 	; a name was given but nobody by that name is here: refuse rather than
 	; silently pairing the agent with the player instead
 	Return None

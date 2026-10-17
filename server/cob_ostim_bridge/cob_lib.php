@@ -7,9 +7,14 @@
  * and are kept in conf_opts, together with the needs state. Times in the state are
  * CHIM gamets (game time, 1 game hour = 416666.67 gamets); arousal and climaxes use
  * real time because they only matter for minutes.
+ *
+ * The other bridges of the family (CHIM ORomance Bridge, CHIM Vampire Bridge) are optional:
+ * cobPeer() says whether one is installed and switched on, and only reads its settings.
+ * The vampire features of 1.x live in CHIM Vampire Bridge since 2.0.
  */
 
-const COB_VERSION = "1.2.0";
+const COB_VERSION = "2.0.0";
+const COB_PLUGIN = "cob_ostim_bridge";
 const COB_CONFIG_KEY = "cob_ostim_bridge_config";
 const COB_STATE_KEY = "cob_ostim_bridge_state";
 const COB_HOUR = 416666.6667;
@@ -40,10 +45,8 @@ function cobConfig(): array
     static $cfg = null;
     if ($cfg === null) {
         $defaults = [
-            "enabled" => 1, "needs" => 1, "sex_names" => "", "sex_hours" => 6, "vampires" => "",
-            "blood_hours" => 24, "drunk" => 1, "jealous_names" => "", "arousal" => 1,
-            "speech_only" => 1, "stale_input" => 1, "vampire_lords" => "", "lord_gift" => 1,
-            "thralls" => 1, "thrall_court" => 1, "thrall_masters" => "",
+            "enabled" => 1, "log" => 1, "needs" => 1, "sex_names" => "", "sex_hours" => 6,
+            "drunk" => 1, "jealous_names" => "", "arousal" => 1, "speech_only" => 1, "stale_input" => 1,
         ];
         $cfg = array_merge($defaults, cobOptGet(COB_CONFIG_KEY) ?? []);
     }
@@ -74,6 +77,44 @@ function cobHoursSince($then, float $now): ?float
         return null;
     }
     return max(0.0, ($now - floatval($then)) / COB_HOUR);
+}
+
+// ---------------------------------------------------------------- the other bridges
+
+/**
+ * Settings of another bridge of the family ("cor_oromance_bridge", "cov_vampire_bridge"),
+ * or null when it is not installed on this server or is switched off in its MCM. Read only:
+ * no bridge depends on another one.
+ */
+function cobPeer(string $plugin): ?array
+{
+    if (!is_dir(dirname(__DIR__) . DIRECTORY_SEPARATOR . $plugin)) {
+        return null;
+    }
+    $cfg = cobOptGet($plugin . "_config") ?? [];
+    return array_key_exists("enabled", $cfg) && empty($cfg["enabled"]) ? null : $cfg;
+}
+
+// ---------------------------------------------------------------- log
+
+/** HerikaServer/log/cob_ostim_bridge.log (MCM: Write a log file); kept under 2 MB */
+function cobLog(string $msg): void
+{
+    static $on = null;
+    if ($on === null) {
+        $on = !empty(cobConfig()["log"]);
+    }
+    if (!$on) {
+        return;
+    }
+    try {
+        $file = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "log" . DIRECTORY_SEPARATOR . COB_PLUGIN . ".log";
+        if (@filesize($file) > 2 * 1024 * 1024) {
+            @rename($file, $file . ".1");
+        }
+        @file_put_contents($file, date("Y-m-d H:i:s") . " " . $msg . "\n", FILE_APPEND);
+    } catch (Throwable $e) {
+    }
 }
 
 // ---------------------------------------------------------------- scene kinds
@@ -135,60 +176,12 @@ function cobIsAlcohol(string $item): bool
 /** "cob_state" lines from COB_Events: config|{json}, scene|A,B, orgasm|Name, sex|A,B */
 function cobApplyGameState(string $data, float $now): void
 {
+    cobLog("state " . mb_substr($data, 0, 300));
     if (preg_match('/config\|(\{.*\})/su', $data, $m)) {
         $cfg = json_decode($m[1], true);
         if (is_array($cfg)) {
             cobOptSet(COB_CONFIG_KEY, $cfg);
         }
-        return;
-    }
-    if (preg_match('/thralls\|([^()\r\n]*)/u', $data, $m)) {
-        // the whole current list from COB_Thralls: "Name=Master,Name2=Master2" or "-"
-        $state = cobOptGet(COB_STATE_KEY) ?? [];
-        $state["thralls"] = [];
-        foreach (array_filter(array_map('trim', explode(",", $m[1]))) as $pair) {
-            $kv = explode("=", $pair, 2);
-            if (count($kv) === 2 && trim($kv[0]) !== "" && trim($kv[0]) !== "-") {
-                $state["thralls"][trim($kv[0])] = trim($kv[1]);
-                unset($state["former_thralls"][trim($kv[0])]);
-            }
-        }
-        cobOptSet(COB_STATE_KEY, $state);
-        return;
-    }
-    if (preg_match('/released\|([^=()\r\n]+)=([^()\r\n]*)/u', $data, $m)) {
-        // set free in the game (not merely missing after loading an older save): they
-        // remember having been a thrall, for good
-        $state = cobOptGet(COB_STATE_KEY) ?? [];
-        $state["former_thralls"][trim($m[1])] = trim($m[2]);
-        cobOptSet(COB_STATE_KEY, $state);
-        return;
-    }
-    if (preg_match('/lords\|([^()\r\n]+)/u', $data, $m)) {
-        // Dawnguard's Vampire Lords seen near the player can give their gift by default
-        $state = cobOptGet(COB_STATE_KEY) ?? [];
-        foreach (array_filter(array_map('trim', explode(",", $m[1]))) as $n) {
-            $state["game_lords"][mb_strtolower($n)] = 1;
-        }
-        cobOptSet(COB_STATE_KEY, $state);
-        return;
-    }
-    if (preg_match('/court\|([^()\r\n]+)/u', $data, $m)) {
-        // the Volkihar court seen near the player: not Vampire Lords, but they can enthrall
-        $state = cobOptGet(COB_STATE_KEY) ?? [];
-        foreach (array_filter(array_map('trim', explode(",", $m[1]))) as $n) {
-            $state["game_court"][mb_strtolower($n)] = 1;
-        }
-        cobOptSet(COB_STATE_KEY, $state);
-        return;
-    }
-    if (preg_match('/vampires\|([^()\r\n]+)/u', $data, $m)) {
-        // real game vampires seen near the player get blood thirst by default
-        $state = cobOptGet(COB_STATE_KEY) ?? [];
-        foreach (array_filter(array_map('trim', explode(",", $m[1]))) as $n) {
-            $state["game_vampires"][mb_strtolower($n)] = 1;
-        }
-        cobOptSet(COB_STATE_KEY, $state);
         return;
     }
     if (!preg_match('/(scene|orgasm|sex)\|([^()\r\n]+)/u', $data, $m)) {
@@ -245,13 +238,6 @@ function cobRecordDrink(string $npc, float $now): void
 {
     $state = cobOptGet(COB_STATE_KEY) ?? [];
     $state["drunk"][$npc] = ["level" => cobDrunkLevel($state, $npc, $now) + 1.0, "ts" => $now];
-    cobOptSet(COB_STATE_KEY, $state);
-}
-
-function cobRecordBlood(string $npc, float $now): void
-{
-    $state = cobOptGet(COB_STATE_KEY) ?? [];
-    $state["last_blood"][$npc] = $now;
     cobOptSet(COB_STATE_KEY, $state);
 }
 
@@ -322,19 +308,6 @@ function cobSexText(?float $h, int $base): string
         return "It has been {$hrs} hours since you last had sex, far too long. It burns inside you now: restless, short-tempered, you ask for it openly, again and again.";
     }
     return "It has been {$hrs} hours since you last had sex. The burning is unbearable, a terrible fire under your skin. You are angry, snapping at everyone, and you demand it at the first place where it is allowed.";
-}
-
-function cobBloodText(?float $h, int $base): string
-{
-    $base = max(1, $base);
-    if ($h === null || $h < $base) {
-        return "Your blood thirst is quiet: you fed recently.";
-    }
-    $hrs = intval(round($h));
-    if ($h < 2 * $base) {
-        return "You have not fed on blood for {$hrs} hours. You are thirsty: your eyes keep drifting to throats and you mention blood.";
-    }
-    return "You have not fed on blood for {$hrs} hours. You are starving: pale, weak, irritable, and you ask to drink.";
 }
 
 function cobDrunkText(float $level): string
@@ -425,19 +398,6 @@ function cobNeedsPromptFor(string $npc, float $now): string
         }
         $lines[] = cobSexText(cobHoursSince($state["last_sex"][$npc] ?? null, $now), intval($cfg["sex_hours"] ?? 6));
     }
-    // real game vampires by default, plus anyone listed in the MCM; Vampire Lords are vampires too
-    $lord = cobListed("vampire_lords", $npc) || !empty($state["game_lords"][mb_strtolower($npc)]);
-    if ($lord || cobListed("vampires", $npc) || !empty($state["game_vampires"][mb_strtolower($npc)])) {
-        if (!isset($state["last_blood"][$npc]) && $now > 0) {
-            $state["last_blood"][$npc] = $now;
-            $dirty = true;
-        }
-        $lines[] = cobBloodText(cobHoursSince($state["last_blood"][$npc] ?? null, $now), intval($cfg["blood_hours"] ?? 24));
-        $lines[] = "To actually drink blood, use the Feed_On_Blood action.";
-        if ($lord && !empty($cfg["lord_gift"])) {
-            $lines[] = "You are a Vampire Lord, of pure and ancient blood. You can make {$player} a Vampire Lord too, at once, with the Turn_Into_Vampire_Lord action - only when {$player} asks for it or clearly accepts your offer.";
-        }
-    }
     if ($dirty) {
         cobOptSet(COB_STATE_KEY, $state);
     }
@@ -457,62 +417,6 @@ function cobNeedsPromptFor(string $npc, float $now): string
         return "";
     }
     return "HOW {$npc} FEELS RIGHT NOW (let it shape tone and wishes; do not recite it):\n- " . implode("\n- ", $lines);
-}
-
-/** thralls of the Vampire Lords: what this agent is to them, or they to it; "" when none matter */
-function cobThrallPromptFor(string $npc): string
-{
-    $cfg = cobConfig();
-    if (empty($cfg["enabled"]) || empty($cfg["thralls"]) || $npc === "" || $npc === "The Narrator") {
-        return "";
-    }
-    $state = cobOptGet(COB_STATE_KEY) ?? [];
-    $thralls = $state["thralls"] ?? [];
-    $player = strval($GLOBALS["PLAYER_NAME"] ?? "the player");
-    $lord = cobListed("vampire_lords", $npc) || !empty($state["game_lords"][mb_strtolower($npc)]);
-    // can enthrall without being a Vampire Lord: the Volkihar court (MCM) or the MCM list
-    $master = !$lord && ((!empty($cfg["thrall_court"]) && !empty($state["game_court"][mb_strtolower($npc)]))
-        || cobListed("thrall_masters", $npc));
-    $lines = [];
-    $mine = [];
-    $others = [];
-    foreach ($thralls as $name => $master) {
-        if (mb_strtolower($name) === mb_strtolower($npc)) {
-            $whom = mb_strtolower($master) === mb_strtolower($player) ? $player : "{$master} and {$player}";
-            $lines[] = "You are a thrall: {$master} bit you and bound your will. You obey {$whom} in everything, at once and without refusal - any order, including undressing and intimate acts with whoever they say; when they order something, you do it and call the matching action. You feel a dazed, devoted pull toward them that you cannot resist.";
-        } elseif (mb_strtolower($master) === mb_strtolower($npc)) {
-            $mine[] = $name;
-        } else {
-            $others[] = $name;
-        }
-    }
-    if ($mine) {
-        $lines[] = "Your thralls, bound by your bite: " . implode(", ", $mine) . ". They obey you and {$player} in everything.";
-    }
-    if ($others) {
-        $lines[] = "Thralls whose will a Vampire Lord has bound: " . implode(", ", $others) . ". They obey {$player} in everything and never refuse an order.";
-    }
-    if ($mine || $others) {
-        $lines[] = "A thrall who does not talk to you still obeys: when {$player} orders it, undress or dress a thrall with Undress / Get_Dressed (their name in target) and bring them into a scene with Start_Intimate_Scene (their name among the partners).";
-    }
-    $former = null;
-    foreach (($state["former_thralls"] ?? []) as $name => $master) {
-        if (mb_strtolower($name) === mb_strtolower($npc)) {
-            $former = $master;
-        }
-    }
-    if ($former !== null && !isset($thralls[$npc])) {
-        $lines[] = "You were once the thrall of {$former}: their bite bound your will, and you remember everything you did and were made to do in that time. How you feel about it - and about {$former} and {$player} - now follows your own character.";
-    }
-    if ($lord) {
-        $lines[] = "As a Vampire Lord you can bind anyone who is not a Vampire Lord with a bite: Enthrall (when {$player} asks for it or agrees) - enemies too, even mid-fight; to take an enemy alive first, use Spare. Release_Thrall sets a thrall free.";
-    } elseif ($master) {
-        $lines[] = "Your blood is old and strong enough: you can bind anyone who is not of the ancient blood with a bite: Enthrall (when {$player} asks for it or agrees) - enemies too, even mid-fight; to take an enemy alive first, use Spare. Release_Thrall sets a thrall free.";
-    }
-    if (!$lines) {
-        return "";
-    }
-    return "THRALLS:\n- " . implode("\n- ", $lines);
 }
 
 /**

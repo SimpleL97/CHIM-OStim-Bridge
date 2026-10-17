@@ -9,7 +9,6 @@ Scriptname COB_Events extends Quest
    cob_dragonsoul  absorbing a dragon soul
    cob_naked       the player stripping naked
    cob_home        walking into a home the player owns
-   cob_vampire_turned  a bitten NPC was not cured in time and became a vampire (always sent)
  Silent bookkeeping (never reaches the LLM): cob_state lines scene, orgasm, sex
  and config (the MCM settings the server needs).}
 
@@ -34,6 +33,7 @@ bool inHome = False
 bool ready = False
 bool configSent = False
 int polls = 0
+float lastRealTime = 0.0
 
 float Property PollSeconds = 3.0 AutoReadOnly Hidden
 
@@ -90,6 +90,13 @@ Function ConfigChanged()
 	lastAfterMsg = Past(lastAfterMsg, now)
 	lastNakedMsg = Past(lastNakedMsg, now)
 	lastHomeMsg = Past(lastHomeMsg, now)
+	; a smaller real time than last time means a new game launch: a fresh log file
+	; (loading saves within one launch keeps it)
+	If now < lastRealTime || lastRealTime == 0.0
+		COB_Config.NewLog()
+	EndIf
+	lastRealTime = now
+	COB_Config.Log("loaded; settings sent to CHIM on the next poll")
 EndFunction
 
 float Function Past(float t, float now)
@@ -109,14 +116,10 @@ Event OnUpdate()
 	If polls == 1 || polls % 100 == 0
 		Hook() ; cheap, keeps the registrations alive whatever happens to the save
 	EndIf
+	lastRealTime = Utility.GetCurrentRealTime()
 	If !configSent
 		SendConfig()
 		configSent = True
-	EndIf
-	If polls % 10 == 1
-		SendVampires()
-		CheckInfected()
-		COB_Thralls.UpdatePlayerPower()
 	EndIf
 	Poll()
 	RegisterForSingleUpdate(PollSeconds)
@@ -428,107 +431,8 @@ bool Function Send(string msg, string kind, string toggleKey)
 	Return True
 EndFunction
 
-; Real game vampires near the player (Vampire keyword, or turned by an untreated bite)
-; and Vampire Lords. They get blood thirst by default (and Lords can give their gift);
-; the MCM lists add anyone else. Sent only when it changes.
-string lastVampires = ""
-string lastLords = ""
-string lastCourt = ""
-Function SendVampires()
-	Keyword kVampire = Game.GetFormFromFile(0x0A82BB, "Skyrim.esm") as Keyword
-	Actor p = Game.GetPlayer()
-	Actor[] around = MiscUtil.ScanCellNPCs(p, 4000.0)
-	string names = ""
-	string lords = ""
-	string court = ""
-	int i = 0
-	While i < around.Length
-		Actor a = around[i]
-		If a && a != p
-			bool lord = COB_Config.IsVampireLord(a)
-			If lord || (kVampire && a.HasKeyword(kVampire)) || StorageUtil.FormListFind(None, "COB_Turned", a) > -1
-				If names != ""
-					names += ","
-				EndIf
-				names += Clean(a.GetDisplayName())
-			EndIf
-			If lord
-				If lords != ""
-					lords += ","
-				EndIf
-				lords += Clean(a.GetDisplayName())
-			ElseIf COB_Config.B("bThrallCourt:Needs") && COB_Thralls.IsCourt(a)
-				If court != ""
-					court += ","
-				EndIf
-				court += Clean(a.GetDisplayName())
-			EndIf
-		EndIf
-		i += 1
-	EndWhile
-	If names != lastVampires
-		lastVampires = names
-		If names != ""
-			SendState("vampires|" + names)
-		EndIf
-	EndIf
-	If lords != lastLords
-		lastLords = lords
-		If lords != ""
-			SendState("lords|" + lords)
-		EndIf
-	EndIf
-	If court != lastCourt
-		lastCourt = court
-		If court != ""
-			SendState("court|" + court)
-		EndIf
-	EndIf
-EndFunction
-
-; NPCs bitten with the curse on (COB_Bridge.Infect). Cured in time (the disease spell is
-; gone) they drop off the list; otherwise after iTurnDays game days they lose the disease
-; and count as vampires from then on (COB_Turned): blood thirst and Feed_On_Blood.
-; Waits while the MCM option is off.
-Function CheckInfected()
-	int n = StorageUtil.FormListCount(None, "COB_Infected")
-	If n == 0 || !COB_Config.B("bBiteCurse:Needs")
-		Return
-	EndIf
-	Spell disease = COB_Config.SanguinareVampiris()
-	If !disease
-		Return
-	EndIf
-	float days = COB_Config.I("iTurnDays:Needs") as float
-	If days <= 0.0
-		days = 3.0
-	EndIf
-	float now = Utility.GetCurrentGameTime()
-	int i = n - 1
-	While i >= 0
-		Actor a = StorageUtil.FormListGet(None, "COB_Infected", i) as Actor
-		If !a || a.IsDead() || !a.HasSpell(disease)
-			StorageUtil.FormListRemoveAt(None, "COB_Infected", i)
-			If a
-				StorageUtil.UnsetFloatValue(a, "COB_InfectedAt")
-			EndIf
-		ElseIf now - StorageUtil.GetFloatValue(a, "COB_InfectedAt", now) >= days
-			StorageUtil.FormListRemoveAt(None, "COB_Infected", i)
-			StorageUtil.UnsetFloatValue(a, "COB_InfectedAt")
-			a.RemoveSpell(disease)
-			StorageUtil.FormListAdd(None, "COB_Turned", a, False)
-			string who = Clean(a.GetDisplayName())
-			SendState("vampires|" + who)
-			COB_Config.Note(who + " turned into a vampire")
-			If COB_Config.B("bEnabled:General")
-				AIAgentFunctions.requestMessage("(" + who + " was not cured of Sanguinare Vampiris in time and has now turned into a vampire)", "cob_vampire_turned")
-			EndIf
-		EndIf
-		i -= 1
-	EndWhile
-EndFunction
-
 Function SendState(string s)
+	COB_Config.Log("state " + s)
 	AIAgentFunctions.requestMessage(s, "cob_state")
 EndFunction
 
@@ -537,16 +441,10 @@ Function SendConfig()
 	string j = "{"
 	j += "\"version\":\"" + COB_Config.Version() + "\""
 	j += ",\"enabled\":" + Bit(COB_Config.B("bEnabled:General"))
+	j += ",\"log\":" + Bit(COB_Config.B("bLog:Debug"))
 	j += ",\"needs\":" + Bit(COB_Config.B("bNeeds:Needs"))
 	j += ",\"sex_names\":\"" + Clean(COB_Config.S("sSexHunger:Needs")) + "\""
 	j += ",\"sex_hours\":" + COB_Config.I("iSexHours:Needs")
-	j += ",\"vampires\":\"" + Clean(COB_Config.S("sVampires:Needs")) + "\""
-	j += ",\"blood_hours\":" + COB_Config.I("iBloodHours:Needs")
-	j += ",\"vampire_lords\":\"" + Clean(COB_Config.S("sVampireLords:Needs")) + "\""
-	j += ",\"lord_gift\":" + Bit(COB_Config.B("bLordGift:Needs"))
-	j += ",\"thralls\":" + Bit(COB_Config.B("bThralls:Needs"))
-	j += ",\"thrall_court\":" + Bit(COB_Config.B("bThrallCourt:Needs"))
-	j += ",\"thrall_masters\":\"" + Clean(COB_Config.S("sThrallMasters:Needs")) + "\""
 	j += ",\"drunk\":" + Bit(COB_Config.B("bDrunk:Needs"))
 	j += ",\"jealous_names\":\"" + Clean(COB_Config.S("sJealous:Needs")) + "\""
 	j += ",\"arousal\":" + Bit(COB_Config.B("bArousal:Needs"))
@@ -554,7 +452,6 @@ Function SendConfig()
 	j += ",\"stale_input\":" + Bit(COB_Config.B("bStaleInput:Fixes"))
 	j += "}"
 	SendState("config|" + j)
-	COB_Thralls.SendThralls() ; the server learns the thralls of this save too
 EndFunction
 
 string Function Clean(string s)

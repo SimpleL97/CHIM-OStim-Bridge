@@ -1,8 +1,11 @@
-CHIM OStim Bridge 1.2.0 by SaurOff
+CHIM OStim Bridge 2.0.0 by SaurOff
 ==================================
 
 Lets CHIM AI agents use OStim Standalone by themselves, react to the world, and
 live with a few simple needs. Everything is configured in the MCM.
+
+The vampire features of 1.x (blood, the bite, Vampire Lords, thralls) are a mod of
+their own since 2.0: CHIM Vampire Bridge. See TOGETHER WITH MY OTHER MODS.
 
 
 REQUIREMENTS
@@ -13,7 +16,6 @@ REQUIREMENTS
 - PapyrusUtil SE/AE (Nexus 13048)
 - SkyUI (Nexus 12604)
 - MCM Helper (Nexus 53000)
-- Dawnguard (for the blood-feeding animation; part of every SE/AE install)
 Optional: OStim animation packs with 3+ actor scenes for group scenes
 (for example Billyy MFF Pack, Nexus 106582).
 
@@ -23,9 +25,9 @@ INSTALLATION
 1. Install with Vortex or MO2 and enable CHIMOStimBridge.esp (ESL flagged,
    it does not use a load order slot). Load order does not matter.
 2. Start the CHIM server as usual, then the game. The server side installs
-   itself: the mod ships it as Data/CHIM/server-plugins/cob_ostim_bridge/1.2.0.dwpkg,
+   itself: the mod ships it as Data/CHIM/server-plugins/cob_ostim_bridge/2.0.0.dwpkg,
    and CHIM's game plugin uploads bundled server plugins to its server at startup
-   (HerikaServer/ext/cob_ostim_bridge). The ten actions are added to CHIM's
+   (HerikaServer/ext/cob_ostim_bridge). The five actions are added to CHIM's
    action list on the first request.
 3. Load a save. The MCM "CHIM OStim Bridge" appears after a few seconds.
 
@@ -38,7 +40,7 @@ click the mod > Open in File Manager).
 Updating: install the new version; CHIM updates the server side on the next
 game start.
 Uninstalling: run Uninstall-ServerPlugin.bat from the manual tools (removes the
-server folder and the ten actions), then remove the mod.
+server folder and the five actions), then remove the mod.
 
 
 The MCM is translated into English, Russian, Ukrainian, German, French, Spanish, Italian, Polish, Czech, Portuguese, Japanese and Chinese and follows the game language; other game languages show it in English.
@@ -59,32 +61,10 @@ off there like any other action):
   Stop_Intimate_Scene    end the scene.
   Undress / Get_Dressed  take clothes off without a scene and put exactly those
                          back on later.
-  Feed_On_Blood          vampires only (real game vampires, or NPCs you list in
-                         the MCM): bite someone present, after finishing the
-                         line that announces it. The bite can pass on the
-                         game's Sanguinare Vampiris (MCM, see Needs).
-  Enthrall               Vampire Lords and the Volkihar court: bite someone who is not a Vampire
-                         Lord (ordinary vampires too) and bind their will - the
-                         thrall obeys their master and you in everything, scenes
-                         included, and is never hostile again.
-  Release_Thrall         set a thrall free; they remember having been a thrall.
-  Spare                  keep an enemy alive: companions only beat them down
-                         instead of killing them (by name, or "women" / "men").
-                         Then a Vampire Lord can make them a thrall - enemies can
-                         be enthralled even in the middle of a fight.
-  Undress / Get_Dressed  can also be used on a thrall by name, so a thrall who is
-                         not an AI agent (and cannot answer) still obeys.
-  Turn_Into_Vampire_Lord Vampire Lords only (Dawnguard's own, anyone in Vampire
-                         Lord form, or NPCs you list in the MCM): turn you into
-                         a Vampire Lord at once, through Dawnguard's own code -
-                         the bite, the vampire change, the Vampire Lord power
-                         and its perk tree. A werewolf loses lycanthropy, as in
-                         the game.
-Once you are a Vampire Lord yourself you get the lesser power "Vampire's Thrall":
-equip it like a shout, look at someone close and use it (Z by default) - you bite
-them and they become your thrall; used on your own thrall it sets them free.
-Who else can enthrall (MCM, Needs > Thralls): the Vampire Lords, the Volkihar
-court (a toggle, on by default) and the names you list under "Can also enthrall".
+  Undress / Get_Dressed  can also be used on a thrall of CHIM Vampire Bridge by
+                         name, so a thrall who is not an AI agent (and cannot
+                         answer) still obeys; a thrall can be named as a scene
+                         partner too.
 Every outcome is reported back to CHIM, so a refused action ("weapons are still
 drawn", "she is not here") is answered in character instead of failing quietly.
 
@@ -109,13 +89,6 @@ full of scenes from other mods does not hold up the replies to you.
 
 Needs (MCM: names of the NPCs it applies to):
   - Hunger for sex: restless, then burning, then angry the longer it has been.
-  - Blood thirst for vampires: thirsty, then starving.
-  - Vampirism by bite (can be switched off): whoever a vampire bites catches
-    Sanguinare Vampiris (chance in the MCM, lowered by disease resistance). Cure
-    it in time (Cure Disease potion, a shrine) or turn: the player after the
-    game's own 3 days, an NPC after the days set in the MCM - from then on the
-    mod treats that NPC as a vampire (blood thirst, can bite). The NPC's race and
-    looks do not change.
   - Drinking: any agent who drinks ale, mead or wine gets tipsy, then drunk;
     it wears off with game time.
   - Arousal during a scene and right after it.
@@ -127,6 +100,28 @@ CHIM fixes (MCM):
   - Nobody talks after a long session: CHIM compares new requests against player
     input stamped by a counter that restarts with the game; after a long session
     every reply is aborted. The stale stamps are reset on game load.
+
+
+TOGETHER WITH MY OTHER MODS
+---------------------------
+Each mod works on its own; installed together they see each other:
+- CHIM Vampire Bridge (github.com/SimpleL97/CHIM-Vampire-Bridge): vampires, the
+  bite, Vampire Lords and thralls - the features this bridge had until 1.2. Its
+  thralls can be undressed and brought into scenes here by name.
+- CHIM ORomance Bridge (github.com/SimpleL97/CHIM-ORomance-Bridge): love, marriage
+  and children through ORomance Plus; every OStim scene with the player raises
+  ORomance affection, and spouses who ask for the marital duty start the scene here.
+What happens in one mod (a scene, a wedding, a pregnancy, a thrall) reaches every
+AI agent nearby, so they can talk about it.
+
+
+NOTIFICATIONS AND LOG
+---------------------
+MCM > General > Debug:
+- Show notifications: every action result and every event, in the top left corner.
+- Write a log file (on by default): Data/SKSE/Plugins/CHIMOStimBridge.log in the
+  game (a new file every time the game starts) and log/cob_ostim_bridge.log on the
+  CHIM server. Attach both to a bug report.
 
 
 COMPATIBILITY

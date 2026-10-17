@@ -1,30 +1,20 @@
 CHIM OStim Bridge - changelog
 =============================
 
-1.2.0
-- New: thralls. A Vampire Lord - an AI agent, or the player once they are one - bites
-  someone who is not a Vampire Lord (ordinary vampires too) and binds their will:
-  the thrall obeys their master and the player in everything, scenes included, is
-  never hostile and (MCM) fights on the player's side. AI actions Enthrall and
-  Release_Thrall; the player gets the lesser power "Vampire's Thrall" (shout key)
-  while a Vampire Lord - biting one's own thrall again sets them free. The vanilla
-  feeding bite is played every time. MCM: Needs > Thralls.
-- Thralls are kept in the save and told to the CHIM server on every load; AI agents
-  who are thralls answer and act as thralls, the others know who obeys. A thrall who
-  is not an AI agent still obeys: agents can undress / dress them (Undress and
-  Get_Dressed now take a thrall's name) and bring them into scenes. A released
-  thrall remembers having been one.
-- Enemies can be enthralled, even mid-fight: the bite ends the fight for them and
-  takes them out of the factions that made them hostile. New AI action Spare: keep
-  someone alive (by name, or every hostile woman / man) - companions only beat
-  them down. Thralls are protected the same way.
-- Who can enthrall by default: the Vampire Lords of Dawnguard (now with the one left
-  out before) and the whole Volkihar court - every noble of Castle Volkihar can bite
-  and bind a thrall too (the court is not of the ancient blood of a Vampire Lord, so
-  no Turn_Into_Vampire_Lord gift). MCM: "The Volkihar court can enthrall" (on by
-  default) and "Can also enthrall" - names who can enthrall without being Vampire Lords.
-- Fix: when a bitten NPC turns into a vampire, the AI now hears of it (the event went
-  out under a wrong name and was never commented on).
+2.0.0
+- The vampire features moved to a mod of their own, CHIM Vampire Bridge: blood thirst,
+  Feed_On_Blood, vampirism by bite, Vampire Lords and Turn_Into_Vampire_Lord, and the
+  thralls (Enthrall, Release_Thrall, Spare, the lesser power "Vampire's Thrall") that
+  were being made for 1.2. This bridge now has no vampire actions or settings at all;
+  install CHIM Vampire Bridge to keep them - it takes over the bitten, turned and thrall
+  NPCs of your save, the server state and the actions by itself.
+- With CHIM Vampire Bridge installed, Undress / Get_Dressed and Start_Intimate_Scene take
+  a thrall's name - a thrall who is not an AI agent still obeys.
+- The three bridges (OStim, ORomance, Vampire) work on their own and see each other when
+  installed together: what happens in one reaches every AI agent nearby.
+- New: a log file in the game (Data/SKSE/Plugins/CHIMOStimBridge.log, a new one every time
+  the game starts) and on the CHIM server (log/cob_ostim_bridge.log). MCM: Debug.
+- The old ExtCmdCOB_* vampire actions are removed from CHIM's action list on update.
 - Built on GitHub from source with the open-source papyrus-compiler: every release
   archive is made by the workflow from the tagged commit, no game files needed
   (tools/build_linux.sh, BUILDING.md).

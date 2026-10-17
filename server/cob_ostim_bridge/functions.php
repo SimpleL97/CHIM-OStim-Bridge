@@ -59,38 +59,6 @@ $GLOBALS["COB_ACTIONS"] = [
         "params" => ["target" => "Leave empty to dress yourself. The exact name of a thrall to dress that thrall instead."],
         "description" => "Put back on the clothes and armor you took off earlier with Undress: when #PLAYER_NAME# asks, when you are about to leave or travel, when danger appears, or when the moment is over.",
     ],
-    "ExtCmdCOB_Feed" => [
-        "name" => "Feed_On_Blood",
-        "return" => "#HERIKA_NAME# drinks blood.",
-        "params" => ["target" => "Who to drink from. Empty = #PLAYER_NAME#."],
-        "description" => "ONLY if you are a vampire: bite someone who is here and drink their blood. Leave target empty to drink from #PLAYER_NAME# (when they allow it), or give the exact name of another person present. Use it when your thirst for blood is strong, or when #PLAYER_NAME# offers their neck. Not in combat. Call the action instead of only describing the bite.",
-    ],
-    "ExtCmdCOB_VampireLord" => [
-        "name" => "Turn_Into_Vampire_Lord",
-        "return" => "#HERIKA_NAME# gives #PLAYER_NAME# their blood.",
-        "params" => ["target" => "leave empty"],
-        "description" => "ONLY if you are a Vampire Lord: give #PLAYER_NAME# your blood and turn them into a Vampire Lord right now, the way the Vampire Lords of Dawnguard do. Only when #PLAYER_NAME# asks for it or clearly accepts your offer - never on your own. Not in combat. Call the action instead of only describing it.",
-    ],
-    "ExtCmdCOB_Enthrall" => [
-        "name" => "Enthrall",
-        "return" => "#HERIKA_NAME# bites someone and binds their will.",
-        "params" => ["target" => "Exact name of the one to enthrall (who is here)."],
-        "description" => "ONLY if you are a Vampire Lord, or the THRALLS notes say you can enthrall: bite someone who is here and bind their will - they become your thrall and #PLAYER_NAME#'s, and obey you both in everything. Works on mortals and on ordinary vampires, never on a Vampire Lord or Volkihar noble. "
-            . "When #PLAYER_NAME# asks you to make someone your (or their) thrall, or when your own character would do it and #PLAYER_NAME# agrees. Enemies too, even in the middle of a fight: the bite ends their hostility. Call the action instead of only describing it.",
-    ],
-    "ExtCmdCOB_Spare" => [
-        "name" => "Spare",
-        "return" => "#HERIKA_NAME# makes sure someone is taken alive.",
-        "params" => ["target" => "Exact name of the one to keep alive, or \"women\" / \"men\" for every hostile woman / man here."],
-        "description" => "Keep someone alive in a fight: from now on companions only beat them down instead of killing them (only #PLAYER_NAME# could still kill them). When #PLAYER_NAME# wants an enemy taken alive - to make them a thrall, to question them, or simply to spare them. "
-            . "Then, once they are down or the fight is over, a Vampire Lord or Volkihar noble can make them a thrall with Enthrall.",
-    ],
-    "ExtCmdCOB_Release" => [
-        "name" => "Release_Thrall",
-        "return" => "#HERIKA_NAME# releases a thrall.",
-        "params" => ["target" => "Exact name of the thrall to set free."],
-        "description" => "Set a thrall free: their will is their own again. When #PLAYER_NAME# asks you to release them, or you as their master decide to.",
-    ],
 ];
 
 foreach ($GLOBALS["COB_ACTIONS"] as $code => $def) {
@@ -137,8 +105,16 @@ foreach ($GLOBALS["COB_ACTIONS"] as $code => $def) {
                 [$code, $def["name"], $def["description"], $def["return"], $params]
             );
         }
+        // actions of older versions (the vampire ones moved to CHIM Vampire Bridge in 2.0):
+        // gone from CHIM's list, so the LLM is not offered what this bridge no longer does
+        $codes = array_keys($GLOBALS["COB_ACTIONS"]);
+        $marks = implode(",", array_map(function ($i) {
+            return "$" . ($i + 1);
+        }, array_keys($codes)));
+        $db->fetchOne("DELETE FROM core_action_custom WHERE code_name LIKE 'ExtCmdCOB\\_%' AND code_name NOT IN ({$marks}) RETURNING 1", $codes);
         $db->upsertRowOnConflict("conf_opts", ["id" => "cob_ostim_bridge_installed", "value" => $stamp], "id");
         error_log("[cob_ostim_bridge] actions installed/updated for " . $stamp);
+        cobLog("actions installed/updated for " . $stamp);
     } catch (Throwable $e) {
         error_log("[cob_ostim_bridge] install: " . $e->getMessage());
     }
@@ -220,6 +196,7 @@ $GLOBALS["action_post_process_fnct_ex"][] = function ($actions) {
                 $parts[2] = $actionName . "@" . $actorName . "~" . $field($parameter);
             }
             $actions[$n] = implode("|", $parts);
+            cobLog("action " . $parts[2]);
         } catch (Throwable $e) {
             error_log("[cob_ostim_bridge] post_process: " . $e->getMessage());
         }
@@ -234,12 +211,7 @@ $cobFuncret = function ($gameRequest) {
     $data = is_array($gameRequest) ? strval($gameRequest[3] ?? "") : "";
     $herika = $GLOBALS["HERIKA_NAME"] ?? "";
     $GLOBALS["FORCE_MAX_TOKENS"] = 120;
-
-    if (strpos($data, "ExtCmdCOB_Feed") !== false && stripos($data, " feeds on ") !== false) {
-        if (preg_match('/@([^@~]+)~/u', $data, $m)) {
-            cobRecordBlood(trim($m[1]), cobNow());
-        }
-    }
+    cobLog("result " . mb_substr($data, 0, 300));
     $refused = (stripos($data, "refuses") !== false) || (stripos($data, "cannot") !== false) || (stripos($data, "nothing to ") !== false);
     if ($refused) {
         $reason = $data;
