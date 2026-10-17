@@ -12,6 +12,10 @@ CHIM OStim Bridge - changelog
   a thrall's name - a thrall who is not an AI agent still obeys.
 - The three bridges (OStim, ORomance, Vampire) work on their own and see each other when
   installed together: what happens in one reaches every AI agent nearby.
+- Fix: a refused action ("there is a fight going on", "she is not here") is answered at
+  once, in character, with the reason. Newer CHIM versions no longer pass an action's
+  result to the mod, so the agent only learned of it in the next reply. Successful
+  actions get no extra reply; every refusal is also written to the server log.
 - New: a log file in the game (Data/SKSE/Plugins/CHIMOStimBridge.log, a new one every time
   the game starts) and on the CHIM server (log/cob_ostim_bridge.log). MCM: Debug.
 - The old ExtCmdCOB_* vampire actions are removed from CHIM's action list on update.

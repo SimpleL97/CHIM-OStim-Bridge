@@ -448,3 +448,37 @@ function cobSpeechOnlyRule(string $npc): string
         . "(not \"she smiles\", not \"she slowly turns her head\", not \"her eyes flash\"), no stage directions, no *asterisks*, "
         . "no descriptive prose between dialogue dashes. Anything physical goes into the action field, not into the message.";
 }
+
+// ---------------------------------------------------------------- refused actions
+
+/** the LLM-facing names of this bridge's actions, for the refusal event */
+const COB_ACTION_NAMES = [
+    "ExtCmdCOB_StartScene" => "Start_Intimate_Scene",
+    "ExtCmdCOB_ChangeScene" => "Change_Intimate_Scene",
+    "ExtCmdCOB_StopScene" => "Stop_Intimate_Scene",
+    "ExtCmdCOB_Undress" => "Undress",
+    "ExtCmdCOB_Redress" => "Get_Dressed",
+];
+
+/**
+ * A refused action of this bridge, as the event "cob_refused" the agent answers at once,
+ * or null. The game reports every outcome as "funcret": "command@<CodeName>@<agent>~<parameter>@<result>".
+ * Newer CHIM versions no longer call a plugin's FUNCRET handler for it (only an action's
+ * follow-up setting, which cannot tell a refusal from a success), so a refusal would only
+ * be seen in the next reply; as an event the agent says right away why it did not happen.
+ * Successful actions stay a plain funcret: no extra reply.
+ */
+function cobRefusalEvent(string $data): ?string
+{
+    $parts = explode("@", $data, 4);
+    if (count($parts) < 4 || !isset(COB_ACTION_NAMES[$parts[1]])) {
+        return null;
+    }
+    $result = trim($parts[3]);
+    if (!preg_match('/^(cannot|refuses|nothing to)\b/i', $result)) {
+        return null;
+    }
+    $agent = trim(explode("~", $parts[2])[0]);
+    cobLog("refused {$parts[1]} by {$agent}: {$result}");
+    return "({$agent} tried " . COB_ACTION_NAMES[$parts[1]] . ", but it did not happen - {$result})";
+}

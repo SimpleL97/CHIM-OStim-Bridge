@@ -6,6 +6,8 @@
  *   cob_state   silent bookkeeping from COB_Events (config, scene, orgasm, sex):
  *               stored and answered here, never reaches the history or the LLM.
  *   cob_after   gets "who climaxed" appended before the agent talks about the scene.
+ *   funcret     a refused action of this bridge becomes the event cob_refused, which the
+ *               agent answers at once (successful ones stay as they are).
  *   inputtext   who the player talks to, for the jealousy need.
  *   init        CHIM fix: eventlog.ts is a game-session counter that restarts with the
  *               game. user_input markers from a long previous session then look newer
@@ -23,6 +25,14 @@ if (isset($gameRequest) && is_array($gameRequest)) {
             // state lines use "|" themselves: glue everything after the third field back
             cobApplyGameState(implode("|", array_slice($gameRequest, 3)), cobNow());
             terminate();
+        }
+        if ($cobType === "funcret") {
+            // a refused action: answered at once, as an event (cob_lib.php, cobRefusalEvent)
+            $cobRefusal = cobRefusalEvent(strval($gameRequest[3] ?? ""));
+            if ($cobRefusal !== null) {
+                $gameRequest[0] = "cob_refused";
+                $gameRequest[3] = $cobRefusal;
+            }
         }
         if ($cobType === "cob_after") {
             $gameRequest[3] = cobDescribeAfterScene(strval($gameRequest[3] ?? ""));
