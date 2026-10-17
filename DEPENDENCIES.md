@@ -17,10 +17,20 @@ None of these are bundled: the release ships only this mod's own files.
 | **SkyUI** | [Nexus 12604](https://www.nexusmods.com/skyrimspecialedition/mods/12604) | The MCM framework: `SKI_ConfigBase` and `SKI_PlayerLoadGameAlias` (re-registers the menu on every game load), plus the `Interface/Translations` loader for the 12 menu languages. |
 | **MCM Helper** | [Nexus 53000](https://www.nexusmods.com/skyrimspecialedition/mods/53000) | Builds the MCM from `MCM/Config/CHIMOStimBridge/config.json` and stores the settings. The scripts read them with `MCM.GetModSettingBool/Int/Float/String`; `COB_MCM` extends `MCM_ConfigBase`. |
 
-Optional, my other mods (none needs another; installed together they see each other):
-**CHIM Vampire Bridge** ([GitHub](https://github.com/SimpleL97/CHIM-Vampire-Bridge)) - vampires and
-thralls, the features this bridge had until 1.2; **CHIM ORomance Bridge**
-([GitHub](https://github.com/SimpleL97/CHIM-ORomance-Bridge)) - love and marriage.
+## Optional, supported: my other CHIM bridges
+
+Built the same way, by the same author, and tested together with this one.
+
+| Mod | What works together |
+|---|---|
+| **CHIM ORomance Bridge** ([GitHub](https://github.com/SimpleL97/CHIM-ORomance-Bridge)) | Every OStim scene with the player raises ORomance like and love (that mod listens to OStim's events). Spouses who ask for the marital duty start the scene with this mod's `Start_Intimate_Scene`; a spouse listed here for hunger for sex gets that instead of the marital duty there. Weddings, pregnancies and births reach the agents here. |
+| **CHIM Vampire Bridge** ([GitHub](https://github.com/SimpleL97/CHIM-Vampire-Bridge)) | The vampire features this bridge had until 1.2. Its thralls (StorageUtil list `COV_Thralls`) can be named in `Undress`, `Get_Dressed` and `Start_Intimate_Scene` - a thrall who is not an AI agent still obeys; a thrall is found by name even with "Any nearby NPC can be a partner" off. |
+
+None of them is required and none requires another; each works on its own. Installed together they
+see each other: in the game they share only the StorageUtil list `COV_Thralls`; on the CHIM
+server each plugin reads another one's settings only when that plugin's folder exists in
+`HerikaServer/ext` and it is switched on in its MCM. Events of every bridge go to CHIM's shared
+event log, so every AI agent nearby can talk about what happened in another one.
 
 Optional: OStim animation packs with 3+ actor scenes for group scenes
 (for example [Billyy MFF Pack](https://www.nexusmods.com/skyrimspecialedition/mods/106582)).
