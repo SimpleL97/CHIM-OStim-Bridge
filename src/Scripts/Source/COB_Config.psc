@@ -70,7 +70,7 @@ bool Function IsVampireLord(Actor a) global
 	If !b
 		Return False
 	EndIf
-	int[] lords = new int[7]
+	int[] lords = new int[8]
 	lords[0] = 0x002B6C ; DLC1Serana
 	lords[1] = 0x003BA7 ; DLC1Harkon
 	lords[2] = 0x01A93D ; DLC1HarkonCombat
@@ -78,6 +78,7 @@ bool Function IsVampireLord(Actor a) global
 	lords[4] = 0x00EC8A ; DLC1HarkonCombatMagic
 	lords[5] = 0x00D1BE ; DLC1dunHarkonFontActor
 	lords[6] = 0x004208 ; DLC1RadiantDisguisedVampireLord
+	lords[7] = 0x003B8B ; DLC1Valerica
 	int i = 0
 	While i < lords.Length
 		If b == Game.GetFormFromFile(lords[i], "Dawnguard.esm")

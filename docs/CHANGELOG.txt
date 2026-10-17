@@ -18,6 +18,10 @@ CHIM OStim Bridge - changelog
   takes them out of the factions that made them hostile. New AI action Spare: keep
   someone alive (by name, or every hostile woman / man) - companions only beat
   them down. Thralls are protected the same way.
+- Who can enthrall by default: the Vampire Lords of Dawnguard (now with the one left
+  out before) and the whole Volkihar court - every noble of Castle Volkihar can bite
+  and bind a thrall too (the court is not of the ancient blood of a Vampire Lord, so
+  no Turn_Into_Vampire_Lord gift). The MCM list still adds anyone.
 
 1.1.0
 - New: the vampire bite passes on Sanguinare Vampiris, the game's own disease

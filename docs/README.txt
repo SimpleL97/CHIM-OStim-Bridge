@@ -63,7 +63,7 @@ off there like any other action):
                          the MCM): bite someone present, after finishing the
                          line that announces it. The bite can pass on the
                          game's Sanguinare Vampiris (MCM, see Needs).
-  Enthrall               Vampire Lords only: bite someone who is not a Vampire
+  Enthrall               Vampire Lords and the Volkihar court: bite someone who is not a Vampire
                          Lord (ordinary vampires too) and bind their will - the
                          thrall obeys their master and you in everything, scenes
                          included, and is never hostile again.

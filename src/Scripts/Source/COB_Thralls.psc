@@ -13,13 +13,21 @@ bool Function IsThrall(Actor a) Global
 	Return a && StorageUtil.FormListFind(None, "COB_Thralls", a) > -1
 EndFunction
 
-; the player counts once they have Dawnguard's Vampire Lord power
+; who can enthrall: the Vampire Lords (Dawnguard's, see COB_Config.IsVampireLord, and anyone listed in the MCM),
+; the whole Volkihar court, and the player once they have Dawnguard's Vampire Lord power
 bool Function IsLord(Actor a) Global
 	If a == Game.GetPlayer()
 		Spell lordPower = Game.GetFormFromFile(0x00283B, "Dawnguard.esm") as Spell ; DLC1VampireChange
 		Return lordPower && a.HasSpell(lordPower)
 	EndIf
-	Return COB_Config.IsVampireLord(a)
+	Return COB_Config.IsVampireLord(a) || IsCourt(a)
+EndFunction
+
+; the vampire nobility of Castle Volkihar (everyone in Dawnguard's DLC1VampireFaction):
+; not Vampire Lords, but masters of thralls all the same
+bool Function IsCourt(Actor a) Global
+	Faction court = Game.GetFormFromFile(0x003376, "Dawnguard.esm") as Faction ; DLC1VampireFaction
+	Return a && court && a != Game.GetPlayer() && a.IsInFaction(court) && !a.IsDead()
 EndFunction
 
 ; why master cannot enthrall target right now, or "" when they can
@@ -28,7 +36,7 @@ string Function Refusal(Actor master, Actor target) Global
 		Return "cannot: enthralling is turned off in the MCM"
 	EndIf
 	If !IsLord(master)
-		Return "cannot: only a Vampire Lord can enthrall"
+		Return "cannot: only a Vampire Lord or a Volkihar noble can enthrall"
 	EndIf
 	If !target || target == master || target == Game.GetPlayer()
 		Return "cannot: nobody to enthrall"
@@ -38,7 +46,7 @@ string Function Refusal(Actor master, Actor target) Global
 		Return "cannot: " + who + " cannot be enthralled"
 	EndIf
 	If IsLord(target)
-		Return "cannot: " + who + " is a Vampire Lord too; their blood is as strong"
+		Return "cannot: " + who + " is of the ancient blood too (a Vampire Lord or Volkihar noble); their will cannot be bound"
 	EndIf
 	If OThreadOf(master) || OThreadOf(target)
 		Return "cannot: busy in a scene"

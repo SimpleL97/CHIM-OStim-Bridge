@@ -36,7 +36,7 @@ instead of building it.
   or any scene as fallback.
 - **Reactions** the AI comments on: cities, shops, the player's home, waking up,
   dragon souls, undressing, scenes nearby, and the scene that just ended.
-- **Thralls**: Vampire Lords - AI agents, and the player once they are one (lesser power on
+- **Thralls**: Vampire Lords and the Volkihar court - AI agents, and the player once a Lord (lesser power on
   the shout key) - bite anyone who is not a Vampire Lord and bind their will.
 - **Needs** for NPCs named in the MCM: hunger for sex, blood thirst (game vampires by
   default), drinking, arousal, jealousy.

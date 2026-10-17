@@ -173,6 +173,15 @@ function cobApplyGameState(string $data, float $now): void
         cobOptSet(COB_STATE_KEY, $state);
         return;
     }
+    if (preg_match('/court\|([^()\r\n]+)/u', $data, $m)) {
+        // the Volkihar court seen near the player: not Vampire Lords, but they can enthrall
+        $state = cobOptGet(COB_STATE_KEY) ?? [];
+        foreach (array_filter(array_map('trim', explode(",", $m[1]))) as $n) {
+            $state["game_court"][mb_strtolower($n)] = 1;
+        }
+        cobOptSet(COB_STATE_KEY, $state);
+        return;
+    }
     if (preg_match('/vampires\|([^()\r\n]+)/u', $data, $m)) {
         // real game vampires seen near the player get blood thirst by default
         $state = cobOptGet(COB_STATE_KEY) ?? [];
@@ -461,6 +470,7 @@ function cobThrallPromptFor(string $npc): string
     $thralls = $state["thralls"] ?? [];
     $player = strval($GLOBALS["PLAYER_NAME"] ?? "the player");
     $lord = cobListed("vampire_lords", $npc) || !empty($state["game_lords"][mb_strtolower($npc)]);
+    $court = !$lord && !empty($state["game_court"][mb_strtolower($npc)]);
     $lines = [];
     $mine = [];
     $others = [];
@@ -494,6 +504,8 @@ function cobThrallPromptFor(string $npc): string
     }
     if ($lord) {
         $lines[] = "As a Vampire Lord you can bind anyone who is not a Vampire Lord with a bite: Enthrall (when {$player} asks for it or agrees) - enemies too, even mid-fight; to take an enemy alive first, use Spare. Release_Thrall sets a thrall free.";
+    } elseif ($court) {
+        $lines[] = "As a noble of the Volkihar clan you can bind anyone who is not of the ancient blood with a bite: Enthrall (when {$player} asks for it or agrees) - enemies too, even mid-fight; to take an enemy alive first, use Spare. Release_Thrall sets a thrall free.";
     }
     if (!$lines) {
         return "";

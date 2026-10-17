@@ -433,12 +433,14 @@ EndFunction
 ; the MCM lists add anyone else. Sent only when it changes.
 string lastVampires = ""
 string lastLords = ""
+string lastCourt = ""
 Function SendVampires()
 	Keyword kVampire = Game.GetFormFromFile(0x0A82BB, "Skyrim.esm") as Keyword
 	Actor p = Game.GetPlayer()
 	Actor[] around = MiscUtil.ScanCellNPCs(p, 4000.0)
 	string names = ""
 	string lords = ""
+	string court = ""
 	int i = 0
 	While i < around.Length
 		Actor a = around[i]
@@ -455,6 +457,11 @@ Function SendVampires()
 					lords += ","
 				EndIf
 				lords += Clean(a.GetDisplayName())
+			ElseIf COB_Thralls.IsCourt(a)
+				If court != ""
+					court += ","
+				EndIf
+				court += Clean(a.GetDisplayName())
 			EndIf
 		EndIf
 		i += 1
@@ -469,6 +476,12 @@ Function SendVampires()
 		lastLords = lords
 		If lords != ""
 			SendState("lords|" + lords)
+		EndIf
+	EndIf
+	If court != lastCourt
+		lastCourt = court
+		If court != ""
+			SendState("court|" + court)
 		EndIf
 	EndIf
 EndFunction

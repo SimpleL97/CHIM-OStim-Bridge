@@ -15,7 +15,7 @@ On top of that the agents react to the world around them, talk about a scene aft
 [*][b]Stop_Intimate_Scene[/b]
 [*][b]Undress / Get_Dressed[/b] - strip without a scene and later put exactly those clothes back on.
 [*][b]Feed_On_Blood[/b] - vampires bite someone present, with the vanilla feeding animation, right after saying so.
-[*][b]Enthrall / Release_Thrall[/b] - a Vampire Lord bites someone who is not a Vampire Lord (ordinary vampires too) and binds their will: the thrall obeys their master and you in everything, intimate scenes included, and is never hostile. Ask your Vampire Lord companion to make someone your thrall - or do it yourself: once you are a Vampire Lord you get the lesser power [i]Vampire's Thrall[/i] on the shout key (Z).
+[*][b]Enthrall / Release_Thrall[/b] - a Vampire Lord (or any noble of the Volkihar court) bites someone who is not a Vampire Lord (ordinary vampires too) and binds their will: the thrall obeys their master and you in everything, intimate scenes included, and is never hostile. Ask your Vampire Lord companion to make someone your thrall - or do it yourself: once you are a Vampire Lord you get the lesser power [i]Vampire's Thrall[/i] on the shout key (Z).
 [*][b]Spare[/b] - keep an enemy alive: companions only beat them down instead of killing them ("don't kill the bandit woman, she'll be our thrall"). Enemies can be enthralled even mid-fight - the bite ends their hostility.
 [*][b]Turn_Into_Vampire_Lord[/b] - a Vampire Lord bites you with the vanilla feeding animation and turns you into a Vampire Lord through Dawnguard's own steps (the vampire change, the Vampire Lord power and its perk tree).
 [/list]
