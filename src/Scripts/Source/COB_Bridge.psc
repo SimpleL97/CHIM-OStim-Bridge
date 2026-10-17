@@ -426,7 +426,7 @@ EndFunction
 ; without it the list is simply empty.
 Actor Function WhoToDress(String parameter, Actor npc)
 	String name = ArgOf(parameter, 1)
-	If name == "" || name == npc.GetDisplayName()
+	If name == "" || COB_Config.NameOf(name) == npc.GetDisplayName() || COB_Config.RefActor(name) == npc
 		Return npc
 	EndIf
 	Actor t = ResolvePartnerName(name)
@@ -533,7 +533,11 @@ Actor Function ResolvePartner(String parameter)
 EndFunction
 
 Actor Function ResolvePartnerName(String name)
-	name = COB_Config.Trim(name)
+	Actor byRef = COB_Config.RefActor(name)
+	If byRef && !byRef.IsDead()
+		Return byRef
+	EndIf
+	name = COB_Config.NameOf(name)
 	Actor player = Game.GetPlayer()
 	If name == "" || name == "player" || name == "self" || name == player.GetDisplayName()
 		Return player
