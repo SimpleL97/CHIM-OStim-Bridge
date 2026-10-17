@@ -22,6 +22,11 @@ CHIM OStim Bridge - changelog
   out before) and the whole Volkihar court - every noble of Castle Volkihar can bite
   and bind a thrall too (the court is not of the ancient blood of a Vampire Lord, so
   no Turn_Into_Vampire_Lord gift). The MCM list still adds anyone.
+- Fix: when a bitten NPC turns into a vampire, the AI now hears of it (the event went
+  out under a wrong name and was never commented on).
+- Built on GitHub from source with the open-source papyrus-compiler: every release
+  archive is made by the workflow from the tagged commit, no game files needed
+  (tools/build_linux.sh, BUILDING.md).
 
 1.1.0
 - New: the vampire bite passes on Sanguinare Vampiris, the game's own disease

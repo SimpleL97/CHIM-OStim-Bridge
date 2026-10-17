@@ -9,7 +9,7 @@ Scriptname COB_Events extends Quest
    cob_dragonsoul  absorbing a dragon soul
    cob_naked       the player stripping naked
    cob_home        walking into a home the player owns
-   cob_turned      a bitten NPC was not cured in time and became a vampire (always sent)
+   cob_vampire_turned  a bitten NPC was not cured in time and became a vampire (always sent)
  Silent bookkeeping (never reaches the LLM): cob_state lines scene, orgasm, sex
  and config (the MCM settings the server needs).}
 
@@ -521,7 +521,7 @@ Function CheckInfected()
 			SendState("vampires|" + who)
 			COB_Config.Note(who + " turned into a vampire")
 			If COB_Config.B("bEnabled:General")
-				AIAgentFunctions.requestMessage("(" + who + " was not cured of Sanguinare Vampiris in time and has now turned into a vampire)", "cob_turned")
+				AIAgentFunctions.requestMessage("(" + who + " was not cured of Sanguinare Vampiris in time and has now turned into a vampire)", "cob_vampire_turned")
 			EndIf
 		EndIf
 		i -= 1

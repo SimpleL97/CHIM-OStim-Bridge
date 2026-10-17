@@ -4,6 +4,12 @@ This repository holds everything the Nexus release is made from. Every file in t
 release archive is either a source file from here, copied as is, or is generated from
 the sources by the scripts below. Nothing is edited by hand after the build.
 
+There are two ways to build:
+
+- **Without the game** (Linux, WSL, macOS, GitHub Actions): one command, see
+  [Build without the game](#build-without-the-game). Every GitHub release is built this way.
+- **On Windows with Bethesda's compiler** and the game's script sources: steps 1-5 below.
+
 ## 1. What you need
 
 - **Python 3.8+** - standard library only, no packages to install. On Windows use
@@ -115,6 +121,44 @@ is newer than its `.psc`, and that every translation file has every menu key. Op
 extra arguments compare against a live CHIM server plugin folder and an installed game
 `Data` folder: `verify_release.py <zip> <HerikaServer/ext/cob_ostim_bridge> <Data>`.
 
+## Build without the game
+
+```
+tools/build_linux.sh <papyrus-compiler binary> [release folder]
+```
+
+Needs Python 3.8+ and the open-source [papyrus-compiler](https://github.com/russo-2025/papyrus-compiler)
+(MIT). Its release 0.0.4 still stores string escapes such as `\"` literally, which breaks
+the scripts' JSON; use a build of commit `b9dc995` or later (the fix for its issue 19).
+Building it from source takes a few seconds with [V](https://github.com/vlang/v/releases/tag/0.5.1)
+0.5.1 - the same commands as in `.github/workflows/release.yml`:
+
+```
+git clone https://github.com/russo-2025/papyrus-compiler.git
+cd papyrus-compiler && git checkout b9dc9951f4264084c8ded6721b20f0d81c021d58
+<path to v>/v -prod -gc none -o bin/papyrus-compiler compiler.v
+```
+
+The script runs step 2 (`make_esp.py`), compiles every script in `src/Scripts/Source`
+against the declaration-only headers in `stubs/headers`, `stubs/vanilla` and `stubs`
+instead of the game's sources, and runs step 4 (`build.py`); the archive goes to
+`dist/` by default. The headers in `stubs/headers` are written by
+
+```
+python3 -I tools/gen_headers.py "<Skyrim>/Data/Scripts/Source" "<Skyrim>/Data/Source/Scripts"
+```
+
+from the installed sources of the base game, SKSE, OStim Standalone, PapyrusUtil and
+CHIM: only the types the mod uses, only their signatures, no code. Re-run it when a
+script starts using a type it did not use before (the build then fails with an
+"undefined" error).
+
+Checked against the Bethesda build of the same sources: every function calls the same
+functions with the same arguments and string literals, and every script has the same
+parent, flags, variables, properties and function signatures. The instructions differ
+slightly (the open compiler leaves out some redundant casts and copies), and its `.pex`
+are smaller.
+
 ## 3. Where every file in the release comes from
 
 | In the release zip | Source in this repository | Made by |
@@ -162,21 +206,21 @@ else, download nothing and change no system settings; read them in `server/`.
 
 ## 4. Releasing
 
-`.github/workflows/nexus.yml` publishes a GitHub release on Nexus Mods. GitHub's runners
-cannot build the mod (no Papyrus compiler, no game sources), so the archive built and
-checked with the steps above is committed:
+`.github/workflows/release.yml` builds the mod on GitHub. No built files are kept in the
+repository.
 
-1. Build and verify the new version (steps 1-5), then copy the archive to
-   `dist/CHIM OStim Bridge.zip`, commit it with the version change and tag the commit
-   (`v<version>`), push both.
-2. Publish a GitHub release from that tag; its text becomes the changelog.
-3. The workflow checks that the archive's FOMOD version matches the tag, attaches the
-   archive to the release and uploads it with the official
-   [Nexus-Mods/upload-action](https://github.com/Nexus-Mods/upload-action) as a new version
-   of the main file (file ID in the workflow): the previous version moves to "Old
-   versions", the mod's version is updated. It needs the environment `Nexus` with the
-   secret `NEXUSMODS_API_KEY`. A failed upload can be retried from the Actions tab
-   (Run workflow, with the tag).
+- **Every push and pull request:** the whole mod is built (`tools/build_linux.sh`); the
+  archive is the run's artifact *CHIM OStim Bridge* (Actions tab -> the run ->
+  Artifacts), handy to test a build in game.
+- **Releasing:** change the version (see *Versioning*), commit, tag the commit
+  `v<version>` and push both. Publish a GitHub release from that tag; its text becomes the
+  changelog. The workflow builds the tagged commit, checks that its version matches the
+  tag, attaches `CHIM OStim Bridge.zip` to the release and uploads it with the official
+  [Nexus-Mods/upload-action](https://github.com/Nexus-Mods/upload-action) as a new version
+  of the main file (file ID in the workflow): the previous version moves to "Old
+  versions", the mod's version is updated. Publishing needs the environment `Nexus` with
+  the secret `NEXUSMODS_API_KEY`. A failed upload can be retried from the Actions tab
+  (Run workflow, with the tag).
 
 ## 5. Versioning
 
@@ -199,6 +243,7 @@ version changes.
   renders it to `art/banner.png` (1920x1080) with Edge headless. Original artwork, no
   third-party logos.
 - `stubs/` - declaration-only Papyrus files for the compiler; see DEPENDENCIES.md.
+- `tools/build_linux.sh`, `tools/gen_headers.py` - the build without the game (above).
 
 ## 7. Quick test in game
 
