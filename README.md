@@ -28,7 +28,8 @@ instead of building it.
   `Change_Intimate_Scene`, `Stop_Intimate_Scene`, `Undress`, `Get_Dressed`,
   `Feed_On_Blood` (vampires; the bite can pass on vampirism), `Turn_Into_Vampire_Lord`
   (Vampire Lords turn the player, through Dawnguard's own code), `Enthrall` / `Release_Thrall`
-  (a Vampire Lord's bite binds someone's will: the thrall obeys their master and the player). Every result is reported back to the AI, so a refusal
+  (a Vampire Lord's bite binds someone's will: the thrall obeys their master and the player;
+  enemies too), `Spare` (companions take an enemy alive instead of killing them). Every result is reported back to the AI, so a refusal
   ("weapons are still drawn") is answered in character.
 - **Scene logic**: partners and groups by name, the act or position taken from what
   was said, men in the active role (optional), partners brought together, a missionary

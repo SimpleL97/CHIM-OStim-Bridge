@@ -25,7 +25,7 @@ INSTALLATION
 2. Start the CHIM server as usual, then the game. The server side installs
    itself: the mod ships it as Data/CHIM/server-plugins/cob_ostim_bridge/1.2.0.dwpkg,
    and CHIM's game plugin uploads bundled server plugins to its server at startup
-   (HerikaServer/ext/cob_ostim_bridge). The nine actions are added to CHIM's
+   (HerikaServer/ext/cob_ostim_bridge). The ten actions are added to CHIM's
    action list on the first request.
 3. Load a save. The MCM "CHIM OStim Bridge" appears after a few seconds.
 
@@ -38,7 +38,7 @@ click the mod > Open in File Manager).
 Updating: install the new version; CHIM updates the server side on the next
 game start.
 Uninstalling: run Uninstall-ServerPlugin.bat from the manual tools (removes the
-server folder and the nine actions), then remove the mod.
+server folder and the ten actions), then remove the mod.
 
 
 The MCM is translated into English, Russian, Ukrainian, German, French, Spanish, Italian, Polish, Czech, Portuguese, Japanese and Chinese and follows the game language; other game languages show it in English.
@@ -68,6 +68,10 @@ off there like any other action):
                          thrall obeys their master and you in everything, scenes
                          included, and is never hostile again.
   Release_Thrall         set a thrall free; they remember having been a thrall.
+  Spare                  keep an enemy alive: companions only beat them down
+                         instead of killing them (by name, or "women" / "men").
+                         Then a Vampire Lord can make them a thrall - enemies can
+                         be enthralled even in the middle of a fight.
   Undress / Get_Dressed  can also be used on a thrall by name, so a thrall who is
                          not an AI agent (and cannot answer) still obeys.
   Turn_Into_Vampire_Lord Vampire Lords only (Dawnguard's own, anyone in Vampire

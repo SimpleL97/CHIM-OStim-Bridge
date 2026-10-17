@@ -40,9 +40,6 @@ string Function Refusal(Actor master, Actor target) Global
 	If IsLord(target)
 		Return "cannot: " + who + " is a Vampire Lord too; their blood is as strong"
 	EndIf
-	If master.IsInCombat() || target.IsInCombat()
-		Return "refuses: not in the middle of a fight"
-	EndIf
 	If OThreadOf(master) || OThreadOf(target)
 		Return "cannot: busy in a scene"
 	EndIf
@@ -73,12 +70,95 @@ string Function Bite(Actor master, Actor target) Global
 	If why != ""
 		Return why
 	EndIf
+	; an enemy can be enthralled too, even mid-fight: the two stop fighting for the bite
+	If master.IsInCombat() || target.IsInCombat()
+		Calm(target)
+		master.StopCombat()
+	EndIf
 	COB_Bridge bridge = Game.GetFormFromFile(0x000800, "CHIMOStimBridge.esp") as COB_Bridge
 	If bridge
 		bridge.BringTogether(master, target)
 		bridge.PlayBite(master, target)
 	EndIf
 	Return Bind(target, master)
+EndFunction
+
+; target stops fighting, and so does everyone near the player who was attacking them
+Function Calm(Actor target) Global
+	target.StopCombat()
+	target.StopCombatAlarm()
+	Actor[] around = MiscUtil.ScanCellNPCs(Game.GetPlayer(), 4000.0)
+	int i = 0
+	While i < around.Length
+		If around[i] && around[i].GetCombatTarget() == target
+			around[i].StopCombat()
+		EndIf
+		i += 1
+	EndWhile
+EndFunction
+
+; Keeps someone alive: only the player can kill a protected actor; anyone else only beats
+; them down (bleedout). For enemies the player wants to enthrall later.
+bool Function Protect(Actor a) Global
+	ActorBase b = a.GetLeveledActorBase()
+	If !b || b.IsProtected() || b.IsEssential()
+		Return False
+	EndIf
+	b.SetProtected(True)
+	StorageUtil.SetIntValue(a, "COB_Protected", 1)
+	Return True
+EndFunction
+
+Function Unprotect(Actor a) Global
+	If StorageUtil.GetIntValue(a, "COB_Protected") == 1
+		ActorBase b = a.GetLeveledActorBase()
+		If b
+			b.SetProtected(False)
+		EndIf
+		StorageUtil.UnsetIntValue(a, "COB_Protected")
+	EndIf
+EndFunction
+
+; "Spare": by exact name, or every hostile woman / man near the player
+string Function Spare(string what) Global
+	Actor p = Game.GetPlayer()
+	string w = what
+	int sex = -1
+	If StringUtil.Find(w, "wom") > -1 || StringUtil.Find(w, "female") > -1 || StringUtil.Find(w, "girl") > -1 || StringUtil.Find(w, "lady") > -1
+		sex = 1
+	ElseIf w == "men" || w == "man" || StringUtil.Find(w, "male") == 0
+		sex = 0
+	EndIf
+	Actor[] around = MiscUtil.ScanCellNPCs(p, 6000.0)
+	string names = ""
+	int n = 0
+	int i = 0
+	While i < around.Length
+		Actor a = around[i]
+		If a && a != p && !a.IsDead() && !a.IsChild()
+			bool pick = False
+			If sex >= 0
+				pick = a.GetLeveledActorBase().GetSex() == sex && (a.IsHostileToActor(p) || a.IsInCombat())
+			Else
+				pick = a.GetDisplayName() == what
+			EndIf
+			If pick
+				Protect(a)
+				n += 1
+				If n <= 4
+					If names != ""
+						names += ", "
+					EndIf
+					names += a.GetDisplayName()
+				EndIf
+			EndIf
+		EndIf
+		i += 1
+	EndWhile
+	If n == 0
+		Return "cannot: nobody here matches \"" + what + "\""
+	EndIf
+	Return "spared " + n + " (" + names + "): companions will only beat them down, not kill them"
 EndFunction
 
 string Function Bind(Actor target, Actor master) Global
@@ -88,9 +168,14 @@ string Function Bind(Actor target, Actor master) Global
 	StorageUtil.FormListAdd(None, "COB_Thralls", target, False)
 	StorageUtil.SetStringValue(target, "COB_ThrallMaster", lord)
 	StorageUtil.SetFloatValue(target, "COB_ThrallAggression", target.GetBaseActorValue("Aggression"))
-	target.StopCombat()
-	target.StopCombatAlarm()
+	; an enemy leaves the factions that made them one (bandits, hostile clans...), so the
+	; player's companions no longer attack them; ordinary people keep theirs
+	If target.IsHostileToActor(player) || target.IsInCombat()
+		target.RemoveFromAllFactions()
+	EndIf
+	Calm(target)
 	target.SetActorValue("Aggression", 0.0)
+	Protect(target) ; a thrall is not killed by a stray blow of the player's companions
 	target.SetRelationshipRank(player, 3)
 	player.SetRelationshipRank(target, 3)
 	If COB_Config.B("bThrallTeammate:Needs") && !target.IsPlayerTeammate()
@@ -119,6 +204,7 @@ string Function Release(Actor target) Global
 	If StorageUtil.GetIntValue(target, "COB_ThrallTeammate") == 1
 		target.SetPlayerTeammate(False)
 	EndIf
+	Unprotect(target)
 	StorageUtil.UnsetStringValue(target, "COB_ThrallMaster")
 	StorageUtil.UnsetFloatValue(target, "COB_ThrallAggression")
 	StorageUtil.UnsetIntValue(target, "COB_ThrallTeammate")

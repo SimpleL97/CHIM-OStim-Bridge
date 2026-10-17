@@ -493,7 +493,7 @@ function cobThrallPromptFor(string $npc): string
         $lines[] = "You were once the thrall of {$former}: their bite bound your will, and you remember everything you did and were made to do in that time. How you feel about it - and about {$former} and {$player} - now follows your own character.";
     }
     if ($lord) {
-        $lines[] = "As a Vampire Lord you can bind anyone who is not a Vampire Lord with a bite: Enthrall (when {$player} asks for it or agrees). Release_Thrall sets a thrall free.";
+        $lines[] = "As a Vampire Lord you can bind anyone who is not a Vampire Lord with a bite: Enthrall (when {$player} asks for it or agrees) - enemies too, even mid-fight; to take an enemy alive first, use Spare. Release_Thrall sets a thrall free.";
     }
     if (!$lines) {
         return "";

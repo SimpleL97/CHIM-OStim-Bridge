@@ -76,7 +76,14 @@ $GLOBALS["COB_ACTIONS"] = [
         "return" => "#HERIKA_NAME# bites someone and binds their will.",
         "params" => ["target" => "Exact name of the one to enthrall (who is here)."],
         "description" => "ONLY if you are a Vampire Lord: bite someone who is here and bind their will - they become your thrall and #PLAYER_NAME#'s, and obey you both in everything. Works on mortals and on ordinary vampires, never on another Vampire Lord. "
-            . "When #PLAYER_NAME# asks you to make someone your (or their) thrall, or when your own character would do it and #PLAYER_NAME# agrees. Not in combat. Call the action instead of only describing it.",
+            . "When #PLAYER_NAME# asks you to make someone your (or their) thrall, or when your own character would do it and #PLAYER_NAME# agrees. Enemies too, even in the middle of a fight: the bite ends their hostility. Call the action instead of only describing it.",
+    ],
+    "ExtCmdCOB_Spare" => [
+        "name" => "Spare",
+        "return" => "#HERIKA_NAME# makes sure someone is taken alive.",
+        "params" => ["target" => "Exact name of the one to keep alive, or \"women\" / \"men\" for every hostile woman / man here."],
+        "description" => "Keep someone alive in a fight: from now on companions only beat them down instead of killing them (only #PLAYER_NAME# could still kill them). When #PLAYER_NAME# wants an enemy taken alive - to make them a thrall, to question them, or simply to spare them. "
+            . "Then, once they are down or the fight is over, a Vampire Lord can make them a thrall with Enthrall.",
     ],
     "ExtCmdCOB_Release" => [
         "name" => "Release_Thrall",

@@ -73,6 +73,12 @@ Event OnChimCommand(String npcname, String command, String parameter)
 		VampireLordGift(command, parameter)
 	ElseIf command == "ExtCmdCOB_Enthrall" || command == "ExtCmdCOB_Release"
 		ThrallAction(command, parameter)
+	ElseIf command == "ExtCmdCOB_Spare"
+		If ArgOf(parameter, 1) == ""
+			Report(command, parameter, "cannot: say whom to spare - a name, or women / men")
+		Else
+			Report(command, parameter, COB_Thralls.Spare(ArgOf(parameter, 1)))
+		EndIf
 	EndIf
 EndEvent
 

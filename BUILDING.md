@@ -155,7 +155,7 @@ version changes. The PHP files are the same as in `server/cob_ostim_bridge/`; re
 `Install-ServerPlugin.bat` starts `Install-ServerPlugin.ps1`, which finds the WSL distro
 running the CHIM server (normally `DwemerAI4Skyrim3`) and copies the `cob_ostim_bridge`
 folder next to it into `/var/www/html/HerikaServer/ext/`. `Uninstall-ServerPlugin.*`
-removes that folder, and the plugin's nine actions and its stored settings and state from
+removes that folder, and the plugin's ten actions and its stored settings and state from
 CHIM's database (`core_action_custom` rows `ExtCmdCOB_*`, `conf_opts` rows
 `cob_ostim_bridge*`). They do nothing
 else, download nothing and change no system settings; read them in `server/`.
