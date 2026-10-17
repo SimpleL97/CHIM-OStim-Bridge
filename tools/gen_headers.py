@@ -7,7 +7,7 @@ base game, SKSE, OStim Standalone, PapyrusUtil, CHIM), first one wins. Starting 
 src/Scripts/Source it follows every script type the mod uses - and every type those
 types mention in their declarations - and writes stubs/headers/<Type>.psc with only the
 script line, properties, function and event signatures: no code, no comments. Types
-already stubbed by hand in stubs/ or stubs/vanilla are left to those.
+already stubbed by hand (stubs/ and its other folders) are left to those.
 
 The compiler needs these headers only to type-check the calls; they are never compiled
 into the release (the game runs the real scripts of those mods). Re-run after the mod
@@ -19,7 +19,10 @@ import os, re, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, "src", "Scripts", "Source")
 OUT = os.path.join(ROOT, "stubs", "headers")
-HAND = [os.path.join(ROOT, "stubs"), os.path.join(ROOT, "stubs", "vanilla")]
+# hand-written stubs: stubs/ and every folder in it but headers/
+HAND = [os.path.join(ROOT, "stubs")] + sorted(
+    os.path.join(ROOT, "stubs", d) for d in os.listdir(os.path.join(ROOT, "stubs"))
+    if d != "headers" and os.path.isdir(os.path.join(ROOT, "stubs", d)))
 
 IDENT = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
 FUNC = re.compile(r"^(?:([\w\[\]]+)\s+)?(function|event)\s+(\w+)\s*\((.*)\)(.*)$", re.I)

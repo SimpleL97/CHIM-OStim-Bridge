@@ -14,13 +14,22 @@ bool Function IsThrall(Actor a) Global
 EndFunction
 
 ; who can enthrall: the Vampire Lords (Dawnguard's, see COB_Config.IsVampireLord, and anyone listed in the MCM),
-; the whole Volkihar court, and the player once they have Dawnguard's Vampire Lord power
+; the Volkihar court (MCM, on by default), the names in the MCM list sThrallMasters, and
+; the player once they have Dawnguard's Vampire Lord power
 bool Function IsLord(Actor a) Global
 	If a == Game.GetPlayer()
 		Spell lordPower = Game.GetFormFromFile(0x00283B, "Dawnguard.esm") as Spell ; DLC1VampireChange
 		Return lordPower && a.HasSpell(lordPower)
 	EndIf
-	Return COB_Config.IsVampireLord(a) || IsCourt(a)
+	Return COB_Config.IsVampireLord(a) || IsMaster(a)
+EndFunction
+
+; can enthrall without being a Vampire Lord: the Volkihar court, or listed in the MCM
+bool Function IsMaster(Actor a) Global
+	If !a || a == Game.GetPlayer()
+		Return False
+	EndIf
+	Return COB_Config.InList("sThrallMasters:Needs", a.GetDisplayName()) || (COB_Config.B("bThrallCourt:Needs") && IsCourt(a))
 EndFunction
 
 ; the vampire nobility of Castle Volkihar (everyone in Dawnguard's DLC1VampireFaction):

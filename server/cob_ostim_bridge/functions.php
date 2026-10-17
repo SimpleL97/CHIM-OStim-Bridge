@@ -75,7 +75,7 @@ $GLOBALS["COB_ACTIONS"] = [
         "name" => "Enthrall",
         "return" => "#HERIKA_NAME# bites someone and binds their will.",
         "params" => ["target" => "Exact name of the one to enthrall (who is here)."],
-        "description" => "ONLY if you are a Vampire Lord or a noble of the Volkihar clan: bite someone who is here and bind their will - they become your thrall and #PLAYER_NAME#'s, and obey you both in everything. Works on mortals and on ordinary vampires, never on a Vampire Lord or Volkihar noble. "
+        "description" => "ONLY if you are a Vampire Lord, or the THRALLS notes say you can enthrall: bite someone who is here and bind their will - they become your thrall and #PLAYER_NAME#'s, and obey you both in everything. Works on mortals and on ordinary vampires, never on a Vampire Lord or Volkihar noble. "
             . "When #PLAYER_NAME# asks you to make someone your (or their) thrall, or when your own character would do it and #PLAYER_NAME# agrees. Enemies too, even in the middle of a fight: the bite ends their hostility. Call the action instead of only describing it.",
     ],
     "ExtCmdCOB_Spare" => [

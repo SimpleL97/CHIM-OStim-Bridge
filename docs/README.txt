@@ -83,6 +83,8 @@ off there like any other action):
 Once you are a Vampire Lord yourself you get the lesser power "Vampire's Thrall":
 equip it like a shout, look at someone close and use it (Z by default) - you bite
 them and they become your thrall; used on your own thrall it sets them free.
+Who else can enthrall (MCM, Needs > Thralls): the Vampire Lords, the Volkihar
+court (a toggle, on by default) and the names you list under "Can also enthrall".
 Every outcome is reported back to CHIM, so a refused action ("weapons are still
 drawn", "she is not here") is answered in character instead of failing quietly.
 

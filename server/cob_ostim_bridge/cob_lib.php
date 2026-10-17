@@ -43,7 +43,7 @@ function cobConfig(): array
             "enabled" => 1, "needs" => 1, "sex_names" => "", "sex_hours" => 6, "vampires" => "",
             "blood_hours" => 24, "drunk" => 1, "jealous_names" => "", "arousal" => 1,
             "speech_only" => 1, "stale_input" => 1, "vampire_lords" => "", "lord_gift" => 1,
-            "thralls" => 1,
+            "thralls" => 1, "thrall_court" => 1, "thrall_masters" => "",
         ];
         $cfg = array_merge($defaults, cobOptGet(COB_CONFIG_KEY) ?? []);
     }
@@ -470,7 +470,9 @@ function cobThrallPromptFor(string $npc): string
     $thralls = $state["thralls"] ?? [];
     $player = strval($GLOBALS["PLAYER_NAME"] ?? "the player");
     $lord = cobListed("vampire_lords", $npc) || !empty($state["game_lords"][mb_strtolower($npc)]);
-    $court = !$lord && !empty($state["game_court"][mb_strtolower($npc)]);
+    // can enthrall without being a Vampire Lord: the Volkihar court (MCM) or the MCM list
+    $master = !$lord && ((!empty($cfg["thrall_court"]) && !empty($state["game_court"][mb_strtolower($npc)]))
+        || cobListed("thrall_masters", $npc));
     $lines = [];
     $mine = [];
     $others = [];
@@ -504,8 +506,8 @@ function cobThrallPromptFor(string $npc): string
     }
     if ($lord) {
         $lines[] = "As a Vampire Lord you can bind anyone who is not a Vampire Lord with a bite: Enthrall (when {$player} asks for it or agrees) - enemies too, even mid-fight; to take an enemy alive first, use Spare. Release_Thrall sets a thrall free.";
-    } elseif ($court) {
-        $lines[] = "As a noble of the Volkihar clan you can bind anyone who is not of the ancient blood with a bite: Enthrall (when {$player} asks for it or agrees) - enemies too, even mid-fight; to take an enemy alive first, use Spare. Release_Thrall sets a thrall free.";
+    } elseif ($master) {
+        $lines[] = "Your blood is old and strong enough: you can bind anyone who is not of the ancient blood with a bite: Enthrall (when {$player} asks for it or agrees) - enemies too, even mid-fight; to take an enemy alive first, use Spare. Release_Thrall sets a thrall free.";
     }
     if (!$lines) {
         return "";

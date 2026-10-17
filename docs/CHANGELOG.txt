@@ -21,7 +21,8 @@ CHIM OStim Bridge - changelog
 - Who can enthrall by default: the Vampire Lords of Dawnguard (now with the one left
   out before) and the whole Volkihar court - every noble of Castle Volkihar can bite
   and bind a thrall too (the court is not of the ancient blood of a Vampire Lord, so
-  no Turn_Into_Vampire_Lord gift). The MCM list still adds anyone.
+  no Turn_Into_Vampire_Lord gift). MCM: "The Volkihar court can enthrall" (on by
+  default) and "Can also enthrall" - names who can enthrall without being Vampire Lords.
 - Fix: when a bitten NPC turns into a vampire, the AI now hears of it (the event went
   out under a wrong name and was never commented on).
 - Built on GitHub from source with the open-source papyrus-compiler: every release

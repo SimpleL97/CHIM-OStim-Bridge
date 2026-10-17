@@ -331,6 +331,24 @@
                     }
                 },
                 {
+                    "id": "bThrallCourt:Needs",
+                    "text": "$COB_ThrallCourt",
+                    "type": "toggle",
+                    "help": "$COB_ThrallCourtH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "id": "sThrallMasters:Needs",
+                    "text": "$COB_ThrallMasters",
+                    "type": "input",
+                    "help": "$COB_ThrallMastersH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingString"
+                    }
+                },
+                {
                     "id": "bThrallPower:Needs",
                     "text": "$COB_ThrallPower",
                     "type": "toggle",

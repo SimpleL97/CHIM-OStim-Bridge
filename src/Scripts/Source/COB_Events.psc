@@ -457,7 +457,7 @@ Function SendVampires()
 					lords += ","
 				EndIf
 				lords += Clean(a.GetDisplayName())
-			ElseIf COB_Thralls.IsCourt(a)
+			ElseIf COB_Config.B("bThrallCourt:Needs") && COB_Thralls.IsCourt(a)
 				If court != ""
 					court += ","
 				EndIf
@@ -545,6 +545,8 @@ Function SendConfig()
 	j += ",\"vampire_lords\":\"" + Clean(COB_Config.S("sVampireLords:Needs")) + "\""
 	j += ",\"lord_gift\":" + Bit(COB_Config.B("bLordGift:Needs"))
 	j += ",\"thralls\":" + Bit(COB_Config.B("bThralls:Needs"))
+	j += ",\"thrall_court\":" + Bit(COB_Config.B("bThrallCourt:Needs"))
+	j += ",\"thrall_masters\":\"" + Clean(COB_Config.S("sThrallMasters:Needs")) + "\""
 	j += ",\"drunk\":" + Bit(COB_Config.B("bDrunk:Needs"))
 	j += ",\"jealous_names\":\"" + Clean(COB_Config.S("sJealous:Needs")) + "\""
 	j += ",\"arousal\":" + Bit(COB_Config.B("bArousal:Needs"))

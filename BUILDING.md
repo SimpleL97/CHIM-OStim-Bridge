@@ -38,7 +38,7 @@ Run everything from the repository root.
 python3 -I localize.py
 ```
 
-Reads the string table `T` inside `localize.py` (77 strings x 12 languages) and writes:
+Reads the string table `T` inside `localize.py` (81 strings x 12 languages) and writes:
 
 - `mcm/config.json` - the MCM Helper menu, with every visible text as a `$COB_...` key
 - `mcm/translations/CHIMOStimBridge_<LANGUAGE>.txt` - one file per game language,
