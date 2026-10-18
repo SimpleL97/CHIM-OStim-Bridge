@@ -435,7 +435,8 @@ function cobActionRule(string $npc): string
         . "set action to Start_Intimate_Scene in this same reply, or Change_Intimate_Scene if a scene is already running. "
         . "Put into target everyone who takes part as agreed (\"{$player}, <her name>, <other name>\" for a threesome; your own name only if you join) "
         . "and the agreed act or position into item. Do this even when you are talking to another NPC and {$player} did not give a separate order. "
-        . "When you tell someone else to do it with {$player} (to pleasure {$player}, to go down on {$player}), target is \"{$player}, <their name>\": a single name means you and that person.";
+        . "Giving an order counts too: when you tell someone else to do it with {$player} (to pleasure {$player}, to go down on {$player}), YOU set Start_Intimate_Scene in this same reply - nobody else will start it - "
+        . "with target \"{$player}, <their name>\": a single name means you and that person.";
 }
 
 function cobSpeechOnlyRule(string $npc): string
