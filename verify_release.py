@@ -30,6 +30,8 @@ for s in ["COB", "COB_Config", "COB_Bridge", "COB_Events", "COB_MCM"]:
     check(f"{s}.pex newer than its .psc", os.path.getmtime(pex) >= os.path.getmtime(psc))
     check(f"{s}.pex in zip = build", z.read(f"00 Core/Scripts/{s}.pex") == read(pex))
     check(f"{s}.psc in zip = source", z.read(f"20 Source/Source/Scripts/{s}.psc") == read(psc))
+for f in ["info.xml", "ModuleConfig.xml", "images/banner.jpg"]:
+    check(f"fomod/{f}", z.read(f"fomod/{f}") == read(os.path.join(ROOT, "fomod", f)))
 for f in ["config.json", "settings.ini"]:
     check(f"MCM {f}", z.read(f"00 Core/MCM/Config/CHIMOStimBridge/{f}") == read(os.path.join(ROOT, "mcm", f)))
 

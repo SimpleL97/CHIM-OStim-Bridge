@@ -68,7 +68,8 @@ for f in ["Install-ServerPlugin.bat", "Install-ServerPlugin.ps1", "Uninstall-Ser
 for f in sorted(os.listdir(os.path.join(ROOT, "server", NAME))):
     copy(os.path.join(ROOT, "server", NAME, f), os.path.join(tools, NAME, f))
 
-for f in ["info.xml", "ModuleConfig.xml"]:
+# the installer picture: a 1280x720 copy of art/banner.png (art/render_banner.ps1)
+for f in ["info.xml", "ModuleConfig.xml", "images/banner.jpg"]:
     copy(os.path.join(ROOT, "fomod", f), os.path.join(stage, "fomod", f))
 for f in ["README.txt", "CHANGELOG.txt"]:
     copy(os.path.join(ROOT, "docs", f), os.path.join(stage, f))

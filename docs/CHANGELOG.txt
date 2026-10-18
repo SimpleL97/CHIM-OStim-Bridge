@@ -19,6 +19,7 @@ CHIM OStim Bridge - changelog
 - New: a log file in the game (Data/SKSE/Plugins/CHIMOStimBridge.log, a new one every time
   the game starts) and on the CHIM server (log/cob_ostim_bridge.log). MCM: Debug.
 - The old ExtCmdCOB_* vampire actions are removed from CHIM's action list on update.
+- The installer (Vortex, MO2) shows the mod's banner.
 - Built on GitHub from source with the open-source papyrus-compiler: every release
   archive is made by the workflow from the tagged commit, no game files needed
   (tools/build_linux.sh, BUILDING.md).

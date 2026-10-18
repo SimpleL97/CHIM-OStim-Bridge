@@ -162,6 +162,7 @@ are smaller.
 | In the release zip | Source in this repository | Made by |
 |---|---|---|
 | `fomod/info.xml`, `fomod/ModuleConfig.xml` | `fomod/` | copied |
+| `fomod/images/banner.jpg` (installer picture) | `art/banner.png` -> `art/render_banner.ps1` | rendered, committed |
 | `README.txt`, `CHANGELOG.txt` | `docs/` | copied |
 | `00 Core/CHIMOStimBridge.esp` | `make_esp.py` | step 2 |
 | `00 Core/Scripts/COB.pex`, `COB_*.pex` | `src/Scripts/Source/COB.psc`, `COB_*.psc` | step 3 |
