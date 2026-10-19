@@ -404,10 +404,30 @@ Event OnSceneEnd(string eventName, string json, float numArg, Form sender)
 	If sceneId != ""
 		what = " (it ended with: " + OMetadata.GetName(sceneId) + ")"
 	EndIf
-	If !Send(JoinAnd(acts) + " finished their intimate scene" + what, "cob_after", "bAfter:Reactions") && lastAfterMsg == now
+	; Who talks about it: an AI agent who took part. Left to CHIM, the reply went to whoever
+	; spoke last - the player's partner in another, still running scene answered for a
+	; companion's solo scene as if it were her own, and then said the same lines again,
+	; word for word, when her own scene ended.
+	If !Send(JoinAnd(acts) + " finished their intimate scene" + what, "cob_after", "bAfter:Reactions", AgentAmong(acts)) && lastAfterMsg == now
 		lastAfterMsg = before
 	EndIf
 EndEvent
+
+; the name of an AI agent among the actors, the player left out; "" when there is none
+string Function AgentAmong(Actor[] acts)
+	Actor p = Game.GetPlayer()
+	int i = 0
+	While i < acts.Length
+		If acts[i] && acts[i] != p
+			string n = acts[i].GetDisplayName()
+			If AIAgentFunctions.getAgentByName(n)
+				Return n
+			EndIf
+		EndIf
+		i += 1
+	EndWhile
+	Return ""
+EndFunction
 
 bool Function HasTeammate(Actor[] acts)
 	int i = 0
@@ -422,8 +442,9 @@ EndFunction
 
 ; ---------------------------------------------------------------- send
 
-; a comment-worthy event: obeys its MCM toggle and chance; True when it was sent
-bool Function Send(string msg, string kind, string toggleKey)
+; a comment-worthy event: obeys its MCM toggle and chance; True when it was sent. speaker:
+; the agent who answers it, or "" to leave the choice to CHIM
+bool Function Send(string msg, string kind, string toggleKey, string speaker = "")
 	If !COB_Config.B("bEnabled:General") || !COB_Config.B(toggleKey)
 		Return False
 	EndIf
@@ -435,7 +456,11 @@ bool Function Send(string msg, string kind, string toggleKey)
 		Return False
 	EndIf
 	COB_Config.Note(kind + ": " + msg)
-	AIAgentFunctions.requestMessage("(" + msg + ")", kind)
+	If speaker != ""
+		AIAgentFunctions.requestMessageForActor("(" + msg + ")", kind, speaker)
+	Else
+		AIAgentFunctions.requestMessage("(" + msg + ")", kind)
+	EndIf
 	Return True
 EndFunction
 

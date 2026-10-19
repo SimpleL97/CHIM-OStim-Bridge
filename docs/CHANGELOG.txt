@@ -5,6 +5,10 @@ CHIM OStim Bridge - changelog
 - Fix: scenes ending (or starting) at the same moment each got a reaction, and the same
   agent answered twice in a row, sometimes word for word. Now only one gets through the
   time limit, as intended.
+- Fix: the talk after a scene went to whoever had spoken last. A companion's solo scene
+  ending was answered by the player's partner in another, still running scene, as if it
+  were hers, and she then said the same lines again word for word when her own scene
+  ended. Now an AI agent who took part in the scene talks about it.
 - "Speech only" (MCM: CHIM fixes) is enforced: narration that still slips into a reply the
   way prose writes it ("Are you serious? - She falls silent, studying his face. - I
   thought...") is cut out before it is spoken, shown as a subtitle or kept in the history.
