@@ -451,6 +451,31 @@ function cobSpeechOnlyRule(string $npc): string
         . "no descriptive prose between dialogue dashes. Anything physical goes into the action field, not into the message.";
 }
 
+/**
+ * The "speech only" rule, enforced on what the model wrote anyway: CHIM passes every sentence
+ * of a reply through the request's transformer on its way to the voice, the subtitles and the
+ * history. Narration the way prose writes it - a dialogue dash, then she/he and what they do -
+ * is cut out up to the next dialogue dash or the end ("Are you serious? - She falls silent,
+ * studying his face. - I thought..." keeps "Are you serious? I thought..."). After the end of a
+ * sentence any pronoun counts ("...bold? - she crosses her arms"); inside one only a capitalised
+ * one, so "a stranger - he is my lord" stays.
+ */
+function cobStripNarration($sentence)
+{
+    $s = strval($sentence);
+    $pron = "(?:Она|Он|Её|Ее|Его|Вона|Він|Її|Його|She|He|Her|His)";
+    $dash = "[\x{2014}\x{2013}-]";
+    $cut = preg_replace("/(?:(?:^|(?<=[.!?\x{2026}]))\s*{$dash}\s+(?i:{$pron})|\s+{$dash}\s+{$pron})\s[^\x{2014}\x{2013}]*?(?:{$dash}\s+|$)/u", " ", $s);
+    if ($cut === null) {
+        return $s;
+    }
+    $cut = trim($cut);
+    if ($cut !== trim($s)) {
+        cobLog("speech only: cut narration from " . strval($GLOBALS["HERIKA_NAME"] ?? "") . ": " . $s);
+    }
+    return $cut;
+}
+
 // ---------------------------------------------------------------- refused actions
 
 /** the LLM-facing names of this bridge's actions, for the refusal event */
