@@ -327,11 +327,14 @@ Event OnSceneStart(string eventName, string strArg, float numArg, Form sender)
 		Return
 	EndIf
 	float now = Utility.GetCurrentRealTime()
-	If now - lastSceneMsg < 30.0
+	; taken at once, as in OnSceneEnd: scenes starting together must not both get a reply
+	If now - lastSceneMsg < 30.0 && lastSceneMsg <= now
 		Return
 	EndIf
-	If Send(JoinAnd(acts) + " started an intimate scene", "cob_scene", "bSceneNear:Reactions")
-		lastSceneMsg = now
+	float before = lastSceneMsg
+	lastSceneMsg = now
+	If !Send(JoinAnd(acts) + " started an intimate scene", "cob_scene", "bSceneNear:Reactions") && lastSceneMsg == now
+		lastSceneMsg = before
 	EndIf
 EndEvent
 
@@ -381,23 +384,28 @@ Event OnSceneEnd(string eventName, string json, float numArg, Form sender)
 	; scenes of their own (an inn full of them) ended eight at once, and the replies
 	; to them held up the answers to the player for a minute. The player's own scene
 	; is always talked about; a companion's at most every 30 s, anyone else's every 2 min.
-	float now = Utility.GetCurrentRealTime()
-	If acts.Find(Game.GetPlayer()) < 0
-		float gap = 120.0
-		If HasTeammate(acts)
-			gap = 30.0
-		EndIf
-		If now - lastAfterMsg < gap
-			Return
-		EndIf
+	bool mine = acts.Find(Game.GetPlayer()) > -1
+	float gap = 120.0
+	If HasTeammate(acts)
+		gap = 30.0
 	EndIf
+	float now = Utility.GetCurrentRealTime()
+	; Scenes that end together run this at the same time: both passed the check before
+	; either set the time, and the same agent answered twice in a row - word for word. The
+	; time is taken right after the check, with no call to another script in between (a
+	; call lets the other event in), and given back when nothing was sent.
+	If !mine && now - lastAfterMsg < gap && lastAfterMsg <= now
+		Return
+	EndIf
+	float before = lastAfterMsg
+	lastAfterMsg = now
 	string what = ""
 	string sceneId = OJSON.GetScene(json)
 	If sceneId != ""
 		what = " (it ended with: " + OMetadata.GetName(sceneId) + ")"
 	EndIf
-	If Send(JoinAnd(acts) + " finished their intimate scene" + what, "cob_after", "bAfter:Reactions")
-		lastAfterMsg = now
+	If !Send(JoinAnd(acts) + " finished their intimate scene" + what, "cob_after", "bAfter:Reactions") && lastAfterMsg == now
+		lastAfterMsg = before
 	EndIf
 EndEvent
 

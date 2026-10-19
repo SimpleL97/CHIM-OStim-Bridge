@@ -2,6 +2,9 @@ CHIM OStim Bridge - changelog
 =============================
 
 2.0.0
+- Fix: scenes ending (or starting) at the same moment each got a reaction, and the same
+  agent answered twice in a row, sometimes word for word. Now only one gets through the
+  time limit, as intended.
 - The vampire features moved to a mod of their own, CHIM Vampire Bridge: blood thirst,
   Feed_On_Blood, vampirism by bite, Vampire Lords and Turn_Into_Vampire_Lord, and the
   thralls (Enthrall, Release_Thrall, Spare, the lesser power "Vampire's Thrall") that
