@@ -6,6 +6,8 @@
  * here gets an answer. Loaded inside a function: use $GLOBALS.
  */
 
+require_once(__DIR__ . DIRECTORY_SEPARATOR . "cob_lib.php");
+
 $cobNpc  = $GLOBALS["HERIKA_NAME"] ?? "";
 $cobTail = $GLOBALS["TEMPLATE_DIALOG"] ?? "";
 
@@ -36,3 +38,24 @@ $GLOBALS["PROMPTS"]["cob_after"] = [
 $GLOBALS["PROMPTS"]["cob_refused"] = [
     "cue" => ["({$cobNpc} wanted to do what is described above, but it did not happen in the game, for the reason given. {$cobNpc} says one short line in character about it - surprise, annoyance, a joke, or what to do instead - and does not try the same action again now. The reason is for {$cobNpc} to understand, not to quote: speak only in-world, never mention the game, mods, ORomance, stats or numbers.) {$cobTail}"],
 ];
+
+// the reply language (MCM: CHIM fixes) at the end of every spoken turn's instruction, where
+// the model follows it (at the bottom of the prompt it is ignored); not for the diary,
+// memories and other text CHIM keeps for itself
+if ($cobNpc !== "" && $cobNpc !== "The Narrator" && !empty($GLOBALS["PROMPTS"]) && is_array($GLOBALS["PROMPTS"])) {
+    $cobLang = cobLanguageCue();
+    $cobSkip = ["memory", "diary", "vision", "playerinfo", "newgame", "suggestion"];
+    if ($cobLang !== "") {
+        foreach ($GLOBALS["PROMPTS"] as $cobType => $cobPrompt) {
+            if (in_array($cobType, $cobSkip, true) || strpos(strval($cobType), "narrator") === 0
+                || !isset($cobPrompt["cue"]) || !is_array($cobPrompt["cue"])) {
+                continue;
+            }
+            foreach ($cobPrompt["cue"] as $cobI => $cobText) {
+                if (is_string($cobText) && strpos($cobText, $cobLang) === false) {
+                    $GLOBALS["PROMPTS"][$cobType]["cue"][$cobI] = $cobText . " " . $cobLang;
+                }
+            }
+        }
+    }
+}

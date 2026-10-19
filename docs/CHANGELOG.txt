@@ -5,6 +5,10 @@ CHIM OStim Bridge - changelog
 - Fix: scenes ending (or starting) at the same moment each got a reaction, and the same
   agent answered twice in a row, sometimes word for word. Now only one gets through the
   time limit, as intended.
+- New (MCM: CHIM fixes, on by default): "Keep the reply language". With voice input in
+  another language than the one set in CHIM, the model tends to answer in yours - and once
+  a few such lines are in the history it keeps to them, though the voices were made for
+  CHIM's language. Now every spoken turn tells it to answer in CHIM's language.
 - "Speech only" (MCM: CHIM fixes) is enforced: narration that still slips into a reply the
   way prose writes it ("Are you serious? - She falls silent, studying his face. - I
   thought...") is cut out before it is spoken, shown as a subtitle or kept in the history.

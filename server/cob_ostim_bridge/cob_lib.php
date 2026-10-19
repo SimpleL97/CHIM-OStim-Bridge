@@ -47,6 +47,7 @@ function cobConfig(): array
         $defaults = [
             "enabled" => 1, "log" => 1, "needs" => 1, "sex_names" => "", "sex_hours" => 6,
             "drunk" => 1, "jealous_names" => "", "arousal" => 1, "speech_only" => 1, "stale_input" => 1,
+            "keep_lang" => 1,
         ];
         $cfg = array_merge($defaults, cobOptGet(COB_CONFIG_KEY) ?? []);
     }
@@ -449,6 +450,33 @@ function cobSpeechOnlyRule(string $npc): string
         . "Never narrate or comment on their own actions, looks, gestures or feelings in the third person "
         . "(not \"she smiles\", not \"she slowly turns her head\", not \"her eyes flash\"), no stage directions, no *asterisks*, "
         . "no descriptive prose between dialogue dashes. Anything physical goes into the action field, not into the message.";
+}
+
+/**
+ * The reply language (MCM: CHIM fixes), CHIM's own setting (LLM_LANG). The model tends to
+ * answer in whatever language the player speaks - and once a few such lines are in the
+ * history it keeps to them, though the voices were made for CHIM's language. Measured on
+ * DeepSeek V4 Pro, a Ukrainian-speaking player: 11 of 12 replies in Ukrainian without
+ * this line, 10 of 12 in Russian with it at the end of the player's turn.
+ */
+function cobLanguageCue(): string
+{
+    if (empty(cobConfig()["keep_lang"])) {
+        return "";
+    }
+    $code = strtolower(trim(strval($GLOBALS["LLM_LANG"] ?? "")));
+    $base = explode("-", $code)[0];
+    $names = [
+        "ru" => "Russian", "uk" => "Ukrainian", "en" => "English", "de" => "German", "fr" => "French",
+        "es" => "Spanish", "it" => "Italian", "pl" => "Polish", "cs" => "Czech", "pt" => "Portuguese",
+        "ja" => "Japanese", "zh" => "Chinese", "ko" => "Korean", "tr" => "Turkish", "nl" => "Dutch",
+    ];
+    if ($base === "") {
+        return "";
+    }
+    $lang = $names[$base] ?? "the language \"{$code}\"";
+    $player = strval($GLOBALS["PLAYER_NAME"] ?? "the player");
+    return "(Reply in {$lang} only - even when {$player} or anyone else speaks another language, the message is in {$lang}.)";
 }
 
 /**

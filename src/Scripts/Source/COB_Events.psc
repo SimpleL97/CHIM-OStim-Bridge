@@ -458,6 +458,7 @@ Function SendConfig()
 	j += ",\"arousal\":" + Bit(COB_Config.B("bArousal:Needs"))
 	j += ",\"speech_only\":" + Bit(COB_Config.B("bSpeechOnly:Fixes"))
 	j += ",\"stale_input\":" + Bit(COB_Config.B("bStaleInput:Fixes"))
+	j += ",\"keep_lang\":" + Bit(COB_Config.B("bKeepLang:Fixes"))
 	j += "}"
 	SendState("config|" + j)
 EndFunction
