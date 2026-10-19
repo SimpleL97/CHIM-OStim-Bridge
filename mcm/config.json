@@ -298,15 +298,6 @@
                     }
                 },
                 {
-                    "id": "bKeepLang:Fixes",
-                    "text": "$COB_KeepLang",
-                    "type": "toggle",
-                    "help": "$COB_KeepLangH",
-                    "valueOptions": {
-                        "sourceType": "ModSettingBool"
-                    }
-                },
-                {
                     "id": "bStaleInput:Fixes",
                     "text": "$COB_Stale",
                     "type": "toggle",
