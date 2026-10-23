@@ -281,6 +281,100 @@
             ]
         },
         {
+            "pageDisplayName": "$COB_pAddons",
+            "cursorFillMode": "topToBottom",
+            "content": [
+                {
+                    "text": "$COB_hAddons",
+                    "type": "header"
+                },
+                {
+                    "id": "bVirginity:Addons",
+                    "text": "$COB_Virginity",
+                    "type": "toggle",
+                    "help": "$COB_VirginityH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "id": "bCum:Addons",
+                    "text": "$COB_Cum",
+                    "type": "toggle",
+                    "help": "$COB_CumH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "id": "bWatching:Addons",
+                    "text": "$COB_Watching",
+                    "type": "toggle",
+                    "help": "$COB_WatchingH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "id": "bPaid:Addons",
+                    "text": "$COB_Paid",
+                    "type": "toggle",
+                    "help": "$COB_PaidH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "id": "bMorning:Addons",
+                    "text": "$COB_Morning",
+                    "type": "toggle",
+                    "help": "$COB_MorningH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "text": "$COB_hDuring",
+                    "type": "header"
+                },
+                {
+                    "id": "bDuring:Addons",
+                    "text": "$COB_During",
+                    "type": "toggle",
+                    "help": "$COB_DuringH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "id": "iDuringGap:Addons",
+                    "text": "$COB_DuringGap",
+                    "type": "slider",
+                    "help": "$COB_DuringGapH",
+                    "valueOptions": {
+                        "min": 15,
+                        "max": 300,
+                        "step": 15,
+                        "formatString": "{0} s",
+                        "sourceType": "ModSettingInt"
+                    }
+                },
+                {
+                    "id": "iDuringChance:Addons",
+                    "text": "$COB_DuringChance",
+                    "type": "slider",
+                    "help": "$COB_DuringChanceH",
+                    "valueOptions": {
+                        "min": 0,
+                        "max": 100,
+                        "step": 5,
+                        "formatString": "{0}%",
+                        "sourceType": "ModSettingInt"
+                    }
+                }
+            ]
+        },
+        {
             "pageDisplayName": "$COB_pFixes",
             "cursorFillMode": "topToBottom",
             "content": [

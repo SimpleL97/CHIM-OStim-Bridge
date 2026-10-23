@@ -85,7 +85,22 @@ between the big cities, shops, your own home, waking up, dragon souls, you
 undressing, a scene starting nearby, and talking after a scene (who came and how
 it ended is passed to the AI). Your own scenes are always talked about; scenes of
 your companions at most every 30 s and anyone else's every 2 minutes, so an inn
-full of scenes from other mods does not hold up the replies to you.
+full of scenes from other mods does not hold up the replies to you. An AI agent who
+took part in the scene is the one who talks about it.
+
+Talking during scenes (MCM page OStim addons): an AI agent in a scene near you says
+a short line when the position changes (MCM pause and chance) and when they climax -
+not only at the start and the end.
+
+Other OStim mods (MCM page OStim addons, each on its own switch; none is needed, each
+is only read when installed):
+  - OVirginity: a virgin near you knows it; losing her virginity in a scene is part
+    of the reaction to it.
+  - OCum: the reaction knows where the cum is on the women (breasts, belly, butt).
+  - OISeeYouMasturbating: whether a woman who caught you watching let you watch.
+  - OMerchants, OTrainers: a merchant's better prices or a trainer's lesson paid
+    with your scene.
+  - MorningSex and the like: a scene right after you wake up is a morning one.
 
 Needs (MCM: names of the NPCs it applies to):
   - Hunger for sex: restless, then burning, then angry the longer it has been.

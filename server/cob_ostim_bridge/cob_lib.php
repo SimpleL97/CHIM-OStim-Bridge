@@ -47,6 +47,7 @@ function cobConfig(): array
         $defaults = [
             "enabled" => 1, "log" => 1, "needs" => 1, "sex_names" => "", "sex_hours" => 6,
             "drunk" => 1, "jealous_names" => "", "arousal" => 1, "speech_only" => 1, "stale_input" => 1,
+            "virginity" => 0,
         ];
         $cfg = array_merge($defaults, cobOptGet(COB_CONFIG_KEY) ?? []);
     }
@@ -182,6 +183,13 @@ function cobApplyGameState(string $data, float $now): void
         if (is_array($cfg)) {
             cobOptSet(COB_CONFIG_KEY, $cfg);
         }
+        return;
+    }
+    if (preg_match('/virgins\|([^()\r\n]*)/u', $data, $m)) {
+        // OVirginity: the women near the player who are virgins ("-" = none)
+        $state = cobOptGet(COB_STATE_KEY) ?? [];
+        $state["virgins"] = trim($m[1]) === "-" ? [] : array_values(array_filter(array_map('trim', explode(",", $m[1]))));
+        cobOptSet(COB_STATE_KEY, $state);
         return;
     }
     if (!preg_match('/(scene|orgasm|sex)\|([^()\r\n]+)/u', $data, $m)) {
@@ -409,6 +417,14 @@ function cobNeedsPromptFor(string $npc, float $now): string
     }
     if (cobListed("jealous_names", $npc)) {
         $lines[] = cobJealousyText($state, $npc, $now, $player);
+    }
+    if (!empty($cfg["virginity"])) {
+        foreach (($state["virgins"] ?? []) as $v) {
+            if (mb_strtolower($v) === mb_strtolower($npc)) {
+                $lines[] = "You are a virgin - you have never had sex. How you feel about it (shy, curious, proud, eager to change it, or saving yourself) follows your own character.";
+                break;
+            }
+        }
     }
     $lines = array_values(array_filter($lines, function ($l) {
         return trim($l) !== "";

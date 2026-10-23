@@ -5,6 +5,13 @@ CHIM OStim Bridge - changelog
 - Fix: scenes ending (or starting) at the same moment each got a reaction, and the same
   agent answered twice in a row, sometimes word for word. Now only one gets through the
   time limit, as intended.
+- New (MCM page OStim addons): talking during scenes - an AI agent in a scene near you says
+  a short line when the position changes (pause and chance) and when they climax.
+- New (MCM page OStim addons, each with its own switch, none required): what other OStim
+  mods know reaches the agents - OVirginity (a virgin knows it; a lost virginity is part of
+  the scene's reaction), OCum (where the cum landed), OISeeYouMasturbating (whether she let
+  you watch), OMerchants and OTrainers (a discount or a lesson paid with the scene), and a
+  scene right after waking up is a morning one (MorningSex and the like).
 - Fix: the talk after a scene went to whoever had spoken last. A companion's solo scene
   ending was answered by the player's partner in another, still running scene, as if it
   were hers, and she then said the same lines again word for word when her own scene

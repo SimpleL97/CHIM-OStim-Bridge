@@ -33,6 +33,9 @@ $GLOBALS["PROMPTS"]["cob_scene"] = [
 $GLOBALS["PROMPTS"]["cob_after"] = [
     "cue" => ["({$cobNpc} talks about the intimate scene that just ended, in character and in their own voice. If they took part: how it was for them, what they liked most, whether they came, how they feel now and what they want next. If they only watched or heard it: their honest reaction. One to three short lines.) {$cobTail}"],
 ];
+$GLOBALS["PROMPTS"]["cob_during"] = [
+    "cue" => ["({$cobNpc} is in the middle of the intimate scene described above and says one short line right now, in character: what they feel this very moment, a moan turned into words, a reaction to what just changed, or what they want next. One short line, spoken in the heat of the moment.) {$cobTail}"],
+];
 $GLOBALS["PROMPTS"]["cob_refused"] = [
     "cue" => ["({$cobNpc} wanted to do what is described above, but it did not happen in the game, for the reason given. {$cobNpc} says one short line in character about it - surprise, annoyance, a joke, or what to do instead - and does not try the same action again now. The reason is for {$cobNpc} to understand, not to quote: speak only in-world, never mention the game, mods, ORomance, stats or numbers.) {$cobTail}"],
 ];

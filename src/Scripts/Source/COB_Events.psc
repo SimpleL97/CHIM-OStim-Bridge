@@ -9,8 +9,14 @@ Scriptname COB_Events extends Quest
    cob_dragonsoul  absorbing a dragon soul
    cob_naked       the player stripping naked
    cob_home        walking into a home the player owns
- Silent bookkeeping (never reaches the LLM): cob_state lines scene, orgasm, sex
- and config (the MCM settings the server needs).}
+   cob_during      the middle of a scene: the position changed, or an agent in it climaxes
+                   (MCM page OStim addons: pause and chance); an agent in the scene speaks
+ Scene reactions also carry what other OStim mods know (COB_Addons, MCM page OStim addons):
+ a lost virginity, where the cum landed, being watched, a merchant's discount or a lesson
+ paid with the scene, a scene right after waking up.
+ Silent bookkeeping (never reaches the LLM): cob_state lines scene, orgasm, sex, virgins
+ (OVirginity: the women near the player who are virgins) and config (the MCM settings the
+ server needs).}
 
 ; ---------------------------------------------------------------- state
 
@@ -27,6 +33,9 @@ float lastSceneMsg = -1000.0
 float lastAfterMsg = -1000.0
 float lastNakedMsg = -1000.0
 float lastHomeMsg = -1000.0
+float lastDuringMsg = -1000.0
+float lastWake = -1000.0
+string lastVirgins = ""
 float lastSouls = -1.0
 bool wasNaked = False
 bool inHome = False
@@ -71,6 +80,7 @@ Function Hook()
 	RegisterForModEvent("ostim_thread_start", "OnSceneStart")
 	RegisterForModEvent("ostim_actor_orgasm", "OnActorOrgasm")
 	RegisterForModEvent("ostim_thread_end", "OnSceneEnd")
+	RegisterForModEvent("ostim_scenechanged", "OnSceneChanged")
 	COB_Bridge bridge = Game.GetFormFromFile(0x000800, "CHIMOStimBridge.esp") as COB_Bridge
 	If bridge
 		bridge.Hook()
@@ -90,6 +100,9 @@ Function ConfigChanged()
 	lastAfterMsg = Past(lastAfterMsg, now)
 	lastNakedMsg = Past(lastNakedMsg, now)
 	lastHomeMsg = Past(lastHomeMsg, now)
+	lastDuringMsg = Past(lastDuringMsg, now)
+	lastWake = Past(lastWake, now)
+	lastVirgins = ""
 	; a smaller real time than last time means a new game launch: a fresh log file
 	; (loading saves within one launch keeps it)
 	If now < lastRealTime || lastRealTime == 0.0
@@ -122,8 +135,40 @@ Event OnUpdate()
 		configSent = True
 	EndIf
 	Poll()
+	If polls % 10 == 5
+		SendVirgins()
+	EndIf
 	RegisterForSingleUpdate(PollSeconds)
 EndEvent
+
+; OVirginity (MCM page OStim addons): the women near the player who are virgins, so they know
+; it; sent when it changed
+Function SendVirgins()
+	If !COB_Config.B("bVirginity:Addons") || !Game.IsPluginInstalled("OVirginity.esp")
+		Return
+	EndIf
+	Actor p = Game.GetPlayer()
+	Actor[] around = MiscUtil.ScanCellNPCs(p, 3000.0)
+	string names = ""
+	int i = 0
+	While i < around.Length
+		Actor a = around[i]
+		If a && a != p && !a.IsChild() && a.GetActorBase().GetSex() == 1 && COB_Addons.Virgin(a) == 1
+			If names != ""
+				names += ","
+			EndIf
+			names += a.GetDisplayName()
+		EndIf
+		i += 1
+	EndWhile
+	If names != lastVirgins
+		lastVirgins = names
+		If names == ""
+			names = "-"
+		EndIf
+		SendState("virgins|" + names)
+	EndIf
+EndFunction
 
 Function Poll()
 	Actor p = Game.GetPlayer()
@@ -307,6 +352,7 @@ EndFunction
 ; ---------------------------------------------------------------- events
 
 Event OnSleepStop(bool abInterrupted)
+	lastWake = Utility.GetCurrentRealTime() ; a scene soon after is a morning one (MorningSex and the like)
 	string who = Game.GetPlayer().GetDisplayName()
 	If abInterrupted
 		Send(who + " was woken up before they had finished sleeping", "cob_wake", "bWake:Reactions")
@@ -322,18 +368,23 @@ Event OnSceneStart(string eventName, string strArg, float numArg, Form sender)
 		Return
 	EndIf
 	SendState("scene|" + names)
+	COB_Addons.SceneStarted(numArg as int)
 	; a scene the AI started itself already got its own reply
 	If RecentBridgeAction()
 		Return
 	EndIf
 	float now = Utility.GetCurrentRealTime()
+	string when = ""
+	If COB_Config.B("bMorning:Addons") && acts.Find(Game.GetPlayer()) > -1 && lastWake <= now && now - lastWake < 180.0
+		when = ", right after waking up in the morning"
+	EndIf
 	; taken at once, as in OnSceneEnd: scenes starting together must not both get a reply
 	If now - lastSceneMsg < 30.0 && lastSceneMsg <= now
 		Return
 	EndIf
 	float before = lastSceneMsg
 	lastSceneMsg = now
-	If !Send(JoinAnd(acts) + " started an intimate scene", "cob_scene", "bSceneNear:Reactions") && lastSceneMsg == now
+	If !Send(JoinAnd(acts) + " started an intimate scene" + when, "cob_scene", "bSceneNear:Reactions") && lastSceneMsg == now
 		lastSceneMsg = before
 	EndIf
 EndEvent
@@ -342,8 +393,49 @@ Event OnActorOrgasm(string eventName, string sceneId, float threadId, Form sende
 	Actor a = sender as Actor
 	If a
 		SendState("orgasm|" + a.GetDisplayName())
+		; talking during the scene (MCM): an agent who climaxes says so - a shorter pause
+		If a != Game.GetPlayer() && AIAgentFunctions.getAgentByName(a.GetDisplayName())
+			Actor[] acts = OThread.GetActors(threadId as int)
+			If NamesNear(acts) != ""
+				During("(" + a.GetDisplayName() + " is climaxing right now, in the scene with " + JoinAnd(acts) + ")", a.GetDisplayName(), 10.0)
+			EndIf
+		EndIf
 	EndIf
 EndEvent
+
+; the position changed in a scene near the player: an agent in it may say a line (MCM)
+Event OnSceneChanged(string eventName, string sceneId, float threadId, Form sender)
+	Actor[] acts = OThread.GetActors(threadId as int)
+	string speaker = AgentAmong(acts)
+	If speaker == "" || NamesNear(acts) == ""
+		Return
+	EndIf
+	string now = ""
+	If sceneId != ""
+		now = ": now " + OMetadata.GetName(sceneId)
+	EndIf
+	During("(" + JoinAnd(acts) + " are in the middle of their intimate scene" + now + ")", speaker, 0.0)
+EndEvent
+
+; one line in the middle of a scene: at most one every MCM seconds (orgasms: minGap), MCM chance
+Function During(string msg, string speaker, float minGap)
+	If !COB_Config.B("bDuring:Addons")
+		Return
+	EndIf
+	float now = Utility.GetCurrentRealTime()
+	float gap = COB_Config.I("iDuringGap:Addons") as float
+	If minGap > 0.0
+		gap = minGap
+	EndIf
+	If lastDuringMsg <= now && now - lastDuringMsg < gap
+		Return
+	EndIf
+	float before = lastDuringMsg
+	lastDuringMsg = now
+	If !Send(msg, "cob_during", "bDuring:Addons", speaker) && lastDuringMsg == now
+		lastDuringMsg = before
+	EndIf
+EndFunction
 
 Event OnSceneEnd(string eventName, string json, float numArg, Form sender)
 	Actor[] acts = OJSON.GetActors(json)
@@ -404,6 +496,12 @@ Event OnSceneEnd(string eventName, string json, float numArg, Form sender)
 	If sceneId != ""
 		what = " (it ended with: " + OMetadata.GetName(sceneId) + ")"
 	EndIf
+	; what other OStim mods know about it (MCM page OStim addons); OMerchants applies its
+	; discount a moment after the scene
+	If mine && COB_Config.B("bPaid:Addons") && Game.IsPluginInstalled("OMerchants.esp")
+		Utility.Wait(1.5)
+	EndIf
+	what += COB_Addons.AfterNotes(acts, numArg as int, sceneId)
 	; Who talks about it: an AI agent who took part. Left to CHIM, the reply went to whoever
 	; spoke last - the player's partner in another, still running scene answered for a
 	; companion's solo scene as if it were her own, and then said the same lines again,
@@ -451,6 +549,8 @@ bool Function Send(string msg, string kind, string toggleKey, string speaker = "
 	int chance = COB_Config.I("iChance:Reactions")
 	If kind == "cob_after"
 		chance = COB_Config.I("iAfterChance:Reactions")
+	ElseIf kind == "cob_during"
+		chance = COB_Config.I("iDuringChance:Addons")
 	EndIf
 	If !COB_Config.Roll(chance)
 		Return False
@@ -483,6 +583,7 @@ Function SendConfig()
 	j += ",\"arousal\":" + Bit(COB_Config.B("bArousal:Needs"))
 	j += ",\"speech_only\":" + Bit(COB_Config.B("bSpeechOnly:Fixes"))
 	j += ",\"stale_input\":" + Bit(COB_Config.B("bStaleInput:Fixes"))
+	j += ",\"virginity\":" + Bit(COB_Config.B("bVirginity:Addons") && Game.IsPluginInstalled("OVirginity.esp"))
 	j += "}"
 	SendState("config|" + j)
 EndFunction
