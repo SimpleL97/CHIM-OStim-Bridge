@@ -371,6 +371,54 @@
                         "formatString": "{0}%",
                         "sourceType": "ModSettingInt"
                     }
+                },
+                {
+                    "text": "$COB_hMoans",
+                    "type": "header"
+                },
+                {
+                    "id": "bMoans:Addons",
+                    "text": "$COB_Moans",
+                    "type": "toggle",
+                    "help": "$COB_MoansH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
+                },
+                {
+                    "id": "iMoanGap:Addons",
+                    "text": "$COB_MoanGap",
+                    "type": "slider",
+                    "help": "$COB_MoanGapH",
+                    "valueOptions": {
+                        "min": 4,
+                        "max": 60,
+                        "step": 2,
+                        "formatString": "{0} s",
+                        "sourceType": "ModSettingInt"
+                    }
+                },
+                {
+                    "id": "iMoanSpeed:Addons",
+                    "text": "$COB_MoanSpeed",
+                    "type": "slider",
+                    "help": "$COB_MoanSpeedH",
+                    "valueOptions": {
+                        "min": 100,
+                        "max": 150,
+                        "step": 5,
+                        "formatString": "{0}%",
+                        "sourceType": "ModSettingInt"
+                    }
+                },
+                {
+                    "id": "bMoanWomen:Addons",
+                    "text": "$COB_MoanWomen",
+                    "type": "toggle",
+                    "help": "$COB_MoanWomenH",
+                    "valueOptions": {
+                        "sourceType": "ModSettingBool"
+                    }
                 }
             ]
         },

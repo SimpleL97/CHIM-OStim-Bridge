@@ -36,6 +36,14 @@ $GLOBALS["PROMPTS"]["cob_after"] = [
 $GLOBALS["PROMPTS"]["cob_during"] = [
     "cue" => ["({$cobNpc} is in the middle of the intimate scene described above and says one short line right now, in character: what they feel this very moment, a moan turned into words, a reaction to what just changed, or what they want next. One short line, spoken in the heat of the moment.) {$cobTail}"],
 ];
+// cries of passion: a few words only; the Inworld voice gets its tone in context_pre.php
+$cobMoanCue = "({$cobNpc} only cries out in the heat of the moment: one to four words, breathless and broken - a moan, an \"oh god\", \"deeper\", \"don't stop\", \"yes, yes, yes!\" or the like, in the language {$cobNpc} speaks. Nothing else: no sentence, no question, no description.) {$cobTail}";
+foreach (["cob_moan", "cob_moan_high", "cob_moan_peak"] as $cobKind) {
+    $GLOBALS["PROMPTS"][$cobKind] = ["cue" => [$cobMoanCue]];
+}
+$GLOBALS["PROMPTS"]["cob_moan_climax"] = [
+    "cue" => ["({$cobNpc} is climaxing right now and only cries out: one to four words, breathless and broken, in the language {$cobNpc} speaks. Nothing else: no sentence, no question, no description.) {$cobTail}"],
+];
 $GLOBALS["PROMPTS"]["cob_refused"] = [
     "cue" => ["({$cobNpc} wanted to do what is described above, but it did not happen in the game, for the reason given. {$cobNpc} says one short line in character about it - surprise, annoyance, a joke, or what to do instead - and does not try the same action again now. The reason is for {$cobNpc} to understand, not to quote: speak only in-world, never mention the game, mods, ORomance, stats or numbers.) {$cobTail}"],
 ];

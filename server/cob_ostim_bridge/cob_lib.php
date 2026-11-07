@@ -47,7 +47,7 @@ function cobConfig(): array
         $defaults = [
             "enabled" => 1, "log" => 1, "needs" => 1, "sex_names" => "", "sex_hours" => 6,
             "drunk" => 1, "jealous_names" => "", "arousal" => 1, "speech_only" => 1, "stale_input" => 1,
-            "virginity" => 0,
+            "virginity" => 0, "moan_speed" => 120,
         ];
         $cfg = array_merge($defaults, cobOptGet(COB_CONFIG_KEY) ?? []);
     }
@@ -524,4 +524,48 @@ function cobRefusalEvent(string $data): ?string
     $agent = trim(explode("~", $parts[2])[0]);
     cobLog("refused {$parts[1]} by {$agent}: {$result}");
     return "({$agent} tried " . COB_ACTION_NAMES[$parts[1]] . ", but it did not happen - {$result})";
+}
+
+// ---------------------------------------------------------------- cries of passion
+
+/**
+ * For a cry of passion (cob_moan*) spoken through Inworld: this one reply gets a tone tag in
+ * front of the text the voice reads - not in the subtitle or the history - and a faster
+ * delivery (MCM). Inworld's own emotion tag for the reply is left out, so only ours is heard.
+ * The TTS driver is loaded here so that CHIM's later require_once keeps our wrapper. Other
+ * TTS engines read the text as it is.
+ */
+function cobMoanVoice(string $type): void
+{
+    $tags = ["cob_moan" => "breathless", "cob_moan_high" => "ecstasy", "cob_moan_peak" => "orgasming", "cob_moan_climax" => "orgasm"];
+    if (!isset($tags[$type]) || strval($GLOBALS["TTSFUNCTION"] ?? "") !== "inworld") {
+        return;
+    }
+    $driver = __DIR__ . "/../../tts/tts-inworld.php";
+    if (!file_exists($driver)) {
+        return;
+    }
+    require_once($driver);
+    $inner = $GLOBALS["TTS_IN_USE"] ?? null;
+    if (!is_callable($inner)) {
+        return;
+    }
+    $tag = $tags[$type];
+    $speed = max(1.0, min(1.5, intval(cobConfig()["moan_speed"] ?? 120) / 100));
+    $GLOBALS["TTS_IN_USE"] = function ($text, $mood, $hash) use ($inner, $tag, $speed) {
+        if (function_exists("getInworldActiveConfig")) {
+            getInworldActiveConfig(); // fills the connector settings now, so they cannot overwrite the speed below
+        }
+        $speedBefore = $GLOBALS["TTS"]["INWORLD"]["speed"] ?? null;
+        $emotionsBefore = $GLOBALS["use_emotions_expression"] ?? null;
+        $GLOBALS["TTS"]["INWORLD"]["speed"] = $speed;
+        $GLOBALS["use_emotions_expression"] = false;
+        try {
+            return $inner("[{$tag}] " . $text, $mood, $hash);
+        } finally {
+            $GLOBALS["TTS"]["INWORLD"]["speed"] = $speedBefore;
+            $GLOBALS["use_emotions_expression"] = $emotionsBefore;
+        }
+    };
+    cobLog("cry of passion: voice tag [{$tag}], speed {$speed}");
 }

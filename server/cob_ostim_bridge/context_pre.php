@@ -34,6 +34,9 @@ if (function_exists('chimRegisterPromptInjection')) {
     }, 900);
 }
 
+// cries of passion: the Inworld voice gets the tone of the moment for this reply
+cobMoanVoice(strval($GLOBALS["gameRequest"][0] ?? ""));
+
 // what slips past the rule is cut out of the spoken reply (an event's own transformer wins)
 if (empty($GLOBALS["TRANSFORMER_FUNCTION"]) && cobSpeechOnlyRule(trim(strval($GLOBALS["HERIKA_NAME"] ?? ""))) !== "") {
     $GLOBALS["TRANSFORMER_FUNCTION"] = "cobStripNarration";

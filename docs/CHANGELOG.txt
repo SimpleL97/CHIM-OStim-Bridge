@@ -7,6 +7,11 @@ CHIM OStim Bridge - changelog
   time limit, as intended.
 - New (MCM page OStim addons): talking during scenes - an AI agent in a scene near you says
   a short line when the position changes (pause and chance) and when they climax.
+- New (MCM page OStim addons, off by default): cries of passion - an AI agent in a scene
+  near you cries out one to four words in their own voice, more often as their OStim
+  excitement climbs, and when they climax. With Inworld TTS the voice gets the tone of the
+  moment (breathless, ecstasy, orgasming, orgasm) and a faster delivery (MCM); subtitles
+  and history stay clean. MCM: pause, speed, only women.
 - New (MCM page OStim addons, each with its own switch, none required): what other OStim
   mods know reaches the agents - OVirginity (a virgin knows it; a lost virginity is part of
   the scene's reaction), OCum (where the cum landed), OISeeYouMasturbating (whether she let

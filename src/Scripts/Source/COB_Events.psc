@@ -11,6 +11,9 @@ Scriptname COB_Events extends Quest
    cob_home        walking into a home the player owns
    cob_during      the middle of a scene: the position changed, or an agent in it climaxes
                    (MCM page OStim addons: pause and chance); an agent in the scene speaks
+   cob_moan*       cries of passion (MCM page OStim addons, off by default): an agent in a
+                   scene cries out a few words, more often as their OStim excitement climbs;
+                   the kind (cob_moan, _high, _peak, _climax) sets the voice's tone on the server
  Scene reactions also carry what other OStim mods know (COB_Addons, MCM page OStim addons):
  a lost virginity, where the cum landed, being watched, a merchant's discount or a lesson
  paid with the scene, a scene right after waking up.
@@ -34,6 +37,7 @@ float lastAfterMsg = -1000.0
 float lastNakedMsg = -1000.0
 float lastHomeMsg = -1000.0
 float lastDuringMsg = -1000.0
+float lastMoan = -1000.0
 float lastWake = -1000.0
 string lastVirgins = ""
 float lastSouls = -1.0
@@ -101,6 +105,7 @@ Function ConfigChanged()
 	lastNakedMsg = Past(lastNakedMsg, now)
 	lastHomeMsg = Past(lastHomeMsg, now)
 	lastDuringMsg = Past(lastDuringMsg, now)
+	lastMoan = Past(lastMoan, now)
 	lastWake = Past(lastWake, now)
 	lastVirgins = ""
 	; a smaller real time than last time means a new game launch: a fresh log file
@@ -135,6 +140,7 @@ Event OnUpdate()
 		configSent = True
 	EndIf
 	Poll()
+	Moans()
 	If polls % 10 == 5
 		SendVirgins()
 	EndIf
@@ -393,11 +399,16 @@ Event OnActorOrgasm(string eventName, string sceneId, float threadId, Form sende
 	Actor a = sender as Actor
 	If a
 		SendState("orgasm|" + a.GetDisplayName())
-		; talking during the scene (MCM): an agent who climaxes says so - a shorter pause
+		; talking during the scene (MCM): an agent who climaxes says so - a shorter pause;
+		; with the cries of passion on, they cry out instead
 		If a != Game.GetPlayer() && AIAgentFunctions.getAgentByName(a.GetDisplayName())
 			Actor[] acts = OThread.GetActors(threadId as int)
 			If NamesNear(acts) != ""
-				During("(" + a.GetDisplayName() + " is climaxing right now, in the scene with " + JoinAnd(acts) + ")", a.GetDisplayName(), 10.0)
+				If MoansFor(a)
+					Moan(a, "cob_moan_climax", "(" + a.GetDisplayName() + " is climaxing right now, in the scene with " + JoinAnd(acts) + ")")
+				Else
+					During("(" + a.GetDisplayName() + " is climaxing right now, in the scene with " + JoinAnd(acts) + ")", a.GetDisplayName(), 10.0)
+				EndIf
 			EndIf
 		EndIf
 	EndIf
@@ -435,6 +446,79 @@ Function During(string msg, string speaker, float minGap)
 	If !Send(msg, "cob_during", "bDuring:Addons", speaker) && lastDuringMsg == now
 		lastDuringMsg = before
 	EndIf
+EndFunction
+
+; ---------------------------------------------------------------- cries of passion (MCM)
+
+; every poll: in a scene near the player, an AI agent who takes part cries out a few words -
+; at most one every MCM seconds at full excitement, twice that while it is still low, never
+; over a line they are still speaking. OStim's excitement (0-100) picks the tone.
+Function Moans()
+	If !COB_Config.B("bEnabled:General") || !COB_Config.B("bMoans:Addons")
+		Return
+	EndIf
+	float now = Utility.GetCurrentRealTime()
+	If now - lastDuringMsg < 6.0 && lastDuringMsg <= now
+		Return ; a line about the scene is on its way: let it be heard
+	EndIf
+	int[] ids = OThread.GetAllThreadIDs()
+	Actor best = None
+	float bestExcitement = -1.0
+	int i = 0
+	While i < ids.Length
+		Actor[] acts = OThread.GetActors(ids[i])
+		If NamesNear(acts) != ""
+			int j = 0
+			While j < acts.Length
+				Actor a = acts[j]
+				If MoansFor(a) && AIAgentFunctions.isActorTalking(a.GetDisplayName()) == 0
+					float e = OActor.GetExcitement(a) + Utility.RandomFloat(0.0, 15.0) ; not always the same one
+					If e > bestExcitement
+						best = a
+						bestExcitement = e
+					EndIf
+				EndIf
+				j += 1
+			EndWhile
+		EndIf
+		i += 1
+	EndWhile
+	If !best
+		Return
+	EndIf
+	float excitement = OActor.GetExcitement(best)
+	float gap = COB_Config.I("iMoanGap:Addons") as float
+	If gap < 4.0
+		gap = 4.0
+	EndIf
+	gap = gap * (2.0 - excitement / 100.0)
+	If lastMoan <= now && now - lastMoan < gap
+		Return
+	EndIf
+	string kind = "cob_moan"
+	If excitement >= 85.0
+		kind = "cob_moan_peak"
+	ElseIf excitement >= 50.0
+		kind = "cob_moan_high"
+	EndIf
+	Moan(best, kind, "(" + best.GetDisplayName() + " cries out in the heat of the intimate scene)")
+EndFunction
+
+; who may cry out: an AI agent other than the player, a woman unless the MCM allows everyone
+bool Function MoansFor(Actor a)
+	If !a || a == Game.GetPlayer() || !COB_Config.B("bEnabled:General") || !COB_Config.B("bMoans:Addons")
+		Return False
+	EndIf
+	If COB_Config.B("bMoanWomen:Addons") && a.GetLeveledActorBase().GetSex() != 1
+		Return False
+	EndIf
+	Return AIAgentFunctions.getAgentByName(a.GetDisplayName()) != None
+EndFunction
+
+Function Moan(Actor a, string kind, string msg)
+	lastMoan = Utility.GetCurrentRealTime()
+	COB_Config.Note(kind + ": " + a.GetDisplayName())
+	AIAgentFunctions.requestMessageForActor(msg, kind, a.GetDisplayName())
 EndFunction
 
 Event OnSceneEnd(string eventName, string json, float numArg, Form sender)
@@ -584,6 +668,7 @@ Function SendConfig()
 	j += ",\"speech_only\":" + Bit(COB_Config.B("bSpeechOnly:Fixes"))
 	j += ",\"stale_input\":" + Bit(COB_Config.B("bStaleInput:Fixes"))
 	j += ",\"virginity\":" + Bit(COB_Config.B("bVirginity:Addons") && Game.IsPluginInstalled("OVirginity.esp"))
+	j += ",\"moan_speed\":" + COB_Config.I("iMoanSpeed:Addons")
 	j += "}"
 	SendState("config|" + j)
 EndFunction
