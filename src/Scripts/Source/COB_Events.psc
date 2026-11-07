@@ -14,7 +14,8 @@ Scriptname COB_Events extends Quest
    cob_moan*       cries of passion (MCM page OStim addons, off by default): an agent in a
                    scene cries out a few words, more often as their OStim excitement climbs;
                    the kind sets the voice's tone on the server: _start (a teasing murmur),
-                   cob_moan, _high, _peak, _climax, and _after (a contented sigh after climax)
+                   cob_moan, _high, _peak, _climax, and _after (a contented sigh after climax);
+                   alone in a scene (masturbation) cob_moan_solo* - wordless sounds only
  Scene reactions also carry what other OStim mods know (COB_Addons, MCM page OStim addons):
  a lost virginity, where the cum landed, being watched, a merchant's discount or a lesson
  paid with the scene, a scene right after waking up.
@@ -41,6 +42,7 @@ float lastDuringMsg = -1000.0
 float lastMoan = -1000.0
 Actor climaxed       ; the agent who cried out at climax: a contented murmur follows (cob_moan_after)
 Actor lastClimaxed   ; ... and is spent for a while after it
+bool climaxedSolo    ; ... alone in their scene
 float climaxAt = -1000.0
 float lastWake = -1000.0
 string lastVirgins = ""
@@ -409,10 +411,18 @@ Event OnActorOrgasm(string eventName, string sceneId, float threadId, Form sende
 		If a != Game.GetPlayer() && AIAgentFunctions.getAgentByName(a.GetDisplayName())
 			Actor[] acts = OThread.GetActors(threadId as int)
 			If NamesNear(acts) != ""
+				bool solo = CountActors(acts) == 1
 				If MoansFor(a)
-					Moan(a, "cob_moan_climax", "(" + a.GetDisplayName() + " is climaxing right now, in the scene with " + JoinAnd(acts) + ")")
+					If solo
+						Moan(a, "cob_moan_solo_climax", "(" + a.GetDisplayName() + " is climaxing alone, pleasuring themselves)")
+					Else
+						Moan(a, "cob_moan_climax", "(" + a.GetDisplayName() + " is climaxing right now, in the scene with " + JoinAnd(acts) + ")")
+					EndIf
 					climaxed = a
+					climaxedSolo = solo
 					climaxAt = Utility.GetCurrentRealTime()
+				ElseIf solo
+					During("(" + a.GetDisplayName() + " is climaxing right now, alone, pleasuring themselves)", a.GetDisplayName(), 10.0)
 				Else
 					During("(" + a.GetDisplayName() + " is climaxing right now, in the scene with " + JoinAnd(acts) + ")", a.GetDisplayName(), 10.0)
 				EndIf
@@ -431,6 +441,12 @@ Event OnSceneChanged(string eventName, string sceneId, float threadId, Form send
 	string now = ""
 	If sceneId != ""
 		now = ": now " + OMetadata.GetName(sceneId)
+	EndIf
+	If CountActors(acts) == 1
+		If !COB_Config.B("bMoans:Addons")
+			During("(" + JoinAnd(acts) + " is pleasuring themselves alone, nobody else in the scene" + now + ")", speaker, 0.0)
+		EndIf
+		Return ; with the cries of passion on, a solo scene has its moans and no talk
 	EndIf
 	During("(" + JoinAnd(acts) + " are in the middle of their intimate scene" + now + ")", speaker, 0.0)
 EndEvent
@@ -473,12 +489,17 @@ Function Moans()
 		Actor after = climaxed
 		climaxed = None
 		If now - climaxAt < 30.0 && InScene(after) && AIAgentFunctions.isActorTalking(after.GetDisplayName()) == 0
-			Moan(after, "cob_moan_after", "(" + after.GetDisplayName() + " has just climaxed and catches their breath)")
+			If climaxedSolo
+				Moan(after, "cob_moan_solo_after", "(" + after.GetDisplayName() + " has just climaxed alone and catches their breath)")
+			Else
+				Moan(after, "cob_moan_after", "(" + after.GetDisplayName() + " has just climaxed and catches their breath)")
+			EndIf
 			Return
 		EndIf
 	EndIf
 	int[] ids = OThread.GetAllThreadIDs()
 	Actor best = None
+	bool bestSolo = False
 	float bestExcitement = -1.0
 	int i = 0
 	While i < ids.Length
@@ -493,6 +514,7 @@ Function Moans()
 					float e = OActor.GetExcitement(a) + Utility.RandomFloat(0.0, 15.0) ; not always the same one
 					If e > bestExcitement
 						best = a
+						bestSolo = CountActors(acts) == 1
 						bestExcitement = e
 					EndIf
 				EndIf
@@ -521,6 +543,17 @@ Function Moans()
 	ElseIf excitement >= 25.0
 		kind = "cob_moan"
 	EndIf
+	If bestSolo
+		; alone (masturbation): sounds only, nobody to talk to - no teasing start either
+		kind = "cob_moan_solo"
+		If excitement >= 85.0
+			kind = "cob_moan_solo_peak"
+		ElseIf excitement >= 50.0
+			kind = "cob_moan_solo_high"
+		EndIf
+		Moan(best, kind, "(" + best.GetDisplayName() + " moans, pleasuring themselves alone)")
+		Return
+	EndIf
 	Moan(best, kind, "(" + best.GetDisplayName() + " cries out in the heat of the intimate scene)")
 EndFunction
 
@@ -533,6 +566,18 @@ bool Function MoansFor(Actor a)
 		Return False
 	EndIf
 	Return AIAgentFunctions.getAgentByName(a.GetDisplayName()) != None
+EndFunction
+
+int Function CountActors(Actor[] acts)
+	int n = 0
+	int i = 0
+	While i < acts.Length
+		If acts[i]
+			n += 1
+		EndIf
+		i += 1
+	EndWhile
+	Return n
 EndFunction
 
 bool Function InScene(Actor a)
@@ -549,7 +594,7 @@ EndFunction
 
 Function Moan(Actor a, string kind, string msg)
 	lastMoan = Utility.GetCurrentRealTime()
-	If kind == "cob_moan_climax" || kind == "cob_moan_after"
+	If StringUtil.Find(kind, "_climax") > -1 || StringUtil.Find(kind, "_after") > -1
 		lastClimaxed = a
 	EndIf
 	COB_Config.Note(kind + ": " + a.GetDisplayName())

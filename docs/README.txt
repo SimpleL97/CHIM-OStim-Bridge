@@ -96,7 +96,8 @@ Cries of passion (MCM page OStim addons, off by default): an AI agent in a scene
 you cries out one to four words in their own voice, more often as their OStim
 excitement climbs: a teasing murmur at the start, moans and "oh god", "deeper",
 begging near the peak, a cry at climax and, a few seconds later, a contented sigh or
-a soft laugh. With Inworld TTS the voice gets the tone of each moment (whispering,
+a soft laugh. Alone in a scene (masturbation) they only moan - wordless sounds,
+nothing said to a partner. With Inworld TTS the voice gets the tone of each moment (whispering,
 seductive, teasing; breathless; ecstasy; orgasming, pleading, begging, desperate,
 overwhelmed; orgasm; satisfied, giggling, laughing - one picked at random per phase,
 with a breath or a sigh now and then in the heat of it) and speaks a little faster

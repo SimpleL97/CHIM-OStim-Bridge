@@ -53,6 +53,17 @@ $GLOBALS["PROMPTS"]["cob_moan_after"] = [
 $GLOBALS["PROMPTS"]["cob_moan_climax"] = [
     "cue" => ["({$cobNpc} is climaxing right now and only cries out: one to four words, breathless and broken, in the language {$cobNpc} speaks. Nothing else: no sentence, no question, no description.) {$cobTail}"],
 ];
+// alone (masturbation): wordless sounds only - nobody is there to talk to
+$cobSoloCue = "({$cobNpc} is pleasuring themselves alone and only moans: one to four wordless sounds - \"mmm...\", \"ah...\", \"ahh!\", a gasp - the way {$cobNpc} sounds. No words at all: no names, no requests, nothing said to anyone, nothing about a partner.) {$cobTail}";
+foreach (["cob_moan_solo", "cob_moan_solo_high", "cob_moan_solo_peak"] as $cobKind) {
+    $GLOBALS["PROMPTS"][$cobKind] = ["cue" => [$cobSoloCue]];
+}
+$GLOBALS["PROMPTS"]["cob_moan_solo_climax"] = [
+    "cue" => ["({$cobNpc} is climaxing alone, pleasuring themselves, and only cries out: wordless sounds - a long moan, a sharp gasp. No words at all: no names, nothing said to anyone, nothing about a partner.) {$cobTail}"],
+];
+$GLOBALS["PROMPTS"]["cob_moan_solo_after"] = [
+    "cue" => ["({$cobNpc} has just climaxed alone and only lets out a contented sigh or a soft \"mmm...\" - sounds, no words to anyone.) {$cobTail}"],
+];
 $GLOBALS["PROMPTS"]["cob_refused"] = [
     "cue" => ["({$cobNpc} wanted to do what is described above, but it did not happen in the game, for the reason given. {$cobNpc} says one short line in character about it - surprise, annoyance, a joke, or what to do instead - and does not try the same action again now. The reason is for {$cobNpc} to understand, not to quote: speak only in-world, never mention the game, mods, ORomance, stats or numbers.) {$cobTail}"],
 ];

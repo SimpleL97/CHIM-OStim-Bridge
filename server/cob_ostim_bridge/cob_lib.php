@@ -545,6 +545,12 @@ function cobMoanVoice(string $type): void
         "cob_moan_peak"   => ["orgasming" => 3, "pleading" => 1, "begging" => 1, "desperate" => 1, "overwhelmed" => 1],
         "cob_moan_climax" => ["orgasm" => 1],
         "cob_moan_after"  => ["satisfied" => 2, "giggling" => 1, "laughing" => 1],
+        // alone (masturbation): moans only
+        "cob_moan_solo"        => ["breathless" => 1],
+        "cob_moan_solo_high"   => ["ecstasy" => 1],
+        "cob_moan_solo_peak"   => ["orgasming" => 1],
+        "cob_moan_solo_climax" => ["orgasm" => 1],
+        "cob_moan_solo_after"  => ["satisfied" => 1],
     ];
     if (!isset($tones[$type]) || strval($GLOBALS["TTSFUNCTION"] ?? "") !== "inworld") {
         return;
@@ -562,10 +568,10 @@ function cobMoanVoice(string $type): void
     $speed = max(1.0, min(1.5, intval(cobConfig()["moan_speed"] ?? 120) / 100));
     if ($type === "cob_moan_start") {
         $speed = min($speed, 1.1); // a murmur, not a cry
-    } elseif ($type === "cob_moan_after") {
+    } elseif ($type === "cob_moan_after" || $type === "cob_moan_solo_after") {
         $speed = 1.0;
     }
-    $heat = in_array($type, ["cob_moan_high", "cob_moan_peak"], true);
+    $heat = in_array($type, ["cob_moan_high", "cob_moan_peak", "cob_moan_solo_high", "cob_moan_solo_peak"], true);
     $GLOBALS["TTS_IN_USE"] = function ($text, $mood, $hash) use ($inner, $tag, $speed, $heat) {
         if (function_exists("getInworldActiveConfig")) {
             getInworldActiveConfig(); // fills the connector settings now, so they cannot overwrite the speed below
