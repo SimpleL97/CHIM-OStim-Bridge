@@ -531,14 +531,22 @@ function cobRefusalEvent(string $data): ?string
 /**
  * For a cry of passion (cob_moan*) spoken through Inworld: this one reply gets a tone tag in
  * front of the text the voice reads - not in the subtitle or the history - and a faster
- * delivery (MCM). Inworld's own emotion tag for the reply is left out, so only ours is heard.
- * The TTS driver is loaded here so that CHIM's later require_once keeps our wrapper. Other
- * TTS engines read the text as it is.
+ * delivery (MCM). Each phase has a few tones, one picked at random (weights); in the heat of
+ * it a breath may come between the words and a sigh at the end. Inworld's own emotion tag for
+ * the reply is left out, so only ours is heard. The TTS driver is loaded here so that CHIM's
+ * later require_once keeps our wrapper. Other TTS engines read the text as it is.
  */
 function cobMoanVoice(string $type): void
 {
-    $tags = ["cob_moan" => "breathless", "cob_moan_high" => "ecstasy", "cob_moan_peak" => "orgasming", "cob_moan_climax" => "orgasm"];
-    if (!isset($tags[$type]) || strval($GLOBALS["TTSFUNCTION"] ?? "") !== "inworld") {
+    $tones = [
+        "cob_moan_start"  => ["whispering" => 1, "seductive" => 1, "teasing" => 1],
+        "cob_moan"        => ["breathless" => 1],
+        "cob_moan_high"   => ["ecstasy" => 1],
+        "cob_moan_peak"   => ["orgasming" => 3, "pleading" => 1, "begging" => 1, "desperate" => 1, "overwhelmed" => 1],
+        "cob_moan_climax" => ["orgasm" => 1],
+        "cob_moan_after"  => ["satisfied" => 2, "giggling" => 1, "laughing" => 1],
+    ];
+    if (!isset($tones[$type]) || strval($GLOBALS["TTSFUNCTION"] ?? "") !== "inworld") {
         return;
     }
     $driver = __DIR__ . "/../../tts/tts-inworld.php";
@@ -550,22 +558,59 @@ function cobMoanVoice(string $type): void
     if (!is_callable($inner)) {
         return;
     }
-    $tag = $tags[$type];
+    $tag = cobPickWeighted($tones[$type]);
     $speed = max(1.0, min(1.5, intval(cobConfig()["moan_speed"] ?? 120) / 100));
-    $GLOBALS["TTS_IN_USE"] = function ($text, $mood, $hash) use ($inner, $tag, $speed) {
+    if ($type === "cob_moan_start") {
+        $speed = min($speed, 1.1); // a murmur, not a cry
+    } elseif ($type === "cob_moan_after") {
+        $speed = 1.0;
+    }
+    $heat = in_array($type, ["cob_moan_high", "cob_moan_peak"], true);
+    $GLOBALS["TTS_IN_USE"] = function ($text, $mood, $hash) use ($inner, $tag, $speed, $heat) {
         if (function_exists("getInworldActiveConfig")) {
             getInworldActiveConfig(); // fills the connector settings now, so they cannot overwrite the speed below
         }
+        $spoken = cobMoanText(strval($text), $tag, $heat);
         $speedBefore = $GLOBALS["TTS"]["INWORLD"]["speed"] ?? null;
         $emotionsBefore = $GLOBALS["use_emotions_expression"] ?? null;
         $GLOBALS["TTS"]["INWORLD"]["speed"] = $speed;
         $GLOBALS["use_emotions_expression"] = false;
         try {
-            return $inner("[{$tag}] " . $text, $mood, $hash);
+            return $inner($spoken, $mood, $hash);
         } finally {
             $GLOBALS["TTS"]["INWORLD"]["speed"] = $speedBefore;
             $GLOBALS["use_emotions_expression"] = $emotionsBefore;
         }
     };
-    cobLog("cry of passion: voice tag [{$tag}], speed {$speed}");
+    cobLog("cry of passion ({$type}): voice tag [{$tag}], speed {$speed}");
+}
+
+/** the text the voice reads: the tone tag; a contented sigh first; in the heat a breath between the words or a sigh at the end */
+function cobMoanText(string $text, string $tag, bool $heat): string
+{
+    $text = trim($text);
+    if ($tag === "satisfied") {
+        $text = "[sigh] " . $text;
+    }
+    if ($heat) {
+        $at = strpos($text, "...");
+        if ($at !== false && $at > 0 && $at + 3 < strlen($text) && mt_rand(1, 100) <= 40) {
+            $text = substr($text, 0, $at + 3) . " [breathe]" . substr($text, $at + 3);
+        } elseif (mt_rand(1, 100) <= 15) {
+            $text .= " [sigh]";
+        }
+    }
+    return "[{$tag}] " . $text;
+}
+
+function cobPickWeighted(array $weights): string
+{
+    $roll = mt_rand(1, max(1, array_sum($weights)));
+    foreach ($weights as $key => $w) {
+        $roll -= $w;
+        if ($roll <= 0) {
+            return strval($key);
+        }
+    }
+    return strval(array_key_first($weights));
 }

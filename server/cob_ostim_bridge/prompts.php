@@ -38,9 +38,18 @@ $GLOBALS["PROMPTS"]["cob_during"] = [
 ];
 // cries of passion: a few words only; the Inworld voice gets its tone in context_pre.php
 $cobMoanCue = "({$cobNpc} only cries out in the heat of the moment: one to four words, breathless and broken - a moan, an \"oh god\", \"deeper\", \"don't stop\", \"yes, yes, yes!\" or the like, in the language {$cobNpc} speaks. Nothing else: no sentence, no question, no description.) {$cobTail}";
-foreach (["cob_moan", "cob_moan_high", "cob_moan_peak"] as $cobKind) {
+foreach (["cob_moan", "cob_moan_high"] as $cobKind) {
     $GLOBALS["PROMPTS"][$cobKind] = ["cue" => [$cobMoanCue]];
 }
+$GLOBALS["PROMPTS"]["cob_moan_start"] = [
+    "cue" => ["({$cobNpc} murmurs one to four words as the intimate scene begins: inviting, teasing or seductive - \"come here...\", \"quiet...\", \"come on...\" or the like, in the language {$cobNpc} speaks. Nothing else: no sentence, no question, no description.) {$cobTail}"],
+];
+$GLOBALS["PROMPTS"]["cob_moan_peak"] = [
+    "cue" => ["({$cobNpc} is close to the edge and only cries out: one to four words, breathless, pleading or overwhelmed - \"don't stop\", \"more, more!\", \"I can't anymore\" or the like, in the language {$cobNpc} speaks. Nothing else: no sentence, no question, no description.) {$cobTail}"],
+];
+$GLOBALS["PROMPTS"]["cob_moan_after"] = [
+    "cue" => ["({$cobNpc} has just climaxed and murmurs one to four words, spent and happy - a contented \"mmm... god...\", a soft laugh, \"that was...\" or the like, in the language {$cobNpc} speaks. Nothing else: no sentence, no question, no description.) {$cobTail}"],
+];
 $GLOBALS["PROMPTS"]["cob_moan_climax"] = [
     "cue" => ["({$cobNpc} is climaxing right now and only cries out: one to four words, breathless and broken, in the language {$cobNpc} speaks. Nothing else: no sentence, no question, no description.) {$cobTail}"],
 ];

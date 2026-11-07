@@ -13,7 +13,8 @@ Scriptname COB_Events extends Quest
                    (MCM page OStim addons: pause and chance); an agent in the scene speaks
    cob_moan*       cries of passion (MCM page OStim addons, off by default): an agent in a
                    scene cries out a few words, more often as their OStim excitement climbs;
-                   the kind (cob_moan, _high, _peak, _climax) sets the voice's tone on the server
+                   the kind sets the voice's tone on the server: _start (a teasing murmur),
+                   cob_moan, _high, _peak, _climax, and _after (a contented sigh after climax)
  Scene reactions also carry what other OStim mods know (COB_Addons, MCM page OStim addons):
  a lost virginity, where the cum landed, being watched, a merchant's discount or a lesson
  paid with the scene, a scene right after waking up.
@@ -38,6 +39,9 @@ float lastNakedMsg = -1000.0
 float lastHomeMsg = -1000.0
 float lastDuringMsg = -1000.0
 float lastMoan = -1000.0
+Actor climaxed       ; the agent who cried out at climax: a contented murmur follows (cob_moan_after)
+Actor lastClimaxed   ; ... and is spent for a while after it
+float climaxAt = -1000.0
 float lastWake = -1000.0
 string lastVirgins = ""
 float lastSouls = -1.0
@@ -106,6 +110,7 @@ Function ConfigChanged()
 	lastHomeMsg = Past(lastHomeMsg, now)
 	lastDuringMsg = Past(lastDuringMsg, now)
 	lastMoan = Past(lastMoan, now)
+	climaxAt = Past(climaxAt, now)
 	lastWake = Past(lastWake, now)
 	lastVirgins = ""
 	; a smaller real time than last time means a new game launch: a fresh log file
@@ -406,6 +411,8 @@ Event OnActorOrgasm(string eventName, string sceneId, float threadId, Form sende
 			If NamesNear(acts) != ""
 				If MoansFor(a)
 					Moan(a, "cob_moan_climax", "(" + a.GetDisplayName() + " is climaxing right now, in the scene with " + JoinAnd(acts) + ")")
+					climaxed = a
+					climaxAt = Utility.GetCurrentRealTime()
 				Else
 					During("(" + a.GetDisplayName() + " is climaxing right now, in the scene with " + JoinAnd(acts) + ")", a.GetDisplayName(), 10.0)
 				EndIf
@@ -461,6 +468,15 @@ Function Moans()
 	If now - lastDuringMsg < 6.0 && lastDuringMsg <= now
 		Return ; a line about the scene is on its way: let it be heard
 	EndIf
+	; a few seconds after their climax, once: spent and happy - while they are still in the scene
+	If climaxed && climaxAt <= now && now - climaxAt >= 7.0
+		Actor after = climaxed
+		climaxed = None
+		If now - climaxAt < 30.0 && InScene(after) && AIAgentFunctions.isActorTalking(after.GetDisplayName()) == 0
+			Moan(after, "cob_moan_after", "(" + after.GetDisplayName() + " has just climaxed and catches their breath)")
+			Return
+		EndIf
+	EndIf
 	int[] ids = OThread.GetAllThreadIDs()
 	Actor best = None
 	float bestExcitement = -1.0
@@ -471,7 +487,9 @@ Function Moans()
 			int j = 0
 			While j < acts.Length
 				Actor a = acts[j]
-				If MoansFor(a) && AIAgentFunctions.isActorTalking(a.GetDisplayName()) == 0
+				; just climaxed: their excitement starts over, but a teasing start would not fit now
+				bool spent = a == climaxed || (now - climaxAt < 30.0 && climaxAt <= now && a == lastClimaxed)
+				If MoansFor(a) && !spent && AIAgentFunctions.isActorTalking(a.GetDisplayName()) == 0
 					float e = OActor.GetExcitement(a) + Utility.RandomFloat(0.0, 15.0) ; not always the same one
 					If e > bestExcitement
 						best = a
@@ -495,11 +513,13 @@ Function Moans()
 	If lastMoan <= now && now - lastMoan < gap
 		Return
 	EndIf
-	string kind = "cob_moan"
+	string kind = "cob_moan_start"
 	If excitement >= 85.0
 		kind = "cob_moan_peak"
 	ElseIf excitement >= 50.0
 		kind = "cob_moan_high"
+	ElseIf excitement >= 25.0
+		kind = "cob_moan"
 	EndIf
 	Moan(best, kind, "(" + best.GetDisplayName() + " cries out in the heat of the intimate scene)")
 EndFunction
@@ -515,8 +535,23 @@ bool Function MoansFor(Actor a)
 	Return AIAgentFunctions.getAgentByName(a.GetDisplayName()) != None
 EndFunction
 
+bool Function InScene(Actor a)
+	int[] ids = OThread.GetAllThreadIDs()
+	int i = 0
+	While i < ids.Length
+		If OThread.GetActorPosition(ids[i], a) > -1
+			Return True
+		EndIf
+		i += 1
+	EndWhile
+	Return False
+EndFunction
+
 Function Moan(Actor a, string kind, string msg)
 	lastMoan = Utility.GetCurrentRealTime()
+	If kind == "cob_moan_climax" || kind == "cob_moan_after"
+		lastClimaxed = a
+	EndIf
 	COB_Config.Note(kind + ": " + a.GetDisplayName())
 	AIAgentFunctions.requestMessageForActor(msg, kind, a.GetDisplayName())
 EndFunction

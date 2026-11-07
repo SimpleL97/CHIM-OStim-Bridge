@@ -93,11 +93,14 @@ a short line when the position changes (MCM pause and chance) and when they clim
 not only at the start and the end.
 
 Cries of passion (MCM page OStim addons, off by default): an AI agent in a scene near
-you cries out one to four words in their own voice - a moan, "oh god", "deeper",
-"don't stop" - more often as their OStim excitement climbs, and when they climax.
-With Inworld TTS the voice gets the tone of the moment (breathless, ecstasy,
-orgasming, orgasm) and speaks a little faster (MCM speed); the tone is only in the
-voice, never in the subtitles or the history. Other TTS engines read the words as
+you cries out one to four words in their own voice, more often as their OStim
+excitement climbs: a teasing murmur at the start, moans and "oh god", "deeper",
+begging near the peak, a cry at climax and, a few seconds later, a contented sigh or
+a soft laugh. With Inworld TTS the voice gets the tone of each moment (whispering,
+seductive, teasing; breathless; ecstasy; orgasming, pleading, begging, desperate,
+overwhelmed; orgasm; satisfied, giggling, laughing - one picked at random per phase,
+with a breath or a sigh now and then in the heat of it) and speaks a little faster
+(MCM speed); the tone is only in the voice, never in the subtitles or the history. Other TTS engines read the words as
 they are. MCM: the pause between cries (up to twice as long while excitement is
 low) and whether only women cry out. Every cry is one LLM reply and one voice line,
 so a short pause uses more of your TTS quota.
