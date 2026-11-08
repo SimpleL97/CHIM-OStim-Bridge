@@ -5,7 +5,8 @@ Lets CHIM AI agents use OStim Standalone by themselves, react to the world, and
 live with a few simple needs. Everything is configured in the MCM.
 
 The vampire features of 1.x (blood, the bite, Vampire Lords, thralls) are a mod of
-their own since 2.0: CHIM Vampire Bridge. See TOGETHER WITH MY OTHER MODS.
+their own since 2.0: CHIM Vampire Bridge (Nexus 198441). See TOGETHER WITH MY
+OTHER MODS.
 
 
 REQUIREMENTS

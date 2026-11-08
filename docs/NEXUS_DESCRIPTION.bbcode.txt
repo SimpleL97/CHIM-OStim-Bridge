@@ -15,7 +15,7 @@ On top of that the agents react to the world around them, talk about a scene aft
 [*][b]Start_Intimate_Scene[/b] - with you, any named NPC nearby, or several people at once. The AI picks the kind of scene from the conversation: oral, cunnilingus, vaginal, anal, handjob, boobjob, kissing, 69, cowgirl, reverse cowgirl, doggystyle, missionary - or masturbation, alone, while you watch.
 [*][b]Change_Intimate_Scene[/b] - switch position or act mid-scene ("now from behind").
 [*][b]Stop_Intimate_Scene[/b]
-[*][b]Undress / Get_Dressed[/b] - strip without a scene and later put exactly those clothes back on. With CHIM Vampire Bridge also a thrall, by name.
+[*][b]Undress / Get_Dressed[/b] - strip without a scene and later put exactly those clothes back on. With [url=https://www.nexusmods.com/skyrimspecialedition/mods/198441]CHIM Vampire Bridge[/url] also a thrall, by name.
 [/list]
 Every result is reported back to CHIM. When something is not possible ("weapons are still drawn", "she is not here", "there is a fight going on") the agent answers in character instead of the action silently failing.
 
