@@ -35,8 +35,10 @@ permissions:
   contents: read
 
 env:
-  MOD_ID: "194761"     # nexusmods.com/skyrimspecialedition/mods/194761
-  FILE_ID: "820230"    # the main file "CHIM OStim Bridge"; new versions are added to it
+  # Nexus Upload API (v3) ids - from the main file's "Advanced" dialog on the Files tab,
+  # section API; not the numbers in the page address (194761) or the download link (820230)
+  MOD_ID: "7318624467145"   # "Unique Mod ID" (the changelog goes to /mods/<id>/changelogs)
+  FILE_ID: "8124060"        # "File ID" of the main file "CHIM OStim Bridge"; new versions are added to it
   ARCHIVE: "dist/CHIM OStim Bridge.zip"
   # papyrus-compiler master with the string escape fix (issue 19), after release 0.0.4
   PAPYRUS_COMPILER_COMMIT: b9dc9951f4264084c8ded6721b20f0d81c021d58
