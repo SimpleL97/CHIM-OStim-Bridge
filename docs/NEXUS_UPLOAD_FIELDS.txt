@@ -4,12 +4,12 @@ CHIM OStim Bridge - values for the Nexus Mods upload form
 MOD PAGE
   Name:            CHIM OStim Bridge
   Author:          SaurOff
-  Version:         1.1.0
+  Version:         2.0.0
   Category:        Gameplay   (Skyrim SE has no separate adult category; adult content is a flag)
   Adult content:   YES (sexual content)
   Language:        English
   Brief overview (max 350 characters):
-    Lets CHIM AI NPCs start, change and end OStim scenes on their own - with you, other NPCs or groups - picking the act from the conversation. They react to cities, shops, sleep and scenes, talk about a scene afterwards and can have needs (lust, blood thirst, drink, jealousy). MCM in 12 languages; the server side installs itself.
+    Lets CHIM AI NPCs start, change and end OStim scenes on their own - with you, other NPCs or groups - picking the act from the conversation. They react to cities, shops, sleep and scenes, talk about a scene afterwards and talk and cry out during scenes, and can have needs (lust, drink, jealousy). MCM in 12 languages; the server installs itself.
   Description:     paste NEXUS_DESCRIPTION.bbcode.txt (BBCode editor)
 
 REQUIREMENTS (Nexus "Requirements" tab, Nexus mods)
@@ -21,23 +21,25 @@ REQUIREMENTS (Nexus "Requirements" tab, Nexus mods)
   Address Library for SKSE Plugins  32444
 Off-site requirement
   SKSE64                            https://skse.silverlock.org/
-DLC requirement
-  Dawnguard
+(No DLC requirement any more: Dawnguard was only needed for the vampire features, now in CHIM Vampire Bridge.)
 
 FILE UPLOAD
   File:            CHIM OStim Bridge.zip   (older versions: archive/CHIM OStim Bridge-<version>.zip)
   File name:       CHIM OStim Bridge
-  Version:         1.1.0   (must match fomod/info.xml; Vortex shows and tracks versions from this)
+  Version:         2.0.0   (must match fomod/info.xml; Vortex shows and tracks versions from this)
   Category:        Main Files
-  Description:     1.1.0: vampirism by bite, Vampire Lords (Turn_Into_Vampire_Lord), solo scenes; fixes: every action after the first one in a session, slow replies near NPC scenes from other mods. FOMOD installer; the CHIM server plugin installs and updates itself at game start.
-  Update notes (Nexus "Changelog" field for 1.1.0, see docs/CHANGELOG.txt for the full list):
-    - New: the vampire bite can pass on Sanguinare Vampiris (MCM toggle and chance).
-    - New: Vampire Lords can turn the player into a Vampire Lord (Turn_Into_Vampire_Lord).
-    - New: solo scenes - an agent can pleasure themselves while the others watch.
-    - Bites wait until the agent has finished the line announcing them.
-    - Fixed: only the first bridge action after starting the game worked.
-    - Fixed: slow replies in places full of NPC scenes from other mods.
-    - Fixed: wrong "who climaxed" after a scene; Feed_On_Blood with no target.
+  Description:     2.0.0: talking and cries of passion during scenes, support for other OStim mods; the vampire features moved to CHIM Vampire Bridge. FOMOD installer; the CHIM server plugin installs and updates itself at game start.
+  Update notes (Nexus "Changelog" field for 2.0.0, see docs/CHANGELOG.txt for the full list):
+    - The vampire features moved to a mod of their own, CHIM Vampire Bridge: install it to keep
+      them - bitten, turned and thrall NPCs, the server state and the actions move over by themselves.
+    - New: talking during scenes - a line when the position changes and at climax.
+    - New: cries of passion (off by default) - short cries in the agent's own voice by excitement
+      phase; solo scenes only moan. With Inworld TTS each phase gets its tone.
+    - New: support for OVirginity, OCum, OISeeYouMasturbating, OMerchants, OTrainers and
+      morning scenes (each on its own switch, none required).
+    - A refused action is answered at once, in character; "speech only" cuts narration out.
+    - Fixed: the talk after a scene went to whoever spoke last; double reactions.
+    - New: log files in the game and on the CHIM server.
   Remove old versions: when uploading a newer version, move the old file to "Old versions"
                    (do not delete it) so players can pick an older version in Vortex.
 
@@ -48,4 +50,4 @@ PERMISSIONS (suggested)
   Convert to other games:  no
   Donation points:         your choice
 
-TAGS (suggested): AI, CHIM, OStim, Followers, Immersion, MCM, Adult, Vampires, Dialogue
+TAGS (suggested): AI, CHIM, OStim, Followers, Immersion, MCM, Adult, Dialogue, Voice
