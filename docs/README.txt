@@ -137,7 +137,7 @@ Each mod works on its own; installed together they see each other:
 - CHIM Vampire Bridge (github.com/SimpleL97/CHIM-Vampire-Bridge): vampires, the
   bite, Vampire Lords and thralls - the features this bridge had until 1.2. Its
   thralls can be undressed and brought into scenes here by name.
-- CHIM ORomance Bridge (github.com/SimpleL97/CHIM-ORomance-Bridge): love, marriage
+- CHIM ORomance Bridge (Nexus 198436, github.com/SimpleL97/CHIM-ORomance-Bridge): love, marriage
   and children through ORomance Plus; every OStim scene with the player raises
   ORomance affection, and spouses who ask for the marital duty start the scene here.
 What happens in one mod (a scene, a wedding, a pregnancy, a thrall) reaches every

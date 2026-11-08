@@ -75,7 +75,7 @@ Blood thirst, the bite, Sanguinare Vampiris and Vampire Lords (1.1) are [b]no lo
 Each works on its own; installed together they see each other - what happens in one (a scene, a wedding, a pregnancy, a thrall) reaches every AI agent nearby.
 [list]
 [*][b]CHIM Vampire Bridge[/b] - [url=https://github.com/SimpleL97/CHIM-Vampire-Bridge]GitHub[/url]. Vampires drink blood and pass on vampirism, Vampire Lords turn you, Vampire Lords and the Volkihar court bind thralls - enemies too, the dead raised. Its thralls can be undressed and brought into scenes here by name, even ones who are not AI agents.
-[*][b]CHIM ORomance Bridge[/b] - [url=https://github.com/SimpleL97/CHIM-ORomance-Bridge]GitHub[/url]. Love, marriage (several spouses) and children through ORomance Plus; every OStim scene with you raises ORomance affection, and spouses who ask for the marital duty start the scene here.
+[*][b]CHIM ORomance Bridge[/b] - [url=https://www.nexusmods.com/skyrimspecialedition/mods/198436]Nexus[/url] · [url=https://github.com/SimpleL97/CHIM-ORomance-Bridge]GitHub[/url]. Love, marriage (several spouses) and children through ORomance Plus; every OStim scene with you raises ORomance affection, and spouses who ask for the marital duty start the scene here.
 [*][b]CHIM Travel Fix[/b] - [url=https://github.com/SimpleL97/CHIM-Travel-Fix]GitHub[/url]. Not connected to this mod: CHIM's own Travel_To goes to the place the agent named, in any game language, instead of a random cave.
 [/list]
 
