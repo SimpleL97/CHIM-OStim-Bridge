@@ -134,7 +134,7 @@ CHIM fixes (MCM):
 TOGETHER WITH MY OTHER MODS
 ---------------------------
 Each mod works on its own; installed together they see each other:
-- CHIM Vampire Bridge (github.com/SimpleL97/CHIM-Vampire-Bridge): vampires, the
+- CHIM Vampire Bridge (Nexus 198441, github.com/SimpleL97/CHIM-Vampire-Bridge): vampires, the
   bite, Vampire Lords and thralls - the features this bridge had until 1.2. Its
   thralls can be undressed and brought into scenes here by name.
 - CHIM ORomance Bridge (Nexus 198436, github.com/SimpleL97/CHIM-ORomance-Bridge): love, marriage

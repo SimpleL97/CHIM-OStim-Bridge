@@ -16,7 +16,7 @@ configured in the MCM.
 > [Nexus page](https://www.nexusmods.com/skyrimspecialedition/mods/194761) still offers
 > **1.1.0**, which has the vampire features (blood thirst, the bite, Vampire Lords). In 2.0
 > they are **removed from this mod** and moved to a mod of their own,
-> **[CHIM Vampire Bridge](https://github.com/SimpleL97/CHIM-Vampire-Bridge)**, together with the
+> **[CHIM Vampire Bridge](https://www.nexusmods.com/skyrimspecialedition/mods/198441)** ([GitHub](https://github.com/SimpleL97/CHIM-Vampire-Bridge)), together with the
 > thralls that were being made for 1.2. CHIM Vampire Bridge takes over the bitten, turned
 > and thrall NPCs of an existing save, the server state and the actions by itself.
 
@@ -105,7 +105,7 @@ through MCM Helper in 12 languages with English fallback.
 |---|---|---|
 | **CHIM OStim Bridge** (this one) | AI agents start, change and end OStim scenes; reactions, talk and cries of passion during scenes; needs | [Nexus](https://www.nexusmods.com/skyrimspecialedition/mods/194761) · [GitHub](https://github.com/SimpleL97/CHIM-OStim-Bridge) |
 | **CHIM ORomance Bridge** | love, partners and marriage (several spouses) through ORomance Plus, married life, children with Fertility Mode | [Nexus](https://www.nexusmods.com/skyrimspecialedition/mods/198436) · [GitHub](https://github.com/SimpleL97/CHIM-ORomance-Bridge) |
-| **CHIM Vampire Bridge** | vampires: blood thirst, the bite, Vampire Lords, thralls who obey; the vampire features of this mod's 1.x | [GitHub](https://github.com/SimpleL97/CHIM-Vampire-Bridge) (Nexus later) |
+| **CHIM Vampire Bridge** | vampires: blood thirst, the bite, Vampire Lords, thralls who obey; the vampire features of this mod's 1.x | [Nexus](https://www.nexusmods.com/skyrimspecialedition/mods/198441) · [GitHub](https://github.com/SimpleL97/CHIM-Vampire-Bridge) |
 | **CHIM Travel Fix** | Travel_To goes to the place the agent named, in any game language, not a random one | [GitHub](https://github.com/SimpleL97/CHIM-Travel-Fix) (Nexus later) |
 
 Each works on its own, and none needs another. Installed together, they see each other:
