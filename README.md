@@ -12,13 +12,11 @@ configured in the MCM.
 > **Adult content.** This mod deals with sexual content in a video game and is meant
 > for adults only.
 
-> **Status: 2.0.0 is in development and not released yet.** The
-> [Nexus page](https://www.nexusmods.com/skyrimspecialedition/mods/194761) still offers
-> **1.1.0**, which has the vampire features (blood thirst, the bite, Vampire Lords). In 2.0
-> they are **removed from this mod** and moved to a mod of their own,
-> **[CHIM Vampire Bridge](https://www.nexusmods.com/skyrimspecialedition/mods/198441)** ([GitHub](https://github.com/SimpleL97/CHIM-Vampire-Bridge)), together with the
-> thralls that were being made for 1.2. CHIM Vampire Bridge takes over the bitten, turned
-> and thrall NPCs of an existing save, the server state and the actions by itself.
+> **Since 2.0 the vampire features are no longer part of this mod.** Blood thirst, the bite
+> and Vampire Lords (1.1) moved, together with the thralls made for 1.2, to a mod of their own:
+> **[CHIM Vampire Bridge](https://www.nexusmods.com/skyrimspecialedition/mods/198441)** ([GitHub](https://github.com/SimpleL97/CHIM-Vampire-Bridge)).
+> It takes over the bitten, turned and thrall NPCs of an existing save, the server state
+> and the actions by itself - install it when updating from 1.x to keep them.
 
 This repository is the complete source of the mod. Players should download the packaged
 release (FOMOD archive) from the **[Nexus Mods page](https://www.nexusmods.com/skyrimspecialedition/mods/194761)**
@@ -106,7 +104,7 @@ through MCM Helper in 12 languages with English fallback.
 | **CHIM OStim Bridge** (this one) | AI agents start, change and end OStim scenes; reactions, talk and cries of passion during scenes; needs | [Nexus](https://www.nexusmods.com/skyrimspecialedition/mods/194761) · [GitHub](https://github.com/SimpleL97/CHIM-OStim-Bridge) |
 | **CHIM ORomance Bridge** | love, partners and marriage (several spouses) through ORomance Plus, married life, children with Fertility Mode | [Nexus](https://www.nexusmods.com/skyrimspecialedition/mods/198436) · [GitHub](https://github.com/SimpleL97/CHIM-ORomance-Bridge) |
 | **CHIM Vampire Bridge** | vampires: blood thirst, the bite, Vampire Lords, thralls who obey; the vampire features of this mod's 1.x | [Nexus](https://www.nexusmods.com/skyrimspecialedition/mods/198441) · [GitHub](https://github.com/SimpleL97/CHIM-Vampire-Bridge) |
-| **CHIM Travel Fix** | Travel_To goes to the place the agent named, in any game language, not a random one | [GitHub](https://github.com/SimpleL97/CHIM-Travel-Fix) (Nexus later) |
+| **CHIM Travel Fix** | Travel_To goes to the place the agent named, in any game language, not a random one | [Nexus](https://www.nexusmods.com/skyrimspecialedition/mods/198442) · [GitHub](https://github.com/SimpleL97/CHIM-Travel-Fix) |
 
 Each works on its own, and none needs another. Installed together, they see each other:
 - a thrall of CHIM Vampire Bridge can be undressed and brought into scenes here by name,
