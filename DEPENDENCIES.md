@@ -25,6 +25,7 @@ Built the same way, by the same author, and tested together with this one.
 |---|---|
 | **CHIM ORomance Bridge** ([GitHub](https://github.com/SimpleL97/CHIM-ORomance-Bridge)) | Every OStim scene with the player raises ORomance like and love (that mod listens to OStim's events). Spouses who ask for the marital duty start the scene with this mod's `Start_Intimate_Scene`; a spouse listed here for hunger for sex gets that instead of the marital duty there. Weddings, pregnancies and births reach the agents here. |
 | **CHIM Vampire Bridge** ([GitHub](https://github.com/SimpleL97/CHIM-Vampire-Bridge)) | The vampire features this bridge had until 1.2. Its thralls (StorageUtil list `COV_Thralls`) can be named in `Undress`, `Get_Dressed` and `Start_Intimate_Scene` - a thrall who is not an AI agent still obeys; a thrall is found by name even with "Any nearby NPC can be a partner" off. |
+| **CHIM Travel Fix** ([GitHub](https://github.com/SimpleL97/CHIM-Travel-Fix)) | Not connected to this mod: a CHIM server plugin that makes CHIM's own Travel_To go to the place the agent named, in any game language, instead of a random one. |
 
 None of them is required and none requires another; each works on its own. Installed together they
 see each other: in the game they share only the StorageUtil list `COV_Thralls`; on the CHIM
@@ -35,6 +36,20 @@ event log, so every AI agent nearby can talk about what happened in another one.
 Optional: OStim animation packs with 3+ actor scenes for group scenes
 (for example [Billyy MFF Pack](https://www.nexusmods.com/skyrimspecialedition/mods/106582)).
 Without them a group request falls back to the two main people.
+
+## Optional, supported: other OStim mods (MCM page OStim addons)
+
+Each one has its own switch and is only read when it is installed: no hard dependency, the
+mod reads their data the way they store it.
+
+| Mod | Link | What the agents learn from it |
+|---|---|---|
+| **OVirginity Reflowered** | [Nexus 77929](https://www.nexusmods.com/skyrimspecialedition/mods/77929) | who is a virgin (`IsVirgin`, list `ovirginity_virginities_taken_list`); a lost virginity is part of the scene's reaction |
+| **OCum Ascended** | [Nexus 77506](https://www.nexusmods.com/skyrimspecialedition/mods/77506) | where the cum is on the women (its stage factions) |
+| **OISeeYouMasturbating** | [Nexus 142008](https://www.nexusmods.com/skyrimspecialedition/mods/142008) | whether a woman who caught you watching let you watch (its factions) |
+| **OMerchants** | [Nexus 101831](https://www.nexusmods.com/skyrimspecialedition/mods/101831) | a merchant's better prices paid with the scene (its effect) |
+| **OTrainers** | [Nexus 101830](https://www.nexusmods.com/skyrimspecialedition/mods/101830) | a trainer's lesson paid with the scene (its quest alias) |
+| **Morning Sex** | [Nexus 98054](https://www.nexusmods.com/skyrimspecialedition/mods/98054) | a scene within 3 minutes of waking up is a morning one (any such mod works: the mod only watches the time since you woke) |
 
 ## To build
 

@@ -142,6 +142,9 @@ Each mod works on its own; installed together they see each other:
   ORomance affection, and spouses who ask for the marital duty start the scene here.
 What happens in one mod (a scene, a wedding, a pregnancy, a thrall) reaches every
 AI agent nearby, so they can talk about it.
+- CHIM Travel Fix (github.com/SimpleL97/CHIM-Travel-Fix): not connected to this
+  mod - CHIM's own Travel_To goes to the place the agent named, in any game
+  language, instead of a random one.
 
 
 NOTIFICATIONS AND LOG
