@@ -2,6 +2,8 @@
 [size=3]Let your CHIM AI companions decide for themselves - and actually do it.[/size]
 [b]Open source:[/b] [url=https://github.com/SimpleL97/CHIM-OStim-Bridge]github.com/SimpleL97/CHIM-OStim-Bridge[/url][/center]
 
+[b]Updating from 1.x?[/b] Since 2.0 the vampire features (blood thirst, the bite, Vampire Lords) live in their own mod, [b][url=https://www.nexusmods.com/skyrimspecialedition/mods/198441]CHIM Vampire Bridge[/url][/b] - install it to keep them; your save's vampires and thralls move over by themselves.
+
 [size=4][b]What is this?[/b][/size]
 [url=https://www.nexusmods.com/skyrimspecialedition/mods/126330]CHIM[/url] gives NPCs a mind and a voice. [url=https://www.nexusmods.com/skyrimspecialedition/mods/98163]OStim Standalone[/url] gives them a body. This mod connects the two: when an AI agent agrees, flirts, insists or gets drunk enough, it can start, change and end OStim scenes on its own, with you, with another NPC or with a whole group - and the kind of scene follows what was said ("use your mouth", "from behind", "all of us together").
 
