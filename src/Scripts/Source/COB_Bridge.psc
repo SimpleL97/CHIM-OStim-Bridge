@@ -102,7 +102,8 @@ Function StartScene(String command, String parameter)
 		If name != ""
 			Actor p = ResolvePartnerName(name)
 			If !p
-				Report(command, parameter, "cannot start: " + name + " is not here")
+				; the server offers the agent one more try with the right name (cobNameRetry)
+				Report(command, parameter, "cannot start: nobody called " + name + " is here")
 				Return
 			EndIf
 			If named.Find(p) < 0
@@ -426,7 +427,7 @@ EndFunction
 ; without it the list is simply empty.
 Actor Function WhoToDress(String parameter, Actor npc)
 	String name = ArgOf(parameter, 1)
-	If name == "" || COB_Config.NameOf(name) == npc.GetDisplayName() || COB_Config.RefActor(name) == npc
+	If name == "" || COB_Config.NameScore(npc, name) == 2 || COB_Config.RefActor(name) == npc
 		Return npc
 	EndIf
 	Actor t = ResolvePartnerName(name)
@@ -539,25 +540,56 @@ Actor Function ResolvePartnerName(String name)
 	EndIf
 	name = COB_Config.NameOf(name)
 	Actor player = Game.GetPlayer()
-	If name == "" || name == "player" || name == "self" || name == player.GetDisplayName()
+	If name == "" || COB_Config.IsPlayerWord(name) || COB_Config.NameScore(player, name) == 2
 		Return player
 	EndIf
 	Actor a = AIAgentFunctions.getAgentByName(name)
+	If !a && COB_Config.BareName(name) != name
+		a = AIAgentFunctions.getAgentByName(COB_Config.BareName(name))
+	EndIf
 	If a
 		Return a
 	EndIf
-	; any NPC around (MCM), and always a thrall: a thrall obeys, CHIM agent or not
+	; the AI agents around, and any NPC around (MCM) or a thrall - a thrall obeys, CHIM
+	; agent or not: the same name first, then a looser fit (a title in front, the first name)
+	Actor[] agents = AIAgentFunctions.findAllNearbyAgents()
 	Actor[] around = MiscUtil.ScanCellNPCs(player, RangeUnits())
+	a = Named(agents, name, 2, True)
+	If !a
+		a = Named(around, name, 2, False)
+	EndIf
+	If !a && COB_Config.NameScore(player, name) == 1
+		Return player
+	EndIf
+	If !a
+		a = Named(agents, name, 1, True)
+	EndIf
+	If !a
+		a = Named(around, name, 1, False)
+	EndIf
+	; a name was given but nobody by that name is here: refuse rather than
+	; silently pairing the agent with the player instead
+	Return a
+EndFunction
+
+; the nearest one in the list who goes by the name this well (COB_Config.NameScore);
+; not an AI agent: only with the MCM option "any NPC", or a thrall
+Actor Function Named(Actor[] list, String name, Int score, bool agents)
+	Actor player = Game.GetPlayer()
+	Actor best = None
 	Int i = 0
-	While i < around.Length
-		If around[i] && around[i].GetDisplayName() == name && (COB_Config.B("bAnyNPC:General") || IsThrall(around[i]))
-			Return around[i]
+	While i < list.Length
+		Actor x = list[i]
+		If x && x != player && !x.IsDead() && COB_Config.NameScore(x, name) == score
+			If agents || COB_Config.B("bAnyNPC:General") || IsThrall(x)
+				If !best || x.GetDistance(player) < best.GetDistance(player)
+					best = x
+				EndIf
+			EndIf
 		EndIf
 		i += 1
 	EndWhile
-	; a name was given but nobody by that name is here: refuse rather than
-	; silently pairing the agent with the player instead
-	Return None
+	Return best
 EndFunction
 
 float Function RangeUnits()

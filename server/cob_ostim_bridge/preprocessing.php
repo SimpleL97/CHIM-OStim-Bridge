@@ -7,7 +7,8 @@
  *               stored and answered here, never reaches the history or the LLM.
  *   cob_after   gets "who climaxed" appended before the agent talks about the scene.
  *   funcret     a refused action of this bridge becomes the event cob_refused, which the
- *               agent answers at once (successful ones stay as they are).
+ *               agent answers at once (successful ones stay as they are); a name nobody
+ *               here has becomes an instruction to try once more with the right name.
  *   inputtext   who the player talks to, for the jealousy need.
  *   init        CHIM fix: eventlog.ts is a game-session counter that restarts with the
  *               game. user_input markers from a long previous session then look newer
@@ -30,8 +31,10 @@ if (isset($gameRequest) && is_array($gameRequest)) {
             // a refused action: answered at once, as an event (cob_lib.php, cobRefusalEvent)
             $cobRefusal = cobRefusalEvent(strval($gameRequest[3] ?? ""));
             if ($cobRefusal !== null) {
-                $gameRequest[0] = "cob_refused";
-                $gameRequest[3] = $cobRefusal;
+                // a name nobody here has: one more try with the right name (cobNameRetry)
+                $cobRetry = cobNameRetry(strval($gameRequest[3] ?? ""));
+                $gameRequest[0] = $cobRetry !== null ? "instruction" : "cob_refused";
+                $gameRequest[3] = $cobRetry ?? $cobRefusal;
             }
         }
         if ($cobType === "cob_after") {

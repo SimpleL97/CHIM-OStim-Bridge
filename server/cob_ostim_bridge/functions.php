@@ -183,6 +183,7 @@ $GLOBALS["action_post_process_fnct_ex"][] = function ($actions) {
                 }
                 // Change keeps its target: when no scene is running the game starts
                 // one, and these are the partners the model meant
+                $parameter = cobResolveTargets($parameter, $actorName);
                 list($sceneActions, $sceneTags) = cobMapSceneKind($item);
                 // alone: the game plays a solo scene when the agent is the only one named
                 if ($codeName === "ExtCmdCOB_StartScene" && cobIsSoloKind($item)
@@ -191,6 +192,9 @@ $GLOBALS["action_post_process_fnct_ex"][] = function ($actions) {
                 }
                 $parts[2] = $actionName . "@" . $actorName . "~" . $field($parameter) . "~" . $field($sceneActions) . "~" . $field($sceneTags);
             } else {
+                if ($codeName !== "ExtCmdCOB_StopScene") {
+                    $parameter = cobResolveTargets($parameter, $actorName); // a thrall by name
+                }
                 // never end the parameter with an empty field: CHIM's command queue
                 // crashes on "Name~" (null read) before the game ever sees the command
                 $parts[2] = $actionName . "@" . $actorName . "~" . $field($parameter);

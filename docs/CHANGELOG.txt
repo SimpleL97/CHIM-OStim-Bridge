@@ -1,6 +1,23 @@
 CHIM OStim Bridge - changelog
 =============================
 
+2.0.1
+- Fix: an action with someone named in it was often refused as "<name> is not here" although
+  that person was right there, and the agent then said you had vanished. The game only knew
+  the exact name, while the AI writes names in many ways. Now these all work:
+  - you, as "The Narrator", "you", "player", your first name alone, your name with a title or
+    a surname, or the name your character has in CHIM's settings when it differs from the game;
+  - others the way CHIM lists them to the AI: "Name [Guard]", "Name [RefID: ...]",
+    "Jarl Name", "Name (busy)";
+  - a first name alone ("Hilde"), or a small misspelling;
+  - "me", for the agent itself.
+  The server matches every name against the people CHIM sees around you, and the game
+  compares names the same loose way. An exact name always wins over a loose one, and when
+  two people fit equally, the action is still refused rather than done with the wrong one.
+- When a name still matches nobody, the agent is told who is here and may call the action
+  once more with the right name, instead of only answering that it did not work. Once per
+  agent and minute.
+
 2.0.0
 - Fix: scenes ending (or starting) at the same moment each got a reaction, and the same
   agent answered twice in a row, sometimes word for word. Now only one gets through the

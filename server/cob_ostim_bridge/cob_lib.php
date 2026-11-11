@@ -13,7 +13,7 @@
  * The vampire features of 1.x live in CHIM Vampire Bridge since 2.0.
  */
 
-const COB_VERSION = "2.0.0";
+const COB_VERSION = "2.0.1";
 const COB_PLUGIN = "cob_ostim_bridge";
 const COB_CONFIG_KEY = "cob_ostim_bridge_config";
 const COB_STATE_KEY = "cob_ostim_bridge_state";
@@ -116,6 +116,154 @@ function cobLog(string $msg): void
         @file_put_contents($file, date("Y-m-d H:i:s") . " " . $msg . "\n", FILE_APPEND);
     } catch (Throwable $e) {
     }
+}
+
+// ---------------------------------------------------------------- names in a target
+
+/**
+ * The model writes the people of a target in many ways: as CHIM lists them to it ("Name
+ * [RefID: ...]", "Name [Bandit Defender]", "Jarl Name", "Name (busy)"), by the first name
+ * alone, misspelled, or the player as "The Narrator", "you", or under the name in CHIM's
+ * settings, which may not be the name in the game. The game only knows exact names, so all
+ * of these used to be refused as "is not here". cobResolveTargets() turns each name into
+ * one of the people CHIM saw around the player last, "player" for the player, or the
+ * agent's own name for "me"; a name it cannot place stays as it was written.
+ */
+const COB_PLAYER_WORDS = [
+    "player", "the player", "you", "narrator", "the narrator", "thenarrator", "dragonborn",
+    "the dragonborn", "#player_name#", "player_name", "{player_name}", "игрок", "гравець",
+];
+const COB_SELF_WORDS = ["me", "myself", "i"];
+
+/** a name without RefID, "[...]", "(...)", quotes and case, for comparing */
+function cobBareName(string $s): string
+{
+    $s = preg_replace('/\[[^\]]*\]|\([^)]*\)/u', ' ', $s);
+    $s = trim(preg_replace('/\s+/u', ' ', strval($s)), " \t\"'`«»“”„.!?:;");
+    return mb_strtolower($s);
+}
+
+/** the people CHIM saw around the player last (its infonpc and infonpc_close events), as CHIM writes them */
+function cobPresentNames(): array
+{
+    static $names = null;
+    if ($names !== null) {
+        return $names;
+    }
+    $names = [];
+    $db = $GLOBALS["db"] ?? null;
+    if (!$db) {
+        return $names;
+    }
+    foreach (["infonpc", "infonpc_close"] as $type) {
+        $row = $db->fetchOne("SELECT data FROM eventlog WHERE type = $1 ORDER BY gamets DESC, ts DESC LIMIT 1", [$type]);
+        $data = !empty($row) ? strval($row["data"] ?? "") : "";
+        $data = preg_replace('/^\s*\(?\s*beings in range:\s*/iu', '', $data);
+        foreach (preg_split('/[,\/|]/u', strval($data)) as $v) {
+            $v = trim($v);
+            // the list itself ends with ")": "(beings in range:A,B,C)"
+            while ($v !== "" && substr($v, -1) === ")" && substr_count($v, "(") < substr_count($v, ")")) {
+                $v = trim(substr($v, 0, -1));
+            }
+            // a state after the name: "(far away)", "(busy)", "(dead)"
+            $v = trim(strval(preg_replace('/(\s*\([^()]*\))+$/u', '', $v)));
+            if ($v !== "" && cobBareName($v) !== "" && !in_array($v, $names, true)) {
+                $names[] = $v;
+            }
+        }
+    }
+    return $names;
+}
+
+/**
+ * The one present person a name means, or null: the same name first; then a title in front
+ * of it ("Jarl Name" / "Name"), either way, or the first name alone ("Hilde" for "Hilde the
+ * Lioness"); then a near spelling. Only when exactly one person fits.
+ */
+function cobMatchPresent(string $want, array $present): ?string
+{
+    $b = cobBareName($want);
+    if ($b === "") {
+        return null;
+    }
+    $exact = [];
+    $loose = [];
+    $near = [];
+    foreach ($present as $name) {
+        $nb = cobBareName($name);
+        if ($nb === "") {
+            continue;
+        }
+        if ($nb === $b) {
+            $exact[] = $name;
+        } elseif (mb_strlen($b) >= 3 && mb_strlen($nb) >= 3
+            && (str_ends_with($nb, " " . $b) || str_ends_with($b, " " . $nb) || str_starts_with($nb, $b . " "))) {
+            $loose[] = $name;
+        } elseif (mb_strlen($b) >= 4) {
+            similar_text($b, $nb, $pct);
+            if ($pct >= 85) {
+                $near[] = $name;
+            }
+        }
+    }
+    foreach ([$exact, $loose, $near] as $found) {
+        if (count($found) === 1 || (count($found) > 1 && count(array_unique(array_map('cobBareName', $found))) === 1)) {
+            return $found[0];
+        }
+        if (count($found) > 1) {
+            return null; // two people fit: better refused than the wrong one
+        }
+    }
+    return null;
+}
+
+/**
+ * A target of comma separated names (also "and", ";", "&", "+", "/") with every name placed
+ * where possible (see above). $keep: words that are not names (lowercase), left as they are.
+ */
+function cobResolveTargets(string $csv, string $agent, array $keep = []): string
+{
+    $csv = trim($csv);
+    if ($csv === "" || $csv === "-") {
+        return $csv;
+    }
+    $player = cobBareName(strval($GLOBALS["PLAYER_NAME"] ?? ""));
+    $self = cobBareName($agent);
+    $present = null;
+    $out = [];
+    foreach (preg_split('/\s*[,;&+\/]\s*|\s+(?:and|и|і|та)\s+/iu', $csv) as $t) {
+        $t = trim($t);
+        $b = cobBareName($t);
+        if ($t === "" || $t === "-" || $b === "") {
+            continue;
+        }
+        if (stripos($t, "RefID") !== false || in_array($b, $keep, true)) {
+            $r = $t; // a RefID is exact
+        } elseif (in_array($b, COB_PLAYER_WORDS, true) || ($player !== "" && $b === $player)) {
+            $r = "player";
+        } elseif (in_array($b, COB_SELF_WORDS, true) || $b === $self) {
+            $r = $agent;
+        } else {
+            $present = $present ?? cobPresentNames();
+            $r = cobMatchPresent($t, $present);
+            if ($r !== null && $player !== "" && cobBareName($r) === $player) {
+                $r = "player"; // CHIM lists the player among the people close by too
+            }
+            if ($r === null && $player !== "" && mb_strlen($b) >= 3
+                && (str_starts_with($player, $b . " ") || str_ends_with($b, " " . $player) || str_starts_with($b, $player . " "))) {
+                $r = "player"; // the player's first name, the name with a title or a surname
+            }
+            $r = $r ?? $t;
+        }
+        if (!in_array(mb_strtolower($r), array_map('mb_strtolower', $out), true)) {
+            $out[] = $r;
+        }
+    }
+    $resolved = implode(", ", $out);
+    if ($resolved !== $csv) {
+        cobLog("target \"{$csv}\" -> \"{$resolved}\"");
+    }
+    return $resolved;
 }
 
 // ---------------------------------------------------------------- scene kinds
@@ -524,6 +672,50 @@ function cobRefusalEvent(string $data): ?string
     $agent = trim(explode("~", $parts[2])[0]);
     cobLog("refused {$parts[1]} by {$agent}: {$result}");
     return "({$agent} tried " . COB_ACTION_NAMES[$parts[1]] . ", but it did not happen - {$result})";
+}
+
+/**
+ * A refusal because nobody by the given name was found, as an instruction instead of the
+ * refusal event: CHIM lets an agent act only on the player's turn and on instructions, so
+ * after the event the agent could only talk about it - and said the player had vanished.
+ * The instruction lists who is here and lets the agent call the action once more with the
+ * right name. Once per agent and minute; a second miss in that time stays a plain refusal.
+ */
+function cobNameRetry(string $data): ?string
+{
+    $parts = explode("@", $data, 4);
+    if (count($parts) < 4 || !isset(COB_ACTION_NAMES[$parts[1]])) {
+        return null;
+    }
+    if (!preg_match('/^cannot[^:]*: nobody called (.+?) is here/i', trim($parts[3]), $m)) {
+        return null;
+    }
+    $agent = trim(explode("~", $parts[2])[0]);
+    $retries = cobOptGet(COB_PLUGIN . "_name_retry") ?? [];
+    $now = time();
+    if ($agent === "" || $now - intval($retries[$agent] ?? 0) < 60) {
+        return null;
+    }
+    $retries[$agent] = $now;
+    cobOptSet(COB_PLUGIN . "_name_retry", array_filter($retries, function ($t) use ($now) {
+        return $now - intval($t) < 3600;
+    }));
+
+    $player = trim(strval($GLOBALS["PLAYER_NAME"] ?? "")) ?: "the player";
+    $people = [$player];
+    foreach (cobPresentNames() as $n) {
+        $n = trim(strval(preg_replace('/\s*\[RefID[^\]]*\]/iu', '', $n)));
+        if ($n !== "" && cobBareName($n) !== cobBareName($agent) && count($people) < 16
+            && !in_array(cobBareName($n), array_map('cobBareName', $people), true)) {
+            $people[] = $n;
+        }
+    }
+    $action = COB_ACTION_NAMES[$parts[1]];
+    cobLog("name not found for {$agent} ({$m[1]}): one more try");
+    return "The Narrator: {$agent} tried {$action}, but nobody called {$m[1]} could be found - that name did not match anyone here; nobody has left or vanished. "
+        . "The people here are: " . implode(", ", $people) . ". "
+        . "If {$agent} meant one of them, {$agent} calls {$action} again right now with that exact name in target (leave target empty for {$player}), and says nothing about the mix-up. "
+        . "Otherwise {$agent} says one short line in character and drops it.";
 }
 
 // ---------------------------------------------------------------- cries of passion
